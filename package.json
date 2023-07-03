@@ -17,7 +17,6 @@
     "lint": "tslint -p tsconfig.json",
     "publishX": "publish --access=public",
     "postinstall": "npm run tsc",
-    "package": "npm uninstall codeartist-core && npm i codeartist-core",
     "add-core": "npm uninstall aayam-clinic-core && npm install aayam-clinic-core"
   },
   "devDependencies": {
@@ -34,7 +33,6 @@
     "aayam-clinic-core": "^0.0.1",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
-    "codeartist-core": "^0.0.27",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",

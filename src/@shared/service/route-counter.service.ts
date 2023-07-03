@@ -1,4 +1,4 @@
-import {RouteCounterVo} from "codeartist-core";
+import { RouteCounterVo } from "aayam-clinic-core";
 import routeCounterModel from "../model/route-counter.model";
 
 export class RouteCounterService {
@@ -10,7 +10,7 @@ export class RouteCounterService {
             if (vo._id) {
                 return await this.model.findByIdAndUpdate(vo._id, vo);
             } else {
-                const exist = await this.model.exists({name: vo.name, type: vo.type});
+                const exist = await this.model.exists({ name: vo.name, type: vo.type });
                 if (exist) {
                     return null;
                 }
@@ -23,7 +23,7 @@ export class RouteCounterService {
 
     public getRouteCounterList = async (type: string = ''): Promise<RouteCounterVo[]> => {
         try {
-            const criteria = type ? {type} : {};
+            const criteria = type ? { type } : {};
             return await this.model.find(criteria) as RouteCounterVo[];
         } catch (e) {
             throw e;

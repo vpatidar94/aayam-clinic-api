@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {DEPT, EmpDepartmentVo, RouteCounterVo} from "codeartist-core";
+import { DEPT, EmpDepartmentVo, RouteCounterVo } from "aayam-clinic-core";
 
 const schema = new mongoose.Schema({
   type: {

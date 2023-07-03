@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { UserAuthVo } from 'codeartist-core';
+import { UserAuthVo } from 'aayam-clinic-core';
 
 const schema = new mongoose.Schema({
   email: String,

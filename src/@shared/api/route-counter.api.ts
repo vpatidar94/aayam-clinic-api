@@ -2,9 +2,9 @@ import {URL} from '../const/url';
 import {ResponseUtility} from '../utility/response.utility';
 import {Request, Response, Router} from 'express';
 import {Route} from '../interface/route.interface';
-import {RouteCounterVo} from 'codeartist-core';
 import authMiddleware from "../middleware/auth.middleware";
 import {RouteCounterService} from "../service/route-counter.service";
+import { RouteCounterVo } from 'aayam-clinic-core';
 
 class RouteCounterApi implements Route {
     public path = URL.MJR_ROUTE_COUNTER;

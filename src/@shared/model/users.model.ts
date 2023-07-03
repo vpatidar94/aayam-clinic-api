@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { UserVo } from 'codeartist-core';
+import { UserVo } from 'aayam-clinic-core';
 
 const userSchema = new mongoose.Schema({
   sub: String,

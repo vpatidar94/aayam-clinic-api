@@ -3,9 +3,9 @@ import {ResponseUtility} from '../utility/response.utility';
 import {Request, Response, Router} from 'express';
 import {Route} from '../interface/route.interface';
 import {UserService} from '../service/user.service';
-import {UserAuthDto, UserCustTypeDto, UserEmpDepartmentDto, UserPasswordDto, UserVo} from 'codeartist-core';
 import passwordMiddleware from "../middleware/password.middleware";
 import authMiddleware from "../middleware/auth.middleware";
+import { UserAuthDto, UserCustTypeDto, UserEmpDepartmentDto, UserPasswordDto, UserVo } from 'aayam-clinic-core';
 
 class UserApi implements Route {
     public path = URL.MJR_USER;

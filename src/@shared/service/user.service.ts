@@ -12,7 +12,7 @@ import {
     UserEmpDepartmentDto,
     UserPasswordDto,
     UserVo
-} from "codeartist-core";
+} from "aayam-clinic-core";
 import userModel from '../model/users.model';
 import userAuthModel from '../model/user-auth.model';
 import bcrypt from 'bcrypt';
