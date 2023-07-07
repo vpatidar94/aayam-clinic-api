@@ -1,16 +1,15 @@
-import { UserVo } from 'aayam-clinic-core';
+import { OrgVo } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
-import authMiddleware from "../middleware/auth.middleware";
-import { UserService } from '../service/user.service';
 import { ResponseUtility } from '../utility/response.utility';
+import { OrgService } from '../../@shared/service/org.service';
 
-class UserApi implements Route {
-    public path = URL.MJR_USER;
+class OrgApi implements Route {
+    public path = URL.MJR_ORG;
     public router = Router();
 
-    private userService = new UserService();
+    private orgService = new OrgService();
 
     constructor() {
         this.initializeRoutes();
@@ -21,9 +20,9 @@ class UserApi implements Route {
         // /api/core/v1/user/app-update
         this.router.post(`${this.path}${URL.ADD_UPDATE}`, async (req: Request, res: Response) => {
             try {
-                const user = await this.userService.saveUser(req.body as UserVo);
+                const user = await this.orgService.addUpdateOrg(req.body as OrgVo);
                 if (!user) {
-                    ResponseUtility.sendFailResponse(res, null, 'User already exists');
+                    ResponseUtility.sendFailResponse(res, null, 'Org Name not available');
                     return;
                 }
                 ResponseUtility.sendSuccess(res, user);
@@ -33,4 +32,4 @@ class UserApi implements Route {
         });
     }
 }
-export default UserApi;
+export default OrgApi;

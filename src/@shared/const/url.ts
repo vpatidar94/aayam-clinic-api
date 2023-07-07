@@ -27,7 +27,9 @@ export const URL = {
     MJR_TX: BASE_CORE + '/tx',
     MJR_VEHICLE: BASE_CORE + '/vehicle',
     MJR_USER: BASE_CORE + '/user',
-    MJR_ROUTE_COUNTER: BASE_CORE + '/route-counter',
+    MJR_AUTH: BASE_CORE + '/auth',
+    MJR_ORG: BASE_CORE + '/org',
+
 
     VEHICLE_LIST: LIST,
     // ORDER: MJR_TX + '/order',
@@ -35,7 +37,7 @@ export const URL = {
     ORDER_ALL: '/order-all',
     ORDER_BY_NAME: '/order-by-name',
 
-    AUTH: '/authenticate',
+    LOGIN: '/login',
     CHANGE_PASSWORD: '/update-password',
 
     EMP_ADD_UPDATE: '/emp-add-update',

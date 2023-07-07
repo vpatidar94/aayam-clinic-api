@@ -1,16 +1,15 @@
-import { UserVo } from 'aayam-clinic-core';
+import { AuthService } from '../../@shared/service/auth.service';
+import { UserAuthDto } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
-import authMiddleware from "../middleware/auth.middleware";
-import { UserService } from '../service/user.service';
 import { ResponseUtility } from '../utility/response.utility';
 
-class UserApi implements Route {
-    public path = URL.MJR_USER;
+class AuthApi implements Route {
+    public path = URL.MJR_AUTH;
     public router = Router();
 
-    private userService = new UserService();
+    private authService = new AuthService();
 
     constructor() {
         this.initializeRoutes();
@@ -19,9 +18,10 @@ class UserApi implements Route {
     private initializeRoutes() {
 
         // /api/core/v1/user/app-update
-        this.router.post(`${this.path}${URL.ADD_UPDATE}`, async (req: Request, res: Response) => {
+        this.router.post(`${this.path}${URL.LOGIN}`, async (req: Request, res: Response) => {
             try {
-                const user = await this.userService.saveUser(req.body as UserVo);
+                const body = await req.body as UserAuthDto;
+                const user = await this.authService.authenticate(body.email, body.password);
                 if (!user) {
                     ResponseUtility.sendFailResponse(res, null, 'User already exists');
                     return;
@@ -33,4 +33,4 @@ class UserApi implements Route {
         });
     }
 }
-export default UserApi;
+export default AuthApi;

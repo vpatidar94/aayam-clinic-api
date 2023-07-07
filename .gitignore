@@ -30,5 +30,5 @@ ehthumbs.db
 $RECYCLE.BIN/
 
 .env
-
+firebase.json
 .idea
