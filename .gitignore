@@ -31,3 +31,4 @@ $RECYCLE.BIN/
 .env
 firebase.json
 .idea
+dist
