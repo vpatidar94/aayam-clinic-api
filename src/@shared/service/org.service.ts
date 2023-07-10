@@ -39,6 +39,10 @@ export class OrgService {
         return nameList;
     }
 
+    public getAll = async (): Promise<Array<OrgVo>> => {
+        return await orgModel.find() as Array<OrgVo>;
+    };
+
     /* ************************************* Private Methods ******************************************** */
 }
 
