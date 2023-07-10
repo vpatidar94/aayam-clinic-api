@@ -4,6 +4,7 @@ import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
 import { ResponseUtility } from '../utility/response.utility';
 import { OrgService } from '../../@shared/service/org.service';
+import authMiddleware from '../../@shared/middleware/auth.middleware';
 
 class OrgApi implements Route {
     public path = URL.MJR_ORG;
@@ -18,7 +19,7 @@ class OrgApi implements Route {
     private initializeRoutes() {
 
         // /api/core/v1/user/app-update
-        this.router.post(`${this.path}${URL.ADD_UPDATE}`, async (req: Request, res: Response) => {
+        this.router.post(`${this.path}${URL.ADD_UPDATE}`, authMiddleware, async (req: Request, res: Response) => {
             try {
                 const user = await this.orgService.addUpdateOrg(req.body as OrgVo);
                 if (!user) {

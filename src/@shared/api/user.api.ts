@@ -19,7 +19,7 @@ class UserApi implements Route {
     private initializeRoutes() {
 
         // /api/core/v1/user/app-update
-        this.router.post(`${this.path}${URL.ADD_UPDATE}`, async (req: Request, res: Response) => {
+        this.router.post(`${this.path}${URL.ADD_UPDATE}`, authMiddleware, async (req: Request, res: Response) => {
             try {
                 const user = await this.userService.saveUser(req.body as UserVo);
                 if (!user) {
