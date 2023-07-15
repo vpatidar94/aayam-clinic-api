@@ -42,6 +42,8 @@ export const URL = {
 
     EMP_ADD_UPDATE: '/emp-add-update',
     CUST_ADD_UPDATE: '/cust-add-update',
-    EMP_LIST: '/emp-list',
-    CUST_LIST: '/cust-list'
+    STAFF_LIST: '/staff-list',
+    CUST_LIST: '/cust-list',
+    STAFF_ADD_UPDATE: '/staff-add-update',
+    ACCESS_LIST: '/access-list',
 };

@@ -2,6 +2,7 @@ import {
     AclVo,
     FnUtility,
     JwtClaimDto,
+    OrgVo,
     ROLE,
     StringUtility,
     UserAccessDto
@@ -17,7 +18,7 @@ export class AuthService {
 
 
     /* ************************************* Public Methods ******************************************** */
-    public authenticate = async (email: string, password: string): Promise<string | null> => {
+    public authenticate = async (email: string, password: string): Promise<JwtClaimDto | null> => {
         try {
             if (!FnUtility.isEmpty(email) && !FnUtility.isEmpty(password)) {
                 // const auth: UserAuthVo | null = await this.userAuth.findOne({ email });
@@ -27,7 +28,7 @@ export class AuthService {
                 if (userExist && userFb?.uid) {
                     const claim = await this.getJwtClaimDto(userFb?.uid, email);
                     await auth.setCustomUserClaims(userFb.uid, claim);
-                    return 'xx';
+                    return claim;
                     // if (!FnUtility.isEmpty(token)) {
                     //     return token;
                     // } else {
@@ -102,17 +103,19 @@ export class AuthService {
                 userAccessList.push(...otherAccessList);
             }
             claim.userAccess = userAccessList[0];
+            claim.userAccessList = userAccessList;
+
         }
         return claim;
     }
 
-    private getUserAccessDto(acl: AclVo, orgName: string) {
+    private getUserAccessDto(acl: AclVo, org: OrgVo) {
         return {
             orgId: acl.orgId,
             brId: acl.brId,
             role: acl.role,
             subRole: acl.subRole,
-            orgName: orgName
+            org: org
         } as UserAccessDto;
     }
 }

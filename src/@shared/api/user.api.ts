@@ -1,5 +1,6 @@
-import { UserVo } from 'aayam-clinic-core';
+import { JwtClaimDto, UserAccessDetailDto, UserEmpDto, UserVo } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
+import { AuthUtility } from '../../@shared/utility/auth.utility';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
 import authMiddleware from "../middleware/auth.middleware";
@@ -30,6 +31,53 @@ class UserApi implements Route {
             } catch (error) {
                 ResponseUtility.sendFailResponse(res, error);
             }
+        });
+
+        this.router.post(`${this.path}${URL.STAFF_ADD_UPDATE}`, authMiddleware, async (req: Request, res: Response) => {
+            try {
+                const body = req.body as UserEmpDto;
+                const claim = res.locals?.claim as JwtClaimDto;
+                if (!AuthUtility.hasOrgAccess(claim, body?.acl?.orgId)) {
+                    ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+                    return;
+                }
+                const user = await this.userService.saveStaff(body);
+                if (!user) {
+                    ResponseUtility.sendFailResponse(res, null, 'User already exists');
+                    return;
+                }
+                ResponseUtility.sendSuccess(res, user);
+            } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+            }
+        });
+
+        this.router.get(`${this.path}${URL.STAFF_LIST}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    const claim = res.locals?.claim as JwtClaimDto;
+                    if (!AuthUtility.hasOrgAccess(claim, req.query?.orgId as string)) {
+                        ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+                        return;
+                    }
+                    const userList: Array<UserVo> | null = await this.userService.getOrgUserList(req.query?.orgId as string);
+                    ResponseUtility.sendSuccess(res, userList);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
+            })();
+        });
+
+        this.router.get(`${this.path}${URL.ACCESS_LIST}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    const claim = res.locals?.claim as JwtClaimDto;
+                    const accessList: UserAccessDetailDto | null = await this.userService.getUserAllAccessList(claim);
+                    ResponseUtility.sendSuccess(res, accessList);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
+            })();
         });
     }
 }

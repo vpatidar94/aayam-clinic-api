@@ -38,7 +38,6 @@ const userSchema = new mongoose.Schema({
     fax: String,
     email: String,
     web: String,
-    type: String,
     lat: mongoose.Schema.Types.Number,
     lng: mongoose.Schema.Types.Number,
     placeId: String,

@@ -43,6 +43,14 @@ export class OrgService {
         return await orgModel.find() as Array<OrgVo>;
     };
 
+    public getOrgListByOrgIds = async (orgIdList: Array<string>): Promise<Array<OrgVo>> => {
+        if (!orgIdList || orgIdList.length <= 0) {
+            return [] as Array<OrgVo>;
+        }
+        const orgList = await orgModel.find({ _id: { $in: orgIdList } }) as Array<OrgVo>;
+        return orgList;
+    };
+
     /* ************************************* Private Methods ******************************************** */
 }
 
