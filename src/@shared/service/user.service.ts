@@ -105,6 +105,15 @@ export class UserService {
         return await this.user.find(criteria) as UserVo[];
     }
 
+    public getOrgUserListBySubRole = async (orgId: string, subRole: string): Promise<UserVo[] | null> => {
+        const criteria = {} as any;
+        const key = `emp.${orgId}`;
+        criteria[`${key}.active`] = true;
+        criteria[`${key}.role`] = ROLE.EMP;
+        criteria[`${key}.subRole`] = subRole;
+        return await this.user.find(criteria) as UserVo[];
+    }
+
     public getUserAllAccessList = async (claim: JwtClaimDto): Promise<UserAccessDetailDto> => {
         const dto = {} as UserAccessDetailDto;
         dto.all = [] as Array<UserAccessDto>;
