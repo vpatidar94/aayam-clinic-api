@@ -3,6 +3,7 @@ import IndexApi from './@app/api/index.api';
 import UserApi from './@shared/api/user.api';
 import AuthApi from './@shared/api/auth.api';
 import OrgApi from './@shared/api/org.api';
+import ServiceItemApi from './@app/api/service-item.api';
 // import IndexRoute from './routes/index.route';
 // import UsersRoute from './routes/users.route';
 // import AuthRoute from './routes/auth.route';
@@ -14,7 +15,8 @@ const app = new App([
     new IndexApi(),
     new UserApi(),
     new AuthApi(),
-    new OrgApi()
+    new OrgApi(),
+    new ServiceItemApi(),
 
     // new UsersRoute(),
     // new AuthRoute(),
