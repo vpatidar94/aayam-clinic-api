@@ -12,7 +12,8 @@ export class ServiceItemService {
       if (serviceItemVo._id) {
         return await serviceItemModel.findByIdAndUpdate(
           serviceItemVo._id,
-          serviceItemVo
+          serviceItemVo,
+          { new: true }
         );
       } else {
         return await this.serviceItem.create(serviceItemVo);

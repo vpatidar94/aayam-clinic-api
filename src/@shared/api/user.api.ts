@@ -33,6 +33,7 @@ class UserApi implements Route {
             }
         });
 
+        // Can be update by Admin and superadmin of that org
         this.router.post(`${this.path}${URL.STAFF_ADD_UPDATE}`, authMiddleware, async (req: Request, res: Response) => {
             try {
                 const body = req.body as UserEmpDto;

@@ -1,9 +1,10 @@
+import { ItemVo, JwtClaimDto } from "aayam-clinic-core";
+import { Request, Response, Router } from "express";
 import { ServiceItemService } from "../../@app/service/service-item.service";
 import { URL } from "../../@shared/const/url";
 import { Route } from "../../@shared/interface/route.interface";
-import { ItemVo, OrgVo, ROLE } from "aayam-clinic-core";
-import { Request, Response, Router } from "express";
 import authMiddleware from "../../@shared/middleware/auth.middleware";
+import { AuthUtility } from "../../@shared/utility/auth.utility";
 import { ResponseUtility } from "../../@shared/utility/response.utility";
 
 class ServiceItemApi implements Route {
@@ -24,17 +25,13 @@ class ServiceItemApi implements Route {
       (req: Request, res: Response) => {
         (async () => {
           try {
-            // if (res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) {
-            //   ResponseUtility.sendFailResponse(
-            //     res,
-            //     null,
-            //     "You are not authorized to create Org"
-            //   );
-            //   return;
-            // }
-            const item = await this.serviceItemService.addUpdateServiceItem(
-              req.body as ItemVo
-            );
+            const body = req.body as ItemVo;
+            const claim = res.locals?.claim as JwtClaimDto;
+            if (!AuthUtility.hasOrgEmpAccess(claim, body?.org)) {
+              ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+              return;
+            }
+            const item = await this.serviceItemService.addUpdateServiceItem(body);
             ResponseUtility.sendSuccess(res, item);
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);
@@ -50,10 +47,11 @@ class ServiceItemApi implements Route {
       (req: Request, res: Response) => {
         (async () => {
           try {
-            // if (res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) {
-            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
-            //   return;
-            // }
+            const claim = res.locals?.claim as JwtClaimDto;
+            if (!AuthUtility.hasOrgEmpAccess(claim, req.query.orgId as string)) {
+              ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+              return;
+            }
             const list: Array<ItemVo> | null = await this.serviceItemService.getListByOrgId(req.query.orgId as string);
             ResponseUtility.sendSuccess(res, list);
           } catch (error) {
