@@ -17,11 +17,11 @@ const setUser = (user: UserVo | string): string => {
 }
 
 const schema = new mongoose.Schema({
-  org: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
-  br: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
+  orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
+  brId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
   name: String,
   description: String,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", set: setUser },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", set: setUser },
   price: { type: Number, get: getPrice, set: setPrice }, // Price in lowest unit
   taxInclusive: Boolean,
   igst: Number,
@@ -37,8 +37,15 @@ const schema = new mongoose.Schema({
     getters: true,
     setters: true
   }
-}
-);
+});
+
+schema.virtual('user', {
+  ref: 'User',
+  localField: 'userId',
+  foreignField: '_id',
+  justOne: true,
+});
+
 
 const model = mongoose.model<ItemVo & mongoose.Document>("ServiceItem", schema);
 

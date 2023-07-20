@@ -1,4 +1,4 @@
-import { ItemVo, JwtClaimDto } from "aayam-clinic-core";
+import { ItemDetailDto, ItemPopulateVo, ItemVo, JwtClaimDto } from "aayam-clinic-core";
 import { Request, Response, Router } from "express";
 import { ServiceItemService } from "../../@app/service/service-item.service";
 import { URL } from "../../@shared/const/url";
@@ -27,7 +27,7 @@ class ServiceItemApi implements Route {
           try {
             const body = req.body as ItemVo;
             const claim = res.locals?.claim as JwtClaimDto;
-            if (!AuthUtility.hasOrgEmpAccess(claim, body?.org)) {
+            if (!AuthUtility.hasOrgEmpAccess(claim, body?.orgId)) {
               ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
               return;
             }
@@ -52,7 +52,7 @@ class ServiceItemApi implements Route {
               ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
               return;
             }
-            const list: Array<ItemVo> | null = await this.serviceItemService.getListByOrgId(req.query.orgId as string);
+            const list: Array<ItemDetailDto> | null = await this.serviceItemService.getListByOrgId(req.query.orgId as string);
             ResponseUtility.sendSuccess(res, list);
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);

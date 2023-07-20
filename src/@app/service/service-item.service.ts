@@ -1,4 +1,4 @@
-import { ItemVo, UserVo } from "aayam-clinic-core";
+import { ItemDetailDto, ItemPopulateVo, ItemVo, UserVo } from "aayam-clinic-core";
 import serviceItemModel from "../model/service-item.model";
 
 export class ServiceItemService {
@@ -23,12 +23,19 @@ export class ServiceItemService {
     }
   };
 
-  public getListByOrgId = async (
-    orgId: string
-  ): Promise<Array<ItemVo> | null> => {
-    return (await this.serviceItem
-      .find({ org: orgId })
-      .populate("user")) as Array<ItemVo>;
+  public getListByOrgId = async (orgId: string): Promise<Array<ItemDetailDto> | null> => {
+    const items = (await this.serviceItem.find({ orgId }).populate("user")) as Array<ItemPopulateVo>;
+    const list = items?.map((item: ItemPopulateVo) => {
+      const record = JSON.parse(JSON.stringify(item));
+      const user = item.user as UserVo;
+      delete record.user;
+      const dto = {} as ItemDetailDto;
+      dto.user = user;
+      dto.item = record;
+      console.log('xx xx ', dto);
+      return dto;
+    }) as Array<ItemDetailDto>;
+    return list;
   };
 
   /* ************************************* Private Methods ******************************************** */
