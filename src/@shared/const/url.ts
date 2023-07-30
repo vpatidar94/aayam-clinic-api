@@ -28,6 +28,7 @@ export const URL = {
   MJR_USER: BASE_CORE + "/user",
   MJR_AUTH: BASE_CORE + "/auth",
   MJR_ORG: BASE_CORE + "/org",
+  MJR_BOOKING: BASE_CORE + "/booking",
   MJR_SERVICE_ITEM: BASE_CORE + "/service-item",
 
   VEHICLE_LIST: LIST,

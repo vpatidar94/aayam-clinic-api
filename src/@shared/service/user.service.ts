@@ -98,6 +98,10 @@ export class UserService {
         return await this.user.findOne({ email }) as UserVo;
     }
 
+    public getUserById = async (id: string): Promise<UserVo | null> => {
+        return await this.user.findById(id) as UserVo;
+    }
+
     public getOrgUserList = async (orgId: string): Promise<UserVo[] | null> => {
         const criteria = {} as any;
         const key = `emp.${orgId}.active`;

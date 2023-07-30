@@ -41,24 +41,21 @@ class ServiceItemApi implements Route {
     );
 
     // /api/core/v1/org/list
-    this.router.get(
-      `${this.path}${URL.LIST}`,
-      authMiddleware,
-      (req: Request, res: Response) => {
-        (async () => {
-          try {
-            const claim = res.locals?.claim as JwtClaimDto;
-            if (!AuthUtility.hasOrgEmpAccess(claim, req.query.orgId as string)) {
-              ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
-              return;
-            }
-            const list: Array<ItemDetailDto> | null = await this.serviceItemService.getListByOrgId(req.query.orgId as string);
-            ResponseUtility.sendSuccess(res, list);
-          } catch (error) {
-            ResponseUtility.sendFailResponse(res, error);
+    this.router.get(`${this.path}${URL.LIST}`, authMiddleware, (req: Request, res: Response) => {
+      (async () => {
+        try {
+          const claim = res.locals?.claim as JwtClaimDto;
+          if (!AuthUtility.hasOrgEmpAccess(claim, req.query.orgId as string)) {
+            ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+            return;
           }
-        })();
-      }
+          const list: Array<ItemDetailDto> | null = await this.serviceItemService.getListByOrgId(req.query.orgId as string);
+          ResponseUtility.sendSuccess(res, list);
+        } catch (error) {
+          ResponseUtility.sendFailResponse(res, error);
+        }
+      })();
+    }
     );
   }
 }
