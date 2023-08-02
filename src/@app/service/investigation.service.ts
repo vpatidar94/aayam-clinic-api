@@ -1,4 +1,4 @@
-import investigationModel from "@app/model/investigation.model";
+import investigationModel from "../../@app/model/investigation.model";
 import { InvestigationVo } from "aayam-clinic-core";
 
 export class InvestigationService {

@@ -1,4 +1,4 @@
-import { OrgVo } from 'aayam-clinic-core';
+import { MetadataOrgVo } from 'aayam-clinic-core';
 import * as mongoose from 'mongoose';
 
 const metaOrgSchema = new mongoose.Schema({
@@ -9,6 +9,6 @@ const metaOrgSchema = new mongoose.Schema({
   patientNo: Number
 });
 
-const metaOrgModel = mongoose.model<any & mongoose.Document>('MetaOrg', metaOrgSchema);
+const metaOrgModel = mongoose.model<MetadataOrgVo & mongoose.Document>('MetaOrg', metaOrgSchema);
 
 export default metaOrgModel;

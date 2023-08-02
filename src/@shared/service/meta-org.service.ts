@@ -1,11 +1,8 @@
-import orgModel from "../../@shared/model/org.model";
+import metaOrgModel from "../../@shared/model/metadata-org.model";
 import {
     MetadataOrgVo,
-    OrgOrderNoDto,
-    OrgVo
+    OrgOrderNoDto
 } from "aayam-clinic-core";
-import userModel from '../model/users.model';
-import metaOrgModel from "@shared/model/metadata-org.model";
 
 export class MetaOrgService {
     public metaOrgModel = metaOrgModel;
@@ -14,9 +11,24 @@ export class MetaOrgService {
     public updateOrderNo = async (orgId: string, no: number, patientNo: number): Promise<void> => {
         try {
             const field = {} as { [key: string]: number };
-            field['no'] = no;
-            field['no'] = patientNo;
-            await userModel.findByIdAndUpdate({ orgId }, { $set: field }, { new: true });
+            if (no > 0) {
+                field['no'] = no;
+            }
+            if (patientNo > 0) {
+                field['patientNo'] = patientNo;
+            }
+
+            const meta = await metaOrgModel.findOne({ orgId }) as MetadataOrgVo | null;
+            if (!meta) {
+                const vo = {} as MetadataOrgVo;
+                vo.no = no;
+                vo.patientNo = patientNo;
+                vo.orgId = orgId;
+                await metaOrgModel.create(vo);
+            } else {
+                await metaOrgModel.findByIdAndUpdate(meta._id, { $set: field }, { new: true });
+            }
+
         } catch (error) {
             throw error;
         }
@@ -26,7 +38,7 @@ export class MetaOrgService {
         const dto = {} as OrgOrderNoDto;
         dto.no = 0;
         dto.patientNo = 0;
-        const meta: MetadataOrgVo = await userModel.findOne({ orgId: orgId }) as MetadataOrgVo;
+        const meta: MetadataOrgVo = await metaOrgModel.findOne({ orgId: orgId }) as MetadataOrgVo;
         if (meta) {
             if (meta?.no > 0) {
                 dto.no = meta.no;

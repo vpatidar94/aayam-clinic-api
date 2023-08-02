@@ -1,4 +1,5 @@
 import {
+    AclCustVo,
     AclVo,
     FnUtility,
     JwtClaimDto,
@@ -6,6 +7,7 @@ import {
     ROLE,
     UserAccessDetailDto,
     UserAccessDto,
+    UserCustDto,
     UserEmpDto,
     UserVo
 } from "aayam-clinic-core";
@@ -78,6 +80,65 @@ export class UserService {
                 user.created = new Date();
                 user.email = user.email?.toLocaleLowerCase()?.trim();
                 user.sub = await this._saveUserAuth(user);
+                const vo = await userModel.create(user) as UserVo;
+                if (user.sub && user.email) {
+                    await new AuthService().setFbCustomUserClaim(user.sub, user.email);
+                }
+                return vo;
+            }
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public saveBookingCust = async (user: UserVo, orgId: string): Promise<UserVo | null> => {
+        const aclCust = {} as AclCustVo;
+        aclCust.enrollAt = new Date();
+        aclCust.orgId = orgId;
+        aclCust.brId = orgId;
+        aclCust.active = true;
+        aclCust.role = ROLE.CUST;
+        const cust = new UserCustDto(user, aclCust);
+        return await this.saveCust(cust);
+    }
+
+    public saveCust = async (cust: UserCustDto): Promise<UserVo | null> => {
+        try {
+            const user = cust.user;
+            const acl = cust.acl;
+            if (!acl || !acl.orgId) {
+                return null;
+            }
+            if (user._id) {
+                if (user.email) {
+                    delete user.email;
+                }
+                const aclList = user.cust;
+                if (!aclList || FnUtility.isEmpty(aclList)) {
+                    user.cust = {} as {
+                        [key: string]: AclCustVo;
+                    };
+                    user.cust[acl.orgId] = acl;
+                } else {
+                    aclList[acl.orgId] = acl;
+                    user.cust = aclList;
+                }
+                const vo = await userModel.findByIdAndUpdate(user._id, user);
+                if (user.sub && user.email) {
+                    await new AuthService().setFbCustomUserClaim(user.sub, user.email);
+                }
+                return vo;
+            } else {
+                // New user
+                user.cust = {} as {
+                    [key: string]: AclCustVo;
+                };
+                user.cust[acl.orgId] = acl;
+                acl.enrollAt = new Date();
+                user.created = new Date();
+                user.email = user.email?.toLocaleLowerCase()?.trim();
+                user.sub = await this._saveUserAuth(user);
+                console.log(user);
                 const vo = await userModel.create(user) as UserVo;
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);

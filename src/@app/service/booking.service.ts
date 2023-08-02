@@ -1,5 +1,5 @@
-import { UserService } from "@shared/service/user.service";
-import { BOOKING_STATUS, BOOKING_TYPE, BookingVo, InvestigationVo, UserBookingDto, UserBookingInvestigationDto, UserVo } from "aayam-clinic-core";
+import { UserService } from "../../@shared/service/user.service";
+import { BOOKING_STATUS, BOOKING_TYPE, BookingVo, InvestigationVo, OrgOrderNoDto, UserBookingDto, UserBookingInvestigationDto, UserVo } from "aayam-clinic-core";
 import bookingModel from "../../@app/model/booking.model";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { InvestigationService } from "./investigation.service";
@@ -14,8 +14,11 @@ export class BookingService {
       if (booking._id) {
         userBookingDto.booking = await bookingModel.findByIdAndUpdate(booking._id, booking, { new: true }) as BookingVo;
       } else {
-        await this._updateBookingStatusAndNo(booking);
+        const newUpdatedOrderNo = await this._updateBookingStatusAndNo(booking);
+        const user = await new UserService().saveBookingCust(userBookingDto.user, booking.orgId);
+        userBookingDto.booking.user = user?._id ?? '';
         userBookingDto.booking = await this.bookingModel.create(booking);
+        await new MetaOrgService().updateOrderNo(booking.orgId, newUpdatedOrderNo.no, newUpdatedOrderNo.patientNo);
       }
       return userBookingDto;
     } catch (error) {
@@ -32,13 +35,17 @@ export class BookingService {
   };
 
   /* ************************************* Private Methods ******************************************** */
-  private _updateBookingStatusAndNo = async (booking: BookingVo): Promise<void> => {
+  private _updateBookingStatusAndNo = async (booking: BookingVo): Promise<OrgOrderNoDto> => {
+    const newUpdatedOrderNo = {} as OrgOrderNoDto;
     const lastBookingOrder = await new MetaOrgService().getLastOrderNo(booking.orgId);
     booking.status = BOOKING_STATUS.PENDING;
     booking.no = String(lastBookingOrder.no + 1);
+    newUpdatedOrderNo.no = lastBookingOrder.no + 1;
     if (booking.type != BOOKING_TYPE.APPOINTMENT) {
       booking.patientNo = String(lastBookingOrder.patientNo + 1);
+      newUpdatedOrderNo.patientNo = lastBookingOrder.patientNo + 1;
       booking.status = BOOKING_STATUS.CONFIRMED;
     }
+    return newUpdatedOrderNo;
   }
 }

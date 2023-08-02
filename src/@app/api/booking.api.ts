@@ -1,4 +1,4 @@
-import { BookingService } from '@app/service/booking.service';
+import { BookingService } from '../../@app/service/booking.service';
 import { JwtClaimDto, UserBookingDto, UserBookingInvestigationDto } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../../@shared/const/url';
