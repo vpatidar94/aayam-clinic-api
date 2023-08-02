@@ -32,7 +32,6 @@ export class ServiceItemService {
       const dto = {} as ItemDetailDto;
       dto.user = user;
       dto.item = record;
-      console.log('xx xx ', dto);
       return dto;
     }) as Array<ItemDetailDto>;
     return list;

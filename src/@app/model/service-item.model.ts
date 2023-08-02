@@ -22,7 +22,7 @@ const schema = new mongoose.Schema({
   name: String,
   description: String,
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", set: setUser },
-  price: { type: Number, set: setPrice }, // Price in lowest unit
+  price: { type: Number }, // Price in rs
   taxInclusive: Boolean,
   igst: Number,
   cgst: Number,
