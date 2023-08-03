@@ -1,5 +1,5 @@
 import { UserService } from "../../@shared/service/user.service";
-import { BOOKING_STATUS, BOOKING_TYPE, BookingVo, InvestigationVo, OrgOrderNoDto, UserBookingDto, UserBookingInvestigationDto, UserVo } from "aayam-clinic-core";
+import { BOOKING_STATUS, BOOKING_TYPE, BookingVo, InvestigationVo, OrgOrderNoDto, UserBookingDto, UserBookingInvestigationDto, UserVo, BookingPopulateVo, OrgBookingDto } from "aayam-clinic-core";
 import bookingModel from "../../@app/model/booking.model";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { InvestigationService } from "./investigation.service";
@@ -32,6 +32,24 @@ export class BookingService {
     userBookingInvestigationDto.investigation = await new InvestigationService().getUserInvestigation(userId) ?? [] as Array<InvestigationVo>;
     userBookingInvestigationDto.user = await new UserService().getUserById(userId) ?? {} as UserVo;
     return userBookingInvestigationDto;
+  };
+
+  public getOrgBooking = async (orgId: string, limit: number, offset: number): Promise<OrgBookingDto[]> => {
+    const list = await this.bookingModel.find({ orgId }).limit(limit).skip(offset).populate(['patient', 'drList']) as Array<BookingPopulateVo>;
+    let orgBookingList = [] as Array<OrgBookingDto>;
+    if (list?.length > 0) {
+      orgBookingList = list.map((it: BookingPopulateVo) => {
+        const record = JSON.parse(JSON.stringify(it));
+        const dto = {} as OrgBookingDto;
+        dto.drList = record.drList;
+        dto.patient = record.patient;
+        delete record.drList;
+        delete record.patient;
+        dto.booking = record;
+        return dto;
+      });
+    }
+    return orgBookingList;
   };
 
   /* ************************************* Private Methods ******************************************** */

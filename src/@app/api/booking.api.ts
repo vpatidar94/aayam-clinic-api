@@ -1,5 +1,5 @@
 import { BookingService } from '../../@app/service/booking.service';
-import { JwtClaimDto, UserBookingDto, UserBookingInvestigationDto } from 'aayam-clinic-core';
+import { JwtClaimDto, OrgBookingDto, UserBookingDto, UserBookingInvestigationDto } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../../@shared/const/url';
 import { Route } from '../../@shared/interface/route.interface';
@@ -51,6 +51,26 @@ class BokingApi implements Route {
                         return;
                     }
                     const userBooking: UserBookingInvestigationDto = await this.bookingService.getPatientBooking(orgId, userId);
+                    ResponseUtility.sendSuccess(res, userBooking);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
+            })();
+        });
+
+        this.router.get(`${this.path}${URL.LIST_BY_ORG}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    const claim = res.locals?.claim as JwtClaimDto;
+                    const orgId = req.query.orgId as string;
+                    const pageNumber = Number(req.query.pageNumber as string);
+                    const maxRecord = Number(req.query.maxRecord as string);
+                    const offset = (maxRecord * pageNumber) - (maxRecord * (pageNumber - 1));
+                    if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
+                        ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+                        return;
+                    }
+                    const userBooking: OrgBookingDto[] = await this.bookingService.getOrgBooking(orgId, maxRecord, offset);
                     ResponseUtility.sendSuccess(res, userBooking);
                 } catch (error) {
                     ResponseUtility.sendFailResponse(res, error);

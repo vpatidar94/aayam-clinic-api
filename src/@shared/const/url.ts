@@ -47,4 +47,6 @@ export const URL = {
   CUST_LIST: "/cust-list",
   STAFF_ADD_UPDATE: "/staff-add-update",
   ACCESS_LIST: "/access-list",
+
+  LIST_BY_ORG: "/list-by-org"
 };
