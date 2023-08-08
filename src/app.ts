@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import * as path from 'path';
 import mongoose from 'mongoose';
 import * as dotenv from "dotenv";
+import metaOrgModel from './@shared/model/metadata-org.model';
 
 class App {
     public app: express.Application;
@@ -17,7 +18,10 @@ class App {
         this.connectToDatabase();
         this.initializeMiddlewares();
         this.initializeRoutes(routes);
-        // this.serveApp();
+        const metaEmitter = metaOrgModel.watch();
+        metaEmitter.on('change', (data) => {
+            console.log('xx xxx x x data ', JSON.stringify(data));
+        });
         // this.initializeErrorHandling();
     }
 
@@ -52,16 +56,6 @@ class App {
         routes.forEach((route) => {
             this.app.use('/api', route.router);
         });
-    }
-
-    serveApp() {
-        if (process.env.NODE_ENV === 'production') {
-            // Set static folder
-            this.app.use(express.static(path.join(__dirname, '../supremerentals-web/dist')));
-            this.app.get('*', (req, res) => {
-                res.sendFile(path.join(__dirname, '../supremerentals-web/dist/index.html'));
-            });
-        }
     }
 
     // private initializeErrorHandling() {

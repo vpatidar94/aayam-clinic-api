@@ -85,7 +85,7 @@ const bookingSchema = new mongoose.Schema({
 
   observation: {
     date: mongoose.Schema.Types.Date,
-    observation: [
+    healthParams: [
       {
         key: String,
         value: String,

@@ -48,5 +48,7 @@ export const URL = {
   STAFF_ADD_UPDATE: "/staff-add-update",
   ACCESS_LIST: "/access-list",
 
-  LIST_BY_ORG: "/list-by-org"
+  LIST_BY_ORG: "/list-by-org",
+  LAST_ORDER_NO: "/last-order-no"
+
 };

@@ -5,12 +5,15 @@ import { Route } from '../interface/route.interface';
 import { ResponseUtility } from '../utility/response.utility';
 import { OrgService } from '../../@shared/service/org.service';
 import authMiddleware from '../../@shared/middleware/auth.middleware';
+import { MetaOrgService } from '../../@shared/service/meta-org.service';
 
 class OrgApi implements Route {
     public path = URL.MJR_ORG;
     public router = Router();
 
     private orgService = new OrgService();
+    private metaOrgService = new MetaOrgService();
+
 
     constructor() {
         this.initializeRoutes();
@@ -55,6 +58,20 @@ class OrgApi implements Route {
                 }
             })();
         });
+
+        this.router.get(`${this.path}${URL.LAST_ORDER_NO}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    const orgOrderNoDto = await this.metaOrgService.getLastOrderNo(req.query.orgId as string);
+                    ResponseUtility.sendSuccess(res, orgOrderNoDto);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
+            })();
+        });
+
+
+
     }
 }
 export default OrgApi;
