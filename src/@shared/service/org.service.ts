@@ -1,17 +1,22 @@
 import orgModel from "../../@shared/model/org.model";
+import departmentModel from "../../@shared/model/department.model";
 import {
-    OrgVo
+    OrgVo, 
+    DepartmentVo,
+    OrgOrderNoDto
 } from "aayam-clinic-core";
-import userModel from '../model/users.model';
+import { MetaOrgService } from "../../@shared/service/meta-org.service";
 
 export class OrgService {
     public org = orgModel;
+    public department = departmentModel;
 
     /* ************************************* Public Methods ******************************************** */
     public addUpdateOrg = async (org: OrgVo): Promise<OrgVo | null> => {
         try {
+            org.codeSuffix = await this._getNewOrgSuffix(org.name);
             if (org._id) {
-                return await userModel.findByIdAndUpdate(org._id, org);
+                return await orgModel.findByIdAndUpdate(org._id, org);
             } else {
                 const orgExist = await this.org.exists({ name: org.name });
                 if (orgExist) {
@@ -51,6 +56,45 @@ export class OrgService {
         return orgList;
     };
 
+    public addUpdateDepartment = async (department: DepartmentVo): Promise<DepartmentVo | null> => {
+        try {
+            if (department._id) {
+                return await departmentModel.findByIdAndUpdate(department._id, department);
+            } else {
+                const departmentExist = await this.department.exists({ name: department.name , orgId : department.orgId, brId : department.brId });
+                if (departmentExist) {
+                    return null;
+                }
+                const nextDepartmentNo = await this._getNextDepartmentNo(department);
+                const orgDetails =  await this.getOrgById(department.orgId);
+                const departmentCode = await this._getNewDepartmentCode(nextDepartmentNo.departmentNo, orgDetails?.codeSuffix as String);
+                department.code = departmentCode;
+                console.log(department);
+                
+                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo.no, nextDepartmentNo.patientNo, nextDepartmentNo.departmentNo);
+                return await departmentModel.create(department);
+            }
+        } catch (error) {
+            throw error;
+        }
+    };
+    
     /* ************************************* Private Methods ******************************************** */
+    private _getNextDepartmentNo = async (department: DepartmentVo): Promise<OrgOrderNoDto> => {
+        const nextDepartmentNo = {} as OrgOrderNoDto;
+        const lastDepartmentOrder = await new MetaOrgService().getLastOrderNo(department.orgId);
+        nextDepartmentNo.departmentNo = lastDepartmentOrder.departmentNo + 1;
+        return nextDepartmentNo;
+    }
+
+    private _getNewDepartmentCode = async (nextDepartmentNo:Number, codeSuffix:String) => {
+        const departmentNo = String(nextDepartmentNo).padStart(5, '0');
+        return codeSuffix.concat(departmentNo);
+    }
+
+    private _getNewOrgSuffix = async (orgName:String) => {
+        return orgName.replace(/[^\w\s]/gi, '').replace(/\s+/g, '').toUpperCase().substring(0, 3);
+    }
+
 }
 

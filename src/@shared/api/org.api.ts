@@ -1,4 +1,4 @@
-import { OrgVo, ROLE } from 'aayam-clinic-core';
+import { OrgVo, DepartmentVo, ROLE } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
@@ -21,7 +21,7 @@ class OrgApi implements Route {
 
     private initializeRoutes() {
 
-        // /api/core/v1/org/app-update
+        // /api/core/v1/org/add-update
         this.router.post(`${this.path}${URL.ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
             (
                 async () => {
@@ -59,6 +59,7 @@ class OrgApi implements Route {
             })();
         });
 
+        // /api/core/v1/org//last-order-no
         this.router.get(`${this.path}${URL.LAST_ORDER_NO}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
                 try {
@@ -70,8 +71,26 @@ class OrgApi implements Route {
             })();
         });
 
-
-
+        // /api/core/v1/org/department-add-update
+        this.router.post(`${this.path}${URL.DEPARTMENT_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+              try {
+                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                    ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                    return;
+                }
+                const org = await this.orgService.addUpdateDepartment(req.body as DepartmentVo);
+                if (!org) {
+                  ResponseUtility.sendFailResponse(res,null,"Org Name not available");
+                  return;
+                }
+                ResponseUtility.sendSuccess(res, org);
+              } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+              }
+            })();
+          }
+        );
     }
 }
 export default OrgApi;

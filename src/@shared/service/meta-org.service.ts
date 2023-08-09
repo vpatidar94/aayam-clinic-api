@@ -8,7 +8,7 @@ export class MetaOrgService {
     public metaOrgModel = metaOrgModel;
 
     /* ************************************* Public Methods ******************************************** */
-    public updateOrderNo = async (orgId: string, no: number, patientNo: number): Promise<void> => {
+    public updateOrderNo = async (orgId: string, no: number, patientNo: number, departmentNo: number): Promise<void> => {
         try {
             const field = {} as { [key: string]: number };
             if (no > 0) {
@@ -17,12 +17,16 @@ export class MetaOrgService {
             if (patientNo > 0) {
                 field['patientNo'] = patientNo;
             }
+            if (departmentNo > 0) {
+                field['departmentNo'] = departmentNo;
+            }
 
             const meta = await metaOrgModel.findOne({ orgId }) as MetadataOrgVo | null;
             if (!meta) {
                 const vo = {} as MetadataOrgVo;
                 vo.no = no;
                 vo.patientNo = patientNo;
+                vo.departmentNo = departmentNo;
                 vo.orgId = orgId;
                 await metaOrgModel.create(vo);
             } else {
@@ -38,6 +42,7 @@ export class MetaOrgService {
         const dto = {} as OrgOrderNoDto;
         dto.no = 0;
         dto.patientNo = 0;
+        dto.departmentNo = 0;
         const meta: MetadataOrgVo = await metaOrgModel.findOne({ orgId: orgId }) as MetadataOrgVo;
         if (meta) {
             if (meta?.no > 0) {
@@ -45,6 +50,9 @@ export class MetaOrgService {
             }
             if (meta?.patientNo > 0) {
                 dto.patientNo = meta.patientNo;
+            }
+            if (meta?.departmentNo > 0) {
+                dto.departmentNo = meta.departmentNo;
             }
         }
         return dto;

@@ -49,6 +49,6 @@ export const URL = {
   ACCESS_LIST: "/access-list",
 
   LIST_BY_ORG: "/list-by-org",
-  LAST_ORDER_NO: "/last-order-no"
-
+  LAST_ORDER_NO: "/last-order-no",
+  DEPARTMENT_ADD_UPDATE: "/department-add-update",
 };

@@ -7,6 +7,7 @@ const orgSchema = new mongoose.Schema({
   nameShort: String,
   name: String,
   nameHi: String,
+  codeSuffix: String,
   type: String,
   taxpayerId: String,
   icon: String,
