@@ -35,7 +35,7 @@ export class BookingService {
   };
 
   public getOrgBooking = async (orgId: string, limit: number, offset: number): Promise<OrgBookingDto[]> => {
-    const list = await this.bookingModel.find({ orgId }).limit(limit).skip(offset).populate(['patient', 'drList']) as Array<BookingPopulateVo>;
+    const list = await this.bookingModel.find({ orgId }).limit(limit).skip(offset).sort({no: 'desc'}).populate(['patient', 'drList']) as Array<BookingPopulateVo>;
     let orgBookingList = [] as Array<OrgBookingDto>;
     if (list?.length > 0) {
       orgBookingList = list.map((it: BookingPopulateVo) => {
@@ -51,6 +51,12 @@ export class BookingService {
     }
     return orgBookingList;
   };
+
+  public getOrgBookingCount = async (orgId: string): Promise<number> => { 
+    let count = 0;
+    count = await this.bookingModel.countDocuments({orgId: orgId});
+    return count;
+  }
 
   /* ************************************* Private Methods ******************************************** */
   private _updateBookingStatusAndNo = async (booking: BookingVo): Promise<OrgOrderNoDto> => {

@@ -118,9 +118,9 @@ export class OrgService {
         }
     };
 
-    public getDepUserTypeList = async (departmentId: string): Promise<UserTypeVo[] | null> => {
+    public getOrgUserTypeList = async (orgId: string): Promise<UserTypeVo[] | null> => {
         const criteria = {} as any;
-        criteria['departmentId'] = departmentId;
+        criteria['orgId'] = orgId;
         criteria['del'] = false;
         return await this.userType.find(criteria) as UserTypeVo[];
     }

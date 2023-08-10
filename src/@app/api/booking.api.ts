@@ -1,6 +1,6 @@
-import { BookingService } from '../../@app/service/booking.service';
-import { JwtClaimDto, OrgBookingDto, UserBookingDto, UserBookingInvestigationDto } from 'aayam-clinic-core';
+import { JwtClaimDto, OrgBookingCountDto, UserBookingDto, UserBookingInvestigationDto } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
+import { BookingService } from '../../@app/service/booking.service';
 import { URL } from '../../@shared/const/url';
 import { Route } from '../../@shared/interface/route.interface';
 import authMiddleware from '../../@shared/middleware/auth.middleware';
@@ -44,7 +44,7 @@ class BokingApi implements Route {
             (async () => {
                 try {
                     const claim = res.locals?.claim as JwtClaimDto;
-                    const userId = req.query.usserId as string;
+                    const userId = req.query.userId as string;
                     const orgId = req.query.orgId as string;
                     if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
                         ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
@@ -65,13 +65,15 @@ class BokingApi implements Route {
                     const orgId = req.query.orgId as string;
                     const pageNumber = Number(req.query.pageNumber as string);
                     const maxRecord = Number(req.query.maxRecord as string);
-                    const offset = (maxRecord * pageNumber) - (maxRecord * (pageNumber - 1));
+                    const offset = (maxRecord * pageNumber) - maxRecord;
                     if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
                         ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
                         return;
                     }
-                    const userBooking: OrgBookingDto[] = await this.bookingService.getOrgBooking(orgId, maxRecord, offset);
-                    ResponseUtility.sendSuccess(res, userBooking);
+                    const orgBookinCount = {} as OrgBookingCountDto;
+                    orgBookinCount.totalBooking = await this.bookingService.getOrgBookingCount(orgId);
+                    orgBookinCount.orgBooking = await this.bookingService.getOrgBooking(orgId, maxRecord, offset);
+                    ResponseUtility.sendSuccess(res, orgBookinCount);
                 } catch (error) {
                     ResponseUtility.sendFailResponse(res, error);
                 }
