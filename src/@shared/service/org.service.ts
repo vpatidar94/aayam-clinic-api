@@ -118,6 +118,16 @@ export class OrgService {
         }
     };
 
+    public getDepUserTypeList = async (departmentId: string): Promise<UserTypeVo[] | null> => {
+        const criteria = {} as any;
+        criteria['departmentId'] = departmentId;
+        criteria['del'] = false;
+        return await this.userType.find(criteria) as UserTypeVo[];
+    }
+
+    public getUserTypeById = async (userTypeId: string): Promise<UserTypeVo | null> => {
+        return await this.userType.findById(userTypeId) as UserTypeVo;
+    }
 
     
     /* ************************************* Private Methods ******************************************** */

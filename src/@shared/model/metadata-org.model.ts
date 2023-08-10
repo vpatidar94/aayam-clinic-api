@@ -7,7 +7,8 @@ const metaOrgSchema = new mongoose.Schema({
 
   no: Number,
   patientNo: Number,
-  departmentNo: Number
+  departmentNo: Number,
+  userTypeNo: Number
 });
 
 const metaOrgModel = mongoose.model<MetadataOrgVo & mongoose.Document>('MetaOrg', metaOrgSchema);

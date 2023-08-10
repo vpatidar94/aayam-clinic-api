@@ -180,6 +180,69 @@ class OrgApi implements Route {
           })();
         }
       );
+
+      // /api/core/v1/org/user-type-list
+      this.router.get(`${this.path}${URL.USER_TYPE_LIST}`, authMiddleware, (req: Request, res: Response) => {
+        (async () => {
+            try {
+                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                    ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                    return;
+                }
+                const userList: Array<UserTypeVo> | null = await this.orgService.getDepUserTypeList(req.query?.departmentId as string);
+                ResponseUtility.sendSuccess(res, userList);
+            } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+            }
+        })();
+    });
+
+    // /api/core/v1/org/user-type-delete
+    this.router.get(`${this.path}${URL.USER_TYPE_DELETE}`, authMiddleware, (req: Request, res: Response) => {
+        (async () => {
+          try {
+            if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                return;
+            }
+            const userType = await this.orgService.getUserTypeById(req.query?.userTypeId as string);
+            if (!userType || userType.del) {
+              ResponseUtility.sendFailResponse(res,null,"UserType not available");
+              return;
+            }
+            userType.del = true;
+            const update = await this.orgService.addUpdateUserType(userType as UserTypeVo);
+            ResponseUtility.sendSuccess(res, update);
+          } catch (error) {
+            ResponseUtility.sendFailResponse(res, error);
+          }
+        })();
+      }
+    );
+
+     // /api/core/v1/org/user-type-active-inactive
+     this.router.get(`${this.path}${URL.USER_TYPE_ACTIVE_INACTIVE}`, authMiddleware, (req: Request, res: Response) => {
+        (async () => {
+          try {
+            if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                return;
+            }
+            const userType = await this.orgService.getUserTypeById(req.query?.   as string);
+            if (!userType || userType.del) {
+              ResponseUtility.sendFailResponse(res,null,"UserType not available");
+              return;
+            }
+            userType.status = userType.status == DEPT_STATUS.ACTIVE ? DEPT_STATUS.INACTIVE : DEPT_STATUS.ACTIVE ;
+            const update = await this.orgService.addUpdateUserType(userType);
+            ResponseUtility.sendSuccess(res, update);
+          } catch (error) {
+            ResponseUtility.sendFailResponse(res, error);
+          }
+        })();
+      }
+    );
+
     }
 }
 export default OrgApi;

@@ -56,5 +56,8 @@ export const URL = {
   DEPARTMENT_DELETE: "/department-delete",
   DEPARTMENT_ACTIVE_INACTIVE: "/department-active-inactive",
 
-  USER_TYPE_ADD_UPDATE: "/user-type-add-update"
+  USER_TYPE_ADD_UPDATE: "/user-type-add-update",
+  USER_TYPE_LIST: "/user-type-list",
+  USER_TYPE_DELETE: "/user-type-delete",
+  USER_TYPE_ACTIVE_INACTIVE: "/user-type-active-inactive"
 };
