@@ -1,4 +1,4 @@
-import { OrgVo, DepartmentVo, ROLE } from 'aayam-clinic-core';
+import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
@@ -79,12 +79,74 @@ class OrgApi implements Route {
                     ResponseUtility.sendFailResponse(res, null, 'Not permitted');
                     return;
                 }
-                const org = await this.orgService.addUpdateDepartment(req.body as DepartmentVo);
-                if (!org) {
-                  ResponseUtility.sendFailResponse(res,null,"Org Name not available");
+                const department = await this.orgService.addUpdateDepartment(req.body as DepartmentVo);
+                if (!department) {
+                  ResponseUtility.sendFailResponse(res,null,"Department Name not available");
                   return;
                 }
-                ResponseUtility.sendSuccess(res, org);
+                ResponseUtility.sendSuccess(res, department);
+              } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+              }
+            })();
+          }
+        );
+
+        // /api/core/v1/org/department-list
+        this.router.get(`${this.path}${URL.DEPARTMENT_LIST}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                        ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                        return;
+                    }
+                    const userList: Array<DepartmentVo> | null = await this.orgService.getOrgDepartmentList(req.query?.orgId as string);
+                    ResponseUtility.sendSuccess(res, userList);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
+            })();
+        });
+
+        // /api/core/v1/org/department-delete
+        this.router.get(`${this.path}${URL.DEPARTMENT_DELETE}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+              try {
+                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                    ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                    return;
+                }
+                const department = await this.orgService.getDepartmentById(req.query?.departmentId as string);
+                if (!department || department.del) {
+                  ResponseUtility.sendFailResponse(res,null,"Department not available");
+                  return;
+                }
+                department.del = true;
+                const update = await this.orgService.addUpdateDepartment(department as DepartmentVo);
+                ResponseUtility.sendSuccess(res, update);
+              } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+              }
+            })();
+          }
+        );
+
+         // /api/core/v1/org/department-active-inactive
+         this.router.get(`${this.path}${URL.DEPARTMENT_ACTIVE_INACTIVE}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+              try {
+                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                    ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                    return;
+                }
+                const department = await this.orgService.getDepartmentById(req.query?.departmentId as string);
+                if (!department || department.del) {
+                  ResponseUtility.sendFailResponse(res,null,"Department not available");
+                  return;
+                }
+                department.status = department.status == DEPT_STATUS.ACTIVE ? DEPT_STATUS.INACTIVE : DEPT_STATUS.ACTIVE ;
+                const update = await this.orgService.addUpdateDepartment(department);
+                ResponseUtility.sendSuccess(res, update);
               } catch (error) {
                 ResponseUtility.sendFailResponse(res, error);
               }

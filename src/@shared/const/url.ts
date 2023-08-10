@@ -50,5 +50,9 @@ export const URL = {
 
   LIST_BY_ORG: "/list-by-org",
   LAST_ORDER_NO: "/last-order-no",
+
   DEPARTMENT_ADD_UPDATE: "/department-add-update",
+  DEPARTMENT_LIST: "/department-list",
+  DEPARTMENT_DELETE: "/department-delete",
+  DEPARTMENT_ACTIVE_INACTIVE: "/department-active-inactive"
 };

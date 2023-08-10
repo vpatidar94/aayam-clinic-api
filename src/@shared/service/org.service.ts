@@ -78,6 +78,16 @@ export class OrgService {
             throw error;
         }
     };
+
+    public getDepartmentById = async (depId: string): Promise<DepartmentVo | null> => {
+        return await this.department.findById(depId) as DepartmentVo;
+    }
+
+    public getOrgDepartmentList = async (orgId: string): Promise<DepartmentVo[] | null> => {
+        const criteria = {} as any;
+        criteria['del'] = false;
+        return await this.department.find(criteria) as DepartmentVo[];
+    }
     
     /* ************************************* Private Methods ******************************************** */
     private _getNextDepartmentNo = async (department: DepartmentVo): Promise<OrgOrderNoDto> => {

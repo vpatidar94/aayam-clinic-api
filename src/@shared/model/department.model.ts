@@ -8,8 +8,8 @@ const departmentSchema = new mongoose.Schema({
   code : {type : String},
   status: String,
   del: mongoose.Schema.Types.Boolean,
-  modBy: String,
-  crtBy: String,
+  modBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  crtBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
   modified: mongoose.Schema.Types.Date,
   created: mongoose.Schema.Types.Date,
 });
