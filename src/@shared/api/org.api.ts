@@ -1,4 +1,4 @@
-import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS, UserTypeVo } from 'aayam-clinic-core';
+import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS, UserTypeVo, USER_TYPE_STATUS } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
@@ -228,12 +228,12 @@ class OrgApi implements Route {
                 ResponseUtility.sendFailResponse(res, null, 'Not permitted');
                 return;
             }
-            const userType = await this.orgService.getUserTypeById(req.query?.   as string);
+            const userType = await this.orgService.getUserTypeById(req.query?.userTypeId as string);
             if (!userType || userType.del) {
               ResponseUtility.sendFailResponse(res,null,"UserType not available");
               return;
             }
-            userType.status = userType.status == DEPT_STATUS.ACTIVE ? DEPT_STATUS.INACTIVE : DEPT_STATUS.ACTIVE ;
+            userType.status = userType.status == USER_TYPE_STATUS.ACTIVE ? USER_TYPE_STATUS.INACTIVE : USER_TYPE_STATUS.ACTIVE ;
             const update = await this.orgService.addUpdateUserType(userType);
             ResponseUtility.sendSuccess(res, update);
           } catch (error) {
