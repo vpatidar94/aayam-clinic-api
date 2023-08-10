@@ -3,7 +3,8 @@ import departmentModel from "../../@shared/model/department.model";
 import {
     OrgVo, 
     DepartmentVo,
-    OrgOrderNoDto
+    OrgOrderNoDto,
+    DEPT_STATUS
 } from "aayam-clinic-core";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 
@@ -69,9 +70,9 @@ export class OrgService {
                 const orgDetails =  await this.getOrgById(department.orgId);
                 const departmentCode = await this._getNewDepartmentCode(nextDepartmentNo.departmentNo, orgDetails?.codeSuffix as String);
                 department.code = departmentCode;
-                console.log(department);
-                
                 await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo.no, nextDepartmentNo.patientNo, nextDepartmentNo.departmentNo);
+                department.del = false;
+                department.status = DEPT_STATUS.ACTIVE;
                 return await departmentModel.create(department);
             }
         } catch (error) {
