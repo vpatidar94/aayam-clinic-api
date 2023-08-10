@@ -1,4 +1,4 @@
-import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS } from 'aayam-clinic-core';
+import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS, UserTypeVo } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
@@ -6,6 +6,7 @@ import { ResponseUtility } from '../utility/response.utility';
 import { OrgService } from '../../@shared/service/org.service';
 import authMiddleware from '../../@shared/middleware/auth.middleware';
 import { MetaOrgService } from '../../@shared/service/meta-org.service';
+import { log } from 'console';
 
 class OrgApi implements Route {
     public path = URL.MJR_ORG;
@@ -75,7 +76,9 @@ class OrgApi implements Route {
         this.router.post(`${this.path}${URL.DEPARTMENT_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
               try {
-                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                console.log(res.locals?.claim?.userAccess?.role);
+                
+                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
                     ResponseUtility.sendFailResponse(res, null, 'Not permitted');
                     return;
                 }
@@ -96,7 +99,10 @@ class OrgApi implements Route {
         this.router.get(`${this.path}${URL.DEPARTMENT_LIST}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
                 try {
-                    if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                console.log(ROLE.ADMIN);
+                console.log(res.locals?.claim?.userAccess?.role);
+
+                    if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
                         ResponseUtility.sendFailResponse(res, null, 'Not permitted');
                         return;
                     }
@@ -112,7 +118,7 @@ class OrgApi implements Route {
         this.router.get(`${this.path}${URL.DEPARTMENT_DELETE}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
               try {
-                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
                     ResponseUtility.sendFailResponse(res, null, 'Not permitted');
                     return;
                 }
@@ -135,7 +141,7 @@ class OrgApi implements Route {
          this.router.get(`${this.path}${URL.DEPARTMENT_ACTIVE_INACTIVE}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
               try {
-                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) || (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
                     ResponseUtility.sendFailResponse(res, null, 'Not permitted');
                     return;
                 }
@@ -153,6 +159,27 @@ class OrgApi implements Route {
             })();
           }
         );
+
+        // /api/core/v1/org/user-type-add-update
+        this.router.post(`${this.path}${URL.USER_TYPE_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
+          (async () => {
+            try {
+              if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                  ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                  return;
+              }
+              const userType = await this.orgService.addUpdateUserType(req.body as UserTypeVo);
+              if (!userType) {
+                ResponseUtility.sendFailResponse(res,null,"UserType Name not available");
+                return;
+              }
+              ResponseUtility.sendSuccess(res, userType);
+            } catch (error) {
+              ResponseUtility.sendFailResponse(res, error);
+            }
+          })();
+        }
+      );
     }
 }
 export default OrgApi;

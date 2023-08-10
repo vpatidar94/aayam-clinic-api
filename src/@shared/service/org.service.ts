@@ -1,16 +1,21 @@
 import orgModel from "../../@shared/model/org.model";
 import departmentModel from "../../@shared/model/department.model";
+import userTypeModel from "../../@shared/model/user-type.model";
 import {
     OrgVo, 
     DepartmentVo,
     OrgOrderNoDto,
-    DEPT_STATUS
+    DEPT_STATUS,
+    UserTypeVo,
+    USER_TYPE_STATUS
 } from "aayam-clinic-core";
+import { PREFIX } from '../const/prefix';
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 
 export class OrgService {
     public org = orgModel;
     public department = departmentModel;
+    public userType = userTypeModel;
 
     /* ************************************* Public Methods ******************************************** */
     public addUpdateOrg = async (org: OrgVo): Promise<OrgVo | null> => {
@@ -68,9 +73,9 @@ export class OrgService {
                 }
                 const nextDepartmentNo = await this._getNextDepartmentNo(department);
                 const orgDetails =  await this.getOrgById(department.orgId);
-                const departmentCode = await this._getNewDepartmentCode(nextDepartmentNo.departmentNo, orgDetails?.codeSuffix as String);
+                const departmentCode = await this._getNewDepartmentCode(nextDepartmentNo.departmentNo, orgDetails?.codeSuffix as string);
                 department.code = departmentCode;
-                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo.no, nextDepartmentNo.patientNo, nextDepartmentNo.departmentNo);
+                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo.no, nextDepartmentNo.patientNo, nextDepartmentNo.departmentNo, nextDepartmentNo.userTypeNo);
                 department.del = false;
                 department.status = DEPT_STATUS.ACTIVE;
                 return await departmentModel.create(department);
@@ -89,6 +94,31 @@ export class OrgService {
         criteria['del'] = false;
         return await this.department.find(criteria) as DepartmentVo[];
     }
+
+    public addUpdateUserType = async (userType: UserTypeVo): Promise<DepartmentVo | null> => {
+        try {
+            if (userType._id) {
+                return await userTypeModel.findByIdAndUpdate(userType._id, userType);
+            } else {
+                const userTypeExist = await this.userType.exists({ name: userType.name , orgId : userType.orgId, brId : userType.brId, departmentId : userType.departmentId });
+                if (userTypeExist) {
+                    return null;
+                }
+                const nextUserTypetNo = await this._getNextUserTypeNo(userType);
+                const orgDetails =  await this.getOrgById(userType.orgId);
+                const userTypeCode = await this._getNewUserTypeCode(nextUserTypetNo.userTypeNo, orgDetails?.codeSuffix as string,);
+                userType.code = userTypeCode;
+                await new MetaOrgService().updateOrderNo(userType.orgId, nextUserTypetNo.no, nextUserTypetNo.patientNo, nextUserTypetNo.departmentNo, nextUserTypetNo.userTypeNo);
+                userType.del = false;
+                userType.status = USER_TYPE_STATUS.ACTIVE;
+                return await userTypeModel.create(userType);
+            }
+        } catch (error) {
+            throw error;
+        }
+    };
+
+
     
     /* ************************************* Private Methods ******************************************** */
     private _getNextDepartmentNo = async (department: DepartmentVo): Promise<OrgOrderNoDto> => {
@@ -98,13 +128,27 @@ export class OrgService {
         return nextDepartmentNo;
     }
 
-    private _getNewDepartmentCode = async (nextDepartmentNo:Number, codeSuffix:String) => {
+    private _getNewDepartmentCode = async (nextDepartmentNo:Number, codeSuffix:string) => {
         const departmentNo = String(nextDepartmentNo).padStart(5, '0');
-        return codeSuffix.concat(departmentNo);
+        const depPrefix = PREFIX.DEPARTMENT
+        return depPrefix.concat(codeSuffix).concat(departmentNo);
     }
 
     private _getNewOrgSuffix = async (orgName:String) => {
         return orgName.replace(/[^\w\s]/gi, '').replace(/\s+/g, '').toUpperCase().substring(0, 3);
+    }
+
+    private _getNextUserTypeNo = async (userType: UserTypeVo): Promise<OrgOrderNoDto> => {
+        const nextUserTypeNo = {} as OrgOrderNoDto;
+        const lastUserTypeOrder = await new MetaOrgService().getLastOrderNo(userType.orgId);
+        nextUserTypeNo.userTypeNo = lastUserTypeOrder.userTypeNo + 1;
+        return nextUserTypeNo;
+    }
+
+    private _getNewUserTypeCode = async (nextUserTypeNo:Number, codeSuffix:string) => {
+        const userTypeNo = String(nextUserTypeNo).padStart(5, '0');
+        const userTypePrefix = PREFIX.USER_TYPE
+        return userTypePrefix.concat(codeSuffix).concat(userTypeNo);
     }
 
 }

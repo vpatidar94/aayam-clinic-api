@@ -54,5 +54,7 @@ export const URL = {
   DEPARTMENT_ADD_UPDATE: "/department-add-update",
   DEPARTMENT_LIST: "/department-list",
   DEPARTMENT_DELETE: "/department-delete",
-  DEPARTMENT_ACTIVE_INACTIVE: "/department-active-inactive"
+  DEPARTMENT_ACTIVE_INACTIVE: "/department-active-inactive",
+
+  USER_TYPE_ADD_UPDATE: "/user-type-add-update"
 };
