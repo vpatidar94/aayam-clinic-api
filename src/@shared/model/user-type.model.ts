@@ -13,6 +13,22 @@ const userTypeSchema = new mongoose.Schema({
   crtBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
   modified: mongoose.Schema.Types.Date,
   created: mongoose.Schema.Types.Date,
+},{
+  toJSON: {
+    getters: true,
+    setters: true
+  },
+  toObject: {
+    getters: true,
+    setters: true
+  }
+});
+
+userTypeSchema.virtual('Department', {
+  ref: 'Department',
+  localField: 'departmentId',
+  foreignField: '_id',
+  justOne: true,
 });
 
 const userTypeModel = mongoose.model<UserTypeVo & mongoose.Document>('usertype', userTypeSchema);

@@ -1,4 +1,4 @@
-import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS, UserTypeVo, USER_TYPE_STATUS } from 'aayam-clinic-core';
+import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS, UserTypeVo, USER_TYPE_STATUS, UserTypeDetailDto } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
@@ -186,7 +186,7 @@ class OrgApi implements Route {
             ResponseUtility.sendFailResponse(res, null, 'Not permitted');
             return;
           }
-          const userList: Array<UserTypeVo> | null = await this.orgService.getOrgUserTypeList(req.query?.orgId as string);
+          const userList: Array<UserTypeDetailDto> | null = await this.orgService.getOrgUserTypeList(req.query?.orgId as string);
           ResponseUtility.sendSuccess(res, userList);
         } catch (error) {
           ResponseUtility.sendFailResponse(res, error);

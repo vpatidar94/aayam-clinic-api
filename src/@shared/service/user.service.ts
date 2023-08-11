@@ -138,7 +138,6 @@ export class UserService {
                 user.created = new Date();
                 user.email = user.email?.toLocaleLowerCase()?.trim();
                 user.sub = await this._saveUserAuth(user);
-                console.log(user);
                 const vo = await userModel.create(user) as UserVo;
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);

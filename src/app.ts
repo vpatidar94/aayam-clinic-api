@@ -20,7 +20,7 @@ class App {
         this.initializeRoutes(routes);
         const metaEmitter = metaOrgModel.watch();
         metaEmitter.on('change', (data) => {
-            console.log('xx xxx x x data ', JSON.stringify(data));
+            console.log('meta data ', JSON.stringify(data));
         });
         // this.initializeErrorHandling();
     }

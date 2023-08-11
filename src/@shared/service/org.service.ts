@@ -7,7 +7,9 @@ import {
     OrgOrderNoDto,
     DEPT_STATUS,
     UserTypeVo,
-    USER_TYPE_STATUS
+    USER_TYPE_STATUS,
+    UserTypePopulateVo,
+    UserTypeDetailDto
 } from "aayam-clinic-core";
 import { PREFIX } from '../const/prefix';
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
@@ -118,11 +120,22 @@ export class OrgService {
         }
     };
 
-    public getOrgUserTypeList = async (orgId: string): Promise<UserTypeVo[] | null> => {
+    public getOrgUserTypeList = async (orgId: string): Promise<UserTypeDetailDto[]> => {
         const criteria = {} as any;
         criteria['orgId'] = orgId;
         criteria['del'] = false;
-        return await this.userType.find(criteria) as UserTypeVo[];
+        const populatedData = (await this.userType.find(criteria).populate("Department")) as Array<UserTypePopulateVo>;
+        const list = populatedData?.map((item: UserTypePopulateVo) => {
+            const record = JSON.parse(JSON.stringify(item));
+            const department = item.Department as DepartmentVo;
+            const dto = {} as UserTypeDetailDto;
+            dto.departmentName = department.name;
+            delete record.Department;
+            dto.userType = record as UserTypeVo;
+            return dto;
+          }) as Array<UserTypeDetailDto>;
+          
+          return list;
     }
 
     public getUserTypeById = async (userTypeId: string): Promise<UserTypeVo | null> => {

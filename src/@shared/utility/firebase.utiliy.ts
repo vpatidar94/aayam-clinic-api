@@ -19,7 +19,7 @@ export class FirebaseUtility {
                 });
             }
         } catch (error) {
-            console.log('xxx xx xx error ', error);
+            console.log('FIREBASE error ', error);
             app = admin.app();
         }
         return app;
