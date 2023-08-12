@@ -6,7 +6,6 @@ import { ResponseUtility } from '../utility/response.utility';
 import { OrgService } from '../../@shared/service/org.service';
 import authMiddleware from '../../@shared/middleware/auth.middleware';
 import { MetaOrgService } from '../../@shared/service/meta-org.service';
-import { log } from 'console';
 
 class OrgApi implements Route {
   public path = URL.MJR_ORG;
@@ -125,7 +124,7 @@ class OrgApi implements Route {
             return;
           }
           department.del = true;
-          const update = await this.orgService.addUpdateDepartment(department as DepartmentVo);
+          const update = await this.orgService.addUpdateDepartment(department);
           ResponseUtility.sendSuccess(res, update);
         } catch (error) {
           ResponseUtility.sendFailResponse(res, error);
@@ -208,7 +207,7 @@ class OrgApi implements Route {
             return;
           }
           userType.del = true;
-          const update = await this.orgService.addUpdateUserType(userType as UserTypeVo);
+          const update = await this.orgService.addUpdateUserType(userType);
           ResponseUtility.sendSuccess(res, update);
         } catch (error) {
           ResponseUtility.sendFailResponse(res, error);
