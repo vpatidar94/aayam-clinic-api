@@ -7,6 +7,7 @@ import {
     ROLE,
     UserAccessDetailDto,
     UserAccessDto,
+    UserAccountVo,
     UserCustDto,
     UserEmpDto,
     UserVo
@@ -15,9 +16,11 @@ import userModel from '../model/users.model';
 import { FirebaseUtility } from "../../@shared/utility/firebase.utiliy";
 import { AuthService } from "./auth.service";
 import { OrgService } from "./org.service";
+import userAccountModel from "../../@shared/model/users-account.model";
 
 export class UserService {
     public user = userModel;
+    public userAccount = userAccountModel;
 
     /* ************************************* Public Methods ******************************************** */
     public saveUser = async (user: UserVo): Promise<UserVo | null> => {
@@ -201,6 +204,26 @@ export class UserService {
         return dto;
     }
 
+    
+    public saveUserAccount = async (userAccount: UserAccountVo): Promise<UserAccountVo | null> => {
+        try {
+            if (userAccount._id) {
+                return await this.userAccount.findByIdAndUpdate(userAccount._id, userAccount);
+            } else {
+                const userAccountExist = await this.userAccount.exists({ uid: userAccount.uid});
+                if (userAccountExist) {
+                    return null;
+                }
+                return await userAccountModel.create(userAccount);
+            }
+        } catch (error) {
+            throw error;
+        }
+    };
+    
+    public getUserAccountDetail = async (uid: string): Promise<UserAccountVo | null> => {
+        return await this.userAccount.findOne({uid : uid}) as UserAccountVo;
+    }
     /* ************************************* Private Methods ******************************************** */
     private _saveUserAuth = async (userVo: UserVo): Promise<string> => {
         const auth = FirebaseUtility.getApp().auth();

@@ -1,4 +1,4 @@
-import { JwtClaimDto, UserAccessDetailDto, UserEmpDto, UserVo } from 'aayam-clinic-core';
+import { JwtClaimDto, UserAccessDetailDto, UserAccountVo, UserEmpDto, UserVo, ROLE } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { AuthUtility } from '../../@shared/utility/auth.utility';
 import { URL } from '../const/url';
@@ -97,6 +97,45 @@ class UserApi implements Route {
                 }
             })();
         });
+
+        this.router.post(`${this.path}${URL.USER_ACCOUNT_ADD_UPDATE}`,authMiddleware,(req: Request, res: Response) => {
+            (async () => {
+              try {
+                const body = req.body as UserAccountVo;
+                const claim = res.locals?.claim as JwtClaimDto;
+                if (claim?.userAccess?.role !== ROLE.SUPER_ADMIN && claim?.userAccess?.role !== ROLE.ADMIN) {
+                  ResponseUtility.sendFailResponse(res, null, "Not permitted");
+                  return;
+                }
+                const user = await this.userService.saveUserAccount(body);
+                if (!user) {
+                  ResponseUtility.sendFailResponse(res,null,"User Account already exists");
+                  return;
+                }
+                ResponseUtility.sendSuccess(res, user);
+              } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+              }
+            })();
+          }
+        );
+
+        this.router.get(`${this.path}${URL.USER_ACCOUNT_DETAILS}`,authMiddleware,(req: Request, res: Response) => {
+            (async () => {
+              try {
+                const claim = res.locals?.claim as JwtClaimDto;
+                if (claim?.userAccess?.role !== ROLE.SUPER_ADMIN && claim?.userAccess?.role !== ROLE.ADMIN) {
+                  ResponseUtility.sendFailResponse(res, null, "Not permitted");
+                  return;
+                }
+                const accessList: UserAccountVo | null = await this.userService.getUserAccountDetail(req.query?.userId as string);
+                ResponseUtility.sendSuccess(res, accessList);
+              } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+              }
+            })();
+          }
+        );
     }
 }
 export default UserApi;

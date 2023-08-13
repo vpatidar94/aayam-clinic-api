@@ -59,5 +59,8 @@ export const URL = {
   USER_TYPE_ADD_UPDATE: "/user-type-add-update",
   USER_TYPE_LIST: "/user-type-list",
   USER_TYPE_DELETE: "/user-type-delete",
-  USER_TYPE_ACTIVE_INACTIVE: "/user-type-active-inactive"
+  USER_TYPE_ACTIVE_INACTIVE: "/user-type-active-inactive",
+
+  USER_ACCOUNT_ADD_UPDATE: "/user-account-add-update",
+  USER_ACCOUNT_DETAILS: "/user-account-details"
 };
