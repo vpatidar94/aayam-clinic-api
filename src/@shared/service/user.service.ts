@@ -10,6 +10,7 @@ import {
     UserAccountVo,
     UserCustDto,
     UserEmpDto,
+    UserIncomeVo,
     UserVo
 } from "aayam-clinic-core";
 import userModel from '../model/users.model';
@@ -207,10 +208,11 @@ export class UserService {
     
     public saveUserAccount = async (userAccount: UserAccountVo): Promise<UserAccountVo | null> => {
         try {
+            userAccount.income = await this._calculateTotalIncome(userAccount.income as UserIncomeVo);
             if (userAccount._id) {
                 return await this.userAccount.findByIdAndUpdate(userAccount._id, userAccount);
             } else {
-                const userAccountExist = await this.userAccount.exists({ uid: userAccount.uid});
+                const userAccountExist = await this.userAccount.exists({ userId: userAccount.userId});
                 if (userAccountExist) {
                     return null;
                 }
@@ -221,8 +223,8 @@ export class UserService {
         }
     };
     
-    public getUserAccountDetail = async (uid: string): Promise<UserAccountVo | null> => {
-        return await this.userAccount.findOne({uid : uid}) as UserAccountVo;
+    public getUserAccountDetail = async (userId: string): Promise<UserAccountVo | null> => {
+        return await this.userAccount.findOne({userId : userId}) as UserAccountVo;
     }
     /* ************************************* Private Methods ******************************************** */
     private _saveUserAuth = async (userVo: UserVo): Promise<string> => {
@@ -246,6 +248,11 @@ export class UserService {
             userAccessDto.org = mapOrgListByOrgId[acl.orgId];
         }
         return userAccessDto;
+    }
+
+    private _calculateTotalIncome(userIncome : UserIncomeVo) : UserIncomeVo {
+        userIncome.total = userIncome?.basicSalary + userIncome?.da + userIncome?.hra + userIncome?.others ;
+        return userIncome;
     }
 }
 

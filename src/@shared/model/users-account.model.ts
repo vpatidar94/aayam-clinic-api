@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { UserAccountVo } from 'aayam-clinic-core';
 
 const userAccountSchema = new mongoose.Schema({
-  uid :  { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  userId :  { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   salaryType: String,
   bankDetail: {
     name: String,
@@ -16,7 +16,8 @@ const userAccountSchema = new mongoose.Schema({
     basicSalary: Number,
     da: Number,
     hra: Number,
-    others: Number
+    others: Number,
+    total: Number
   },
   deduction: {
     tds: Number,
