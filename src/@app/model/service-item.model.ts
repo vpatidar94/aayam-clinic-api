@@ -19,15 +19,21 @@ const setUser = (user: UserVo | string): string => {
 const schema = new mongoose.Schema({
   orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
   brId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
+  departmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
+  servieTypeId: { type: mongoose.Schema.Types.ObjectId, ref: "serviceType" },
+  associatedDoctorId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   name: String,
-  description: String,
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", set: setUser },
-  price: { type: Number }, // Price in rs
-  taxInclusive: Boolean,
-  igst: Number,
-  cgst: Number,
-  sgst: Number,
-  active: Boolean,
+  code: String,
+  fee: Number,
+  feeType: String,
+  doctorFee: Number,
+  orgFee: Number,
+  status: String,
+  del: mongoose.Schema.Types.Boolean,
+  modBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  crtBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  modified: mongoose.Schema.Types.Date,
+  created: mongoose.Schema.Types.Date,
 }, {
   toJSON: {
     getters: true,
@@ -47,6 +53,6 @@ schema.virtual('user', {
 });
 
 
-const model = mongoose.model<ItemVo & mongoose.Document>("ServiceItem", schema);
+const model = mongoose.model<ItemVo & mongoose.Document>("serviceItem", schema);
 
 export default model;

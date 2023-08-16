@@ -18,15 +18,13 @@ class ServiceItemApi implements Route {
   }
 
   private initializeRoutes() {
-    // /api/core/v1/org/app-update
-    this.router.post(
-      `${this.path}${URL.ADD_UPDATE}`,
-      authMiddleware,
-      (req: Request, res: Response) => {
+    // /api/core/v1/service-item/app-update
+    this.router.post(`${this.path}${URL.ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
         (async () => {
           try {
             const body = req.body as ItemVo;
             const claim = res.locals?.claim as JwtClaimDto;
+            
             if (!AuthUtility.hasOrgEmpAccess(claim, body?.orgId)) {
               ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
               return;
