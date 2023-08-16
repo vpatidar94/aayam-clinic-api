@@ -77,7 +77,7 @@ export class OrgService {
                 const orgDetails =  await this.getOrgById(department.orgId);
                 const departmentCode = await this._getNewDepartmentCode(nextDepartmentNo.departmentNo, orgDetails?.codeSuffix as string);
                 department.code = departmentCode;
-                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo.no, nextDepartmentNo.patientNo, nextDepartmentNo.departmentNo, nextDepartmentNo.userTypeNo);
+                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo.no, nextDepartmentNo.patientNo, nextDepartmentNo.departmentNo, nextDepartmentNo.userTypeNo, nextDepartmentNo.serviceTypeNo);
                 department.del = false;
                 department.status = DEPT_STATUS.ACTIVE;
                 return await departmentModel.create(department);
@@ -110,7 +110,7 @@ export class OrgService {
                 const orgDetails =  await this.getOrgById(userType.orgId);
                 const userTypeCode = await this._getNewUserTypeCode(nextUserTypetNo.userTypeNo, orgDetails?.codeSuffix as string,);
                 userType.code = userTypeCode;
-                await new MetaOrgService().updateOrderNo(userType.orgId, nextUserTypetNo.no, nextUserTypetNo.patientNo, nextUserTypetNo.departmentNo, nextUserTypetNo.userTypeNo);
+                await new MetaOrgService().updateOrderNo(userType.orgId, nextUserTypetNo.no, nextUserTypetNo.patientNo, nextUserTypetNo.departmentNo, nextUserTypetNo.userTypeNo, nextUserTypetNo.serviceTypeNo);
                 userType.del = false;
                 userType.status = USER_TYPE_STATUS.ACTIVE;
                 return await userTypeModel.create(userType);

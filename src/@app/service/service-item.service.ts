@@ -1,8 +1,13 @@
-import { ItemDetailDto, ItemPopulateVo, ItemVo, UserVo } from "aayam-clinic-core";
+import { ItemDetailDto, ItemPopulateVo, ItemVo, OrgOrderNoDto, ServiceTypeVo, UserVo, SERVICE_TYPE_STATUS } from "aayam-clinic-core";
 import serviceItemModel from "../model/service-item.model";
+import serviceTypeModel from "../../@app/model/service-type.model";
+import { MetaOrgService } from "../../@shared/service/meta-org.service";
+import { OrgService } from "../../@shared/service/org.service";
+import { PREFIX } from "../../@shared/const/prefix";
 
 export class ServiceItemService {
   public serviceItem = serviceItemModel;
+  public serviceType = serviceTypeModel;
 
   /* ************************************* Public Methods ******************************************** */
   public addUpdateServiceItem = async (
@@ -37,5 +42,52 @@ export class ServiceItemService {
     return list;
   };
 
+  
+  public addUpdateServiceType = async (serviceType: ServiceTypeVo): Promise<ServiceTypeVo | null> => {
+    try {
+        if (serviceType._id) {
+            return await serviceTypeModel.findByIdAndUpdate(serviceType._id, serviceType);
+        } else {
+            const serviceTypeExist = await this.serviceType.exists({ name: serviceType.name , orgId : serviceType.orgId, brId : serviceType.brId , departmentId : serviceType.departmentId});
+            if (serviceTypeExist) {
+                return null;
+            }
+            const nextServiceTypeNo = await this._getNextServiceTypeNo(serviceType);
+            const orgDetails =  await new OrgService().getOrgById(serviceType.orgId);
+            const servcieTypeCode = await this._getNewServiceTypeCode(nextServiceTypeNo.serviceTypeNo, orgDetails?.codeSuffix as string);
+            serviceType.code = servcieTypeCode;
+            await new MetaOrgService().updateOrderNo(serviceType.orgId, nextServiceTypeNo.no, nextServiceTypeNo.patientNo, nextServiceTypeNo.departmentNo, nextServiceTypeNo.userTypeNo, nextServiceTypeNo.serviceTypeNo);
+            serviceType.del = false;
+            serviceType.status = SERVICE_TYPE_STATUS.ACTIVE;
+            if(serviceType?.doctorAssociated !== true){
+              serviceType.doctorAssociated = false;
+            }
+            return await serviceTypeModel.create(serviceType);
+        }
+    } catch (error) {
+        throw error;
+    }
+};
+
+public getServiceTypeListByOrgId = async (orgId: string): Promise<Array<ServiceTypeVo> | null> => {
+  return (await this.serviceType.find({ orgId })) as Array<ServiceTypeVo>;
+};
+
+public getServiceTypeById = async (serviceTypeId: string): Promise<ServiceTypeVo | null> => {
+  return await this.serviceType.findById(serviceTypeId) as ServiceTypeVo;
+}
+
   /* ************************************* Private Methods ******************************************** */
+  private _getNextServiceTypeNo = async (serviceType: ServiceTypeVo): Promise<OrgOrderNoDto> => {
+    const nextServiceTypeNo = {} as OrgOrderNoDto;
+    const lastServiceTypeOrder = await new MetaOrgService().getLastOrderNo(serviceType.orgId);
+    nextServiceTypeNo.serviceTypeNo = lastServiceTypeOrder.serviceTypeNo + 1;
+    return nextServiceTypeNo;
+}
+
+private _getNewServiceTypeCode = async (nextServiceTypeNo:Number, codeSuffix:string) => {
+    const serviceTypeNo = String(nextServiceTypeNo).padStart(5, '0');
+    const serviceTypePrefix = PREFIX.SERVICE_TYPE
+    return serviceTypePrefix.concat(codeSuffix).concat(serviceTypeNo);
+}
 }

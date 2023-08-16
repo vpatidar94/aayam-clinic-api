@@ -1,4 +1,4 @@
-import { ItemDetailDto, ItemPopulateVo, ItemVo, JwtClaimDto } from "aayam-clinic-core";
+import { ItemDetailDto, ItemPopulateVo, ItemVo, JwtClaimDto, ROLE, SERVICE_TYPE_STATUS, ServiceTypeVo} from "aayam-clinic-core";
 import { Request, Response, Router } from "express";
 import { ServiceItemService } from "../../@app/service/service-item.service";
 import { URL } from "../../@shared/const/url";
@@ -57,6 +57,91 @@ class ServiceItemApi implements Route {
       })();
     }
     );
+
+    // /api/core/v1/service-item/service-type-add-update
+    this.router.post(`${this.path}${URL.SERVICE_TYPE_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
+      (async () => {
+        try {
+          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+            return;
+          }
+          const userType = await this.serviceItemService.addUpdateServiceType(req.body as ServiceTypeVo);
+          if (!userType) {
+            ResponseUtility.sendFailResponse(res, null, "Service Type Name not available");
+            return;
+          }
+          ResponseUtility.sendSuccess(res, userType);
+        } catch (error) {
+          ResponseUtility.sendFailResponse(res, error);
+        }
+      })();
+    }
+    );
+
+    // /api/core/v1/service-item/service-type-list
+    this.router.get(`${this.path}${URL.SERVICE_TYPE_LIST}`, authMiddleware, (req: Request, res: Response) => {
+      (async () => {
+        try {
+          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+            return;
+          }
+          const list: Array<ServiceTypeVo> | null = await this.serviceItemService.getServiceTypeListByOrgId(req.query.orgId as string);
+          ResponseUtility.sendSuccess(res, list);
+        } catch (error) {
+          ResponseUtility.sendFailResponse(res, error);
+        }
+      })();
+    }
+    );
+
+        // /api/core/v1/service-item/service-type-delete
+        this.router.get(`${this.path}${URL.SERVICE_TYPE_DELETE}`, authMiddleware, (req: Request, res: Response) => {
+          (async () => {
+            try {
+              if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                return;
+              }
+              const serviceType = await this.serviceItemService.getServiceTypeById(req.query?.serviceTypeId as string);
+              if (!serviceType || serviceType.del) {
+                ResponseUtility.sendFailResponse(res, null, "Service Type not available");
+                return;
+              }
+              serviceType.del = true;
+              const update = await this.serviceItemService.addUpdateServiceType(serviceType);
+              ResponseUtility.sendSuccess(res, update);
+            } catch (error) {
+              ResponseUtility.sendFailResponse(res, error);
+            }
+          })();
+        }
+        );
+    
+        // /api/core/v1/service-item/service-type-active-inactive
+        this.router.get(`${this.path}${URL.SERVICE_TYPE_ACTIVE_INACTIVE}`, authMiddleware, (req: Request, res: Response) => {
+          (async () => {
+            try {
+              if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                return;
+              }
+              const serviceType = await this.serviceItemService.getServiceTypeById(req.query?.serviceTypeId as string);
+              if (!serviceType || serviceType.del) {
+                ResponseUtility.sendFailResponse(res, null, "Service Type not available");
+                return;
+              }
+              serviceType.status = serviceType.status == SERVICE_TYPE_STATUS.ACTIVE ? SERVICE_TYPE_STATUS.INACTIVE : SERVICE_TYPE_STATUS.ACTIVE;
+              const update = await this.serviceItemService.addUpdateServiceType(serviceType);
+              ResponseUtility.sendSuccess(res, update);
+            } catch (error) {
+              ResponseUtility.sendFailResponse(res, error);
+            }
+          })();
+        }
+        );
+
   }
 }
 export default ServiceItemApi;

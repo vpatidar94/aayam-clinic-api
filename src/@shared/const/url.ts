@@ -62,5 +62,10 @@ export const URL = {
   USER_TYPE_ACTIVE_INACTIVE: "/user-type-active-inactive",
 
   USER_ACCOUNT_ADD_UPDATE: "/user-account-add-update",
-  USER_ACCOUNT_DETAILS: "/user-account-details"
+  USER_ACCOUNT_DETAILS: "/user-account-details",
+
+  SERVICE_TYPE_ADD_UPDATE: "/service-type-add-update",
+  SERVICE_TYPE_LIST: "/service-type-list",
+  SERVICE_TYPE_DELETE: "/service-type-delete",
+  SERVICE_TYPE_ACTIVE_INACTIVE: "/service-type-active-inactive"
 };

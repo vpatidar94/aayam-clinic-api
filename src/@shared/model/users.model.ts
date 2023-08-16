@@ -47,7 +47,13 @@ const userSchema = new mongoose.Schema({
     apartmentNo: String,
     dropOffOption: String,
     note: String,
-  }
+  },
+  serviceTiming:[
+    {
+      from : String, 
+      to : String
+    }
+  ]
 });
 
 const userModel = mongoose.model<UserVo & mongoose.Document>('User', userSchema);
