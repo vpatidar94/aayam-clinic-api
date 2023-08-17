@@ -14,12 +14,10 @@ export class ServiceItemService {
     serviceItemVo: ItemVo
   ): Promise<ItemVo | null> => {
     try {
-      if(serviceItemVo.feeType == "FIXED"){
-        serviceItemVo.orgFee = serviceItemVo.fee - serviceItemVo.doctorFee;
-      }
-      if(serviceItemVo.feeType == "COMMISSION"){
-        serviceItemVo.doctorFee = (serviceItemVo.fee/100) * serviceItemVo.doctorFee;
-        serviceItemVo.orgFee = serviceItemVo.fee - serviceItemVo.doctorFee;
+      if(serviceItemVo.feeType.isPercent){
+        serviceItemVo.doctorFee = (serviceItemVo.fee/100) * serviceItemVo.feeType.value;
+      }else{
+        serviceItemVo.doctorFee = serviceItemVo.feeType.value;
       }
       if (serviceItemVo._id) {
         return await serviceItemModel.findByIdAndUpdate(
