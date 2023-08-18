@@ -87,7 +87,7 @@ export class UserService {
                 user.created = new Date();
                 const nextUserNo = await this._getNextUserNo(acl.orgId);
                 user = await this._generateUserCodeAndEmail(acl.orgId,user,nextUserNo);
-
+                await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
                 user.sub = await this._saveUserAuth(user);
                 const vo = await userModel.create(user) as UserVo;
                 if (user.sub && user.email) {
