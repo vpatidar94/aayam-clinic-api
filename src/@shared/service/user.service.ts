@@ -87,9 +87,13 @@ export class UserService {
                 user.created = new Date();
                 const nextUserNo = await this._getNextUserNo(acl.orgId);
                 user = await this._generateUserCodeAndEmail(acl.orgId,user,nextUserNo);
-                await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
                 user.sub = await this._saveUserAuth(user);
                 const vo = await userModel.create(user) as UserVo;
+                console.log(nextUserNo);
+                
+                await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
+                console.log("heeeeee");
+                
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);
                 }

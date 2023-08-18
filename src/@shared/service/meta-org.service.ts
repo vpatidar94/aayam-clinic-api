@@ -26,6 +26,9 @@ export class MetaOrgService {
             if (OrgOrderNoDto.serviceTypeNo > 0) {
                 field['serviceTypeNo'] = OrgOrderNoDto.serviceTypeNo;
             }
+            if (OrgOrderNoDto.userNo > 0) {
+                field['userNo'] = OrgOrderNoDto.userNo;
+            }
 
             const meta = await metaOrgModel.findOne({ orgId }) as MetadataOrgVo | null;
             if (!meta) {
@@ -35,6 +38,7 @@ export class MetaOrgService {
                 vo.departmentNo = OrgOrderNoDto.departmentNo;
                 vo.userTypeNo = OrgOrderNoDto.userTypeNo;
                 vo.serviceTypeNo = OrgOrderNoDto.serviceTypeNo;
+                vo.userNo = OrgOrderNoDto.userNo;
                 vo.orgId = orgId;
                 await metaOrgModel.create(vo);
             } else {
