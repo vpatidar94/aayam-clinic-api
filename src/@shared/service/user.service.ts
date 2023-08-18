@@ -3,6 +3,7 @@ import {
     AclVo,
     FnUtility,
     JwtClaimDto,
+    OrgOrderNoDto,
     OrgVo,
     ROLE,
     UserAccessDetailDto,
@@ -18,45 +19,47 @@ import { FirebaseUtility } from "../../@shared/utility/firebase.utiliy";
 import { AuthService } from "./auth.service";
 import { OrgService } from "./org.service";
 import userAccountModel from "../../@shared/model/users-account.model";
+import { PREFIX, SUFFIX } from "../const/prefix-suffix";
+import { MetaOrgService } from "../../@shared/service/meta-org.service";
 
 export class UserService {
     public user = userModel;
     public userAccount = userAccountModel;
 
     /* ************************************* Public Methods ******************************************** */
-    public saveUser = async (user: UserVo): Promise<UserVo | null> => {
-        try {
-            if (user._id) {
-                if (user.email) {
-                    delete user.email;
-                }
-                const vo = await userModel.findByIdAndUpdate(user._id, user);
-                if (user.sub && user.email) {
-                    await new AuthService().setFbCustomUserClaim(user.sub, user.email,);
-                }
-                return vo;
-            } else {
-                const userExist = await this.user.exists({ email: user.email });
-                if (userExist) {
-                    return null;
-                }
-                user.email = user.email?.toLocaleLowerCase()?.trim();
-                user.sub = await this._saveUserAuth(user);
-                return await userModel.create(user);
-            }
-        } catch (error) {
-            throw error;
-        }
-    };
+    // Not used 
+    // public saveUser = async (user: UserVo): Promise<UserVo | null> => {
+    //     try {
+    //         if (user._id) {
+    //             if (user.email) {
+    //                 delete user.email;
+    //             }
+    //             const vo = await userModel.findByIdAndUpdate(user._id, user);
+    //             if (user.sub && user.email) {
+    //                 await new AuthService().setFbCustomUserClaim(user.sub, user.email,);
+    //             }
+    //             return vo;
+    //         } else {
+    //             const userExist = await this.user.exists({ email: user.email });
+    //             if (userExist) {
+    //                 return null;
+    //             }
+    //             user.sub = await this._saveUserAuth(user);
+    //             return await userModel.create(user);
+    //         }
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // };
 
     public saveStaff = async (staff: UserEmpDto): Promise<UserVo | null> => {
         try {
-            const user = staff.user;
+            let user = staff.user;
             const acl = staff.acl;
             if (!acl || !acl.orgId) {
                 return null;
             }
-            if (user._id) {
+            if (user?._id) {
                 if (user.email) {
                     delete user.email;
                 }
@@ -82,7 +85,9 @@ export class UserService {
                 };
                 user.emp[acl.orgId] = acl;
                 user.created = new Date();
-                user.email = user.email?.toLocaleLowerCase()?.trim();
+                const nextUserNo = await this._getNextUserNo(acl.orgId);
+                user = await this._generateUserCodeAndEmail(acl.orgId,user,nextUserNo);
+
                 user.sub = await this._saveUserAuth(user);
                 const vo = await userModel.create(user) as UserVo;
                 if (user.sub && user.email) {
@@ -108,7 +113,7 @@ export class UserService {
 
     public saveCust = async (cust: UserCustDto): Promise<UserVo | null> => {
         try {
-            const user = cust.user;
+            let user = cust.user;
             const acl = cust.acl;
             if (!acl || !acl.orgId) {
                 return null;
@@ -140,9 +145,11 @@ export class UserService {
                 user.cust[acl.orgId] = acl;
                 acl.enrollAt = new Date();
                 user.created = new Date();
-                user.email = user.email?.toLocaleLowerCase()?.trim();
+                const nextUserNo = await this._getNextUserNo(acl.orgId);
+                user = await this._generateUserCodeAndEmail(acl.orgId,user,nextUserNo);
                 user.sub = await this._saveUserAuth(user);
                 const vo = await userModel.create(user) as UserVo;
+                await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);
                 }
@@ -253,6 +260,31 @@ export class UserService {
     private _calculateTotalIncome(userIncome : UserIncomeVo) : UserIncomeVo {
         userIncome.total = userIncome?.basicSalary + userIncome?.da + userIncome?.hra + userIncome?.others ;
         return userIncome;
+    }
+
+    private _getNextUserNo = async (orgId: string): Promise<OrgOrderNoDto> => {
+        const nextUserNo = {} as OrgOrderNoDto;
+        const lastUserOrder = await new MetaOrgService().getLastOrderNo(orgId);
+        nextUserNo.userNo = lastUserOrder.userNo + 1;
+        return nextUserNo;
+    }
+
+    private _getNewUserCode = async (nextUserNo:Number, codeSuffix:string) => {
+        const userNo = String(nextUserNo).padStart(5, '0');
+        const depPrefix = PREFIX.USER
+        return depPrefix.concat(codeSuffix).concat(userNo);
+    }
+
+    private _generateUserEmail =async (code:string) => {
+        const emailSuffix = SUFFIX.EMAIL;
+        return code.concat(emailSuffix);
+    }
+
+    private _generateUserCodeAndEmail =async (orgId:string,user:UserVo,nextUserNo: OrgOrderNoDto) => {
+        const orgDetails =  await new OrgService().getOrgById(orgId);
+        user.code = await this._getNewUserCode(nextUserNo.userNo, orgDetails?.codeSuffix as string)
+        user.email = await this._generateUserEmail(user.code);
+        return user;
     }
 }
 

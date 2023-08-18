@@ -20,37 +20,40 @@ class UserApi implements Route {
     private initializeRoutes() {
 
         // /api/core/v1/user/app-update
-        this.router.post(`${this.path}${URL.ADD_UPDATE}`, authMiddleware, async (req: Request, res: Response) => {
-            try {
-                const user = await this.userService.saveUser(req.body as UserVo);
-                if (!user) {
-                    ResponseUtility.sendFailResponse(res, null, 'User already exists');
-                    return;
-                }
-                ResponseUtility.sendSuccess(res, user);
-            } catch (error) {
-                ResponseUtility.sendFailResponse(res, error);
-            }
-        });
+        // Not used
+        // this.router.post(`${this.path}${URL.ADD_UPDATE}`, authMiddleware, async (req: Request, res: Response) => {
+        //     try {
+        //         const user = await this.userService.saveUser(req.body as UserVo);
+        //         if (!user) {
+        //             ResponseUtility.sendFailResponse(res, null, 'User already exists');
+        //             return;
+        //         }
+        //         ResponseUtility.sendSuccess(res, user);
+        //     } catch (error) {
+        //         ResponseUtility.sendFailResponse(res, error);
+        //     }
+        // });
 
         // Can be update by Admin and superadmin of that org
-        this.router.post(`${this.path}${URL.STAFF_ADD_UPDATE}`, authMiddleware, async (req: Request, res: Response) => {
-            try {
-                const body = req.body as UserEmpDto;
-                const claim = res.locals?.claim as JwtClaimDto;
-                if (!AuthUtility.hasOrgAccess(claim, body?.acl?.orgId)) {
-                    ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
-                    return;
+        this.router.post(`${this.path}${URL.STAFF_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    const body = req.body as UserEmpDto;
+                    const claim = res.locals?.claim as JwtClaimDto;
+                    if (!AuthUtility.hasOrgAccess(claim, body?.acl?.orgId)) {
+                        ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+                        return;
+                    }
+                    const user = await this.userService.saveStaff(body);
+                    if (!user) {
+                        ResponseUtility.sendFailResponse(res, null, 'User already exists');
+                        return;
+                    }
+                    ResponseUtility.sendSuccess(res, user);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
                 }
-                const user = await this.userService.saveStaff(body);
-                if (!user) {
-                    ResponseUtility.sendFailResponse(res, null, 'User already exists');
-                    return;
-                }
-                ResponseUtility.sendSuccess(res, user);
-            } catch (error) {
-                ResponseUtility.sendFailResponse(res, error);
-            }
+            })();
         });
 
         this.router.get(`${this.path}${URL.STAFF_LIST}`, authMiddleware, (req: Request, res: Response) => {

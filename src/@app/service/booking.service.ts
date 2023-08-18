@@ -18,7 +18,7 @@ export class BookingService {
         const user = await new UserService().saveBookingCust(userBookingDto.user, booking.orgId);
         userBookingDto.booking.user = user?._id ?? '';
         userBookingDto.booking = await this.bookingModel.create(booking);
-        await new MetaOrgService().updateOrderNo(booking.orgId, newUpdatedOrderNo.no, newUpdatedOrderNo.patientNo, newUpdatedOrderNo.departmentNo, newUpdatedOrderNo.userTypeNo, newUpdatedOrderNo.serviceTypeNo);
+        await new MetaOrgService().updateOrderNo(booking.orgId, newUpdatedOrderNo);
       }
       return userBookingDto;
     } catch (error) {

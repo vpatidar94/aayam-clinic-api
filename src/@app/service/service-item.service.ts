@@ -3,7 +3,7 @@ import serviceItemModel from "../model/service-item.model";
 import serviceTypeModel from "../../@app/model/service-type.model";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { OrgService } from "../../@shared/service/org.service";
-import { PREFIX } from "../../@shared/const/prefix";
+import { PREFIX } from "../../@shared/const/prefix-suffix";
 
 export class ServiceItemService {
   public serviceItem = serviceItemModel;
@@ -19,6 +19,7 @@ export class ServiceItemService {
       }else{
         serviceItemVo.doctorFee = serviceItemVo.feeType.value;
       }
+      serviceItemVo.orgFee = serviceItemVo.fee - serviceItemVo.doctorFee;
       if (serviceItemVo._id) {
         return await serviceItemModel.findByIdAndUpdate(
           serviceItemVo._id,
@@ -61,7 +62,7 @@ export class ServiceItemService {
             const orgDetails =  await new OrgService().getOrgById(serviceType.orgId);
             const servcieTypeCode = await this._getNewServiceTypeCode(nextServiceTypeNo.serviceTypeNo, orgDetails?.codeSuffix as string);
             serviceType.code = servcieTypeCode;
-            await new MetaOrgService().updateOrderNo(serviceType.orgId, nextServiceTypeNo.no, nextServiceTypeNo.patientNo, nextServiceTypeNo.departmentNo, nextServiceTypeNo.userTypeNo, nextServiceTypeNo.serviceTypeNo);
+            await new MetaOrgService().updateOrderNo(serviceType.orgId, nextServiceTypeNo);
             serviceType.del = false;
             serviceType.status = SERVICE_TYPE_STATUS.ACTIVE;
             if(serviceType?.doctorAssociated !== true){

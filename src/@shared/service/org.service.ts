@@ -11,7 +11,7 @@ import {
     UserTypePopulateVo,
     UserTypeDetailDto
 } from "aayam-clinic-core";
-import { PREFIX } from '../const/prefix';
+import { PREFIX } from '../const/prefix-suffix';
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 
 export class OrgService {
@@ -77,7 +77,7 @@ export class OrgService {
                 const orgDetails =  await this.getOrgById(department.orgId);
                 const departmentCode = await this._getNewDepartmentCode(nextDepartmentNo.departmentNo, orgDetails?.codeSuffix as string);
                 department.code = departmentCode;
-                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo.no, nextDepartmentNo.patientNo, nextDepartmentNo.departmentNo, nextDepartmentNo.userTypeNo, nextDepartmentNo.serviceTypeNo);
+                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo);
                 department.del = false;
                 department.status = DEPT_STATUS.ACTIVE;
                 return await departmentModel.create(department);
@@ -106,11 +106,11 @@ export class OrgService {
                 if (userTypeExist) {
                     return null;
                 }
-                const nextUserTypetNo = await this._getNextUserTypeNo(userType);
+                const nextUserTypeNo = await this._getNextUserTypeNo(userType);
                 const orgDetails =  await this.getOrgById(userType.orgId);
-                const userTypeCode = await this._getNewUserTypeCode(nextUserTypetNo.userTypeNo, orgDetails?.codeSuffix as string,);
+                const userTypeCode = await this._getNewUserTypeCode(nextUserTypeNo.userTypeNo, orgDetails?.codeSuffix as string,);
                 userType.code = userTypeCode;
-                await new MetaOrgService().updateOrderNo(userType.orgId, nextUserTypetNo.no, nextUserTypetNo.patientNo, nextUserTypetNo.departmentNo, nextUserTypetNo.userTypeNo, nextUserTypetNo.serviceTypeNo);
+                await new MetaOrgService().updateOrderNo(userType.orgId, nextUserTypeNo);
                 userType.del = false;
                 userType.status = USER_TYPE_STATUS.ACTIVE;
                 return await userTypeModel.create(userType);

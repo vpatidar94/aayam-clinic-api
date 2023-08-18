@@ -25,7 +25,10 @@ const schema = new mongoose.Schema({
   name: String,
   code: String,
   fee: Number,
-  feeType: String,
+  feeType: {
+    isPercent : mongoose.Schema.Types.Boolean,
+    value : {type : Number}
+  },
   doctorFee: Number,
   orgFee: Number,
   status: String,

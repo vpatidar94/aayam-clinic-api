@@ -8,33 +8,33 @@ export class MetaOrgService {
     public metaOrgModel = metaOrgModel;
 
     /* ************************************* Public Methods ******************************************** */
-    public updateOrderNo = async (orgId: string, no: number, patientNo: number, departmentNo: number, userTypeNo : number, serviceTypeNo : number): Promise<void> => {
+    public updateOrderNo = async ( orgId: string, OrgOrderNoDto: OrgOrderNoDto): Promise<void> => {
         try {
             const field = {} as { [key: string]: number };
-            if (no > 0) {
-                field['no'] = no;
+            if (OrgOrderNoDto.no > 0) {
+                field['no'] = OrgOrderNoDto.no;
             }
-            if (patientNo > 0) {
-                field['patientNo'] = patientNo;
+            if (OrgOrderNoDto.patientNo > 0) {
+                field['patientNo'] = OrgOrderNoDto.patientNo;
             }
-            if (departmentNo > 0) {
-                field['departmentNo'] = departmentNo;
+            if (OrgOrderNoDto.departmentNo > 0) {
+                field['departmentNo'] = OrgOrderNoDto.departmentNo;
             }
-            if (userTypeNo > 0) {
-                field['userTypeNo'] = userTypeNo;
+            if (OrgOrderNoDto.userTypeNo > 0) {
+                field['userTypeNo'] = OrgOrderNoDto.userTypeNo;
             }
-            if (serviceTypeNo > 0) {
-                field['serviceTypeNo'] = serviceTypeNo;
+            if (OrgOrderNoDto.serviceTypeNo > 0) {
+                field['serviceTypeNo'] = OrgOrderNoDto.serviceTypeNo;
             }
 
             const meta = await metaOrgModel.findOne({ orgId }) as MetadataOrgVo | null;
             if (!meta) {
                 const vo = {} as MetadataOrgVo;
-                vo.no = no;
-                vo.patientNo = patientNo;
-                vo.departmentNo = departmentNo;
-                vo.userTypeNo = userTypeNo;
-                vo.serviceTypeNo = serviceTypeNo;
+                vo.no = OrgOrderNoDto.no;
+                vo.patientNo = OrgOrderNoDto.patientNo;
+                vo.departmentNo = OrgOrderNoDto.departmentNo;
+                vo.userTypeNo = OrgOrderNoDto.userTypeNo;
+                vo.serviceTypeNo = OrgOrderNoDto.serviceTypeNo;
                 vo.orgId = orgId;
                 await metaOrgModel.create(vo);
             } else {
@@ -51,8 +51,9 @@ export class MetaOrgService {
         dto.no = 0;
         dto.patientNo = 0;
         dto.departmentNo = 0;
-        dto.userTypeNo = 0
-        dto.serviceTypeNo = 0
+        dto.userTypeNo = 0;
+        dto.serviceTypeNo = 0;
+        dto.userNo = 0;
         const meta: MetadataOrgVo = await metaOrgModel.findOne({ orgId: orgId }) as MetadataOrgVo;
         if (meta) {
             if (meta?.no > 0) {
@@ -69,6 +70,9 @@ export class MetaOrgService {
             }
             if (meta?.serviceTypeNo > 0) {
                 dto.serviceTypeNo = meta.serviceTypeNo;
+            }
+            if (meta?.userNo > 0) {
+                dto.userNo = meta.userNo;
             }
         }
         return dto;
