@@ -38,7 +38,7 @@ class ServiceItemApi implements Route {
       }
     );
 
-    // /api/core/v1/org/list
+    // /api/core/v1/service-item/list
     this.router.get(`${this.path}${URL.LIST}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {

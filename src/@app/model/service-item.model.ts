@@ -20,7 +20,7 @@ const schema = new mongoose.Schema({
   orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
   brId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
   departmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
-  servieTypeId: { type: mongoose.Schema.Types.ObjectId, ref: "serviceType" },
+  serviceTypeId: { type: mongoose.Schema.Types.ObjectId, ref: "serviceType" },
   associatedDoctorId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   name: String,
   code: String,
