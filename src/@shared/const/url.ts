@@ -30,6 +30,7 @@ export const URL = {
   MJR_ORG: BASE_CORE + "/org",
   MJR_BOOKING: BASE_CORE + "/booking",
   MJR_SERVICE_ITEM: BASE_CORE + "/service-item",
+  MJR_PRODUCT: BASE_CORE + "/product",
 
   VEHICLE_LIST: LIST,
   // ORDER: MJR_TX + '/order',

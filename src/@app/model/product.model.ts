@@ -1,13 +1,20 @@
-import { ServiceTypeVo } from "aayam-clinic-core";
+import { ProductVo } from "aayam-clinic-core";
 import * as mongoose from "mongoose";
 
-const serviceTypeSchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
   orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
   brId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
-  departmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
   name: String,
   code: String,
-  doctorAssociated: mongoose.Schema.Types.Boolean,
+  drug: String,
+  productType: String,
+  company: String,
+  price : Number,
+  qtyPerStrip : Number,
+  pricePerStrip : Number,
+  purchaseDate: mongoose.Schema.Types.Date,
+  expirtyDate : mongoose.Schema.Types.Date,
+
   status: String,
   del: mongoose.Schema.Types.Boolean,
   modBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -25,6 +32,6 @@ const serviceTypeSchema = new mongoose.Schema({
   }
 });
 
-const serviceTypeModel = mongoose.model<ServiceTypeVo & mongoose.Document>("serviceType", serviceTypeSchema);
+const productModel = mongoose.model<ProductVo & mongoose.Document>("product", productSchema);
 
-export default serviceTypeModel;
+export default productModel;

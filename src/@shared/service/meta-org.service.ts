@@ -29,6 +29,9 @@ export class MetaOrgService {
             if (OrgOrderNoDto.userNo > 0) {
                 field['userNo'] = OrgOrderNoDto.userNo;
             }
+            if (OrgOrderNoDto.productNo > 0) {
+                field['productNo'] = OrgOrderNoDto.productNo;
+            }
 
             const meta = await metaOrgModel.findOne({ orgId }) as MetadataOrgVo | null;
             if (!meta) {
@@ -39,6 +42,7 @@ export class MetaOrgService {
                 vo.userTypeNo = OrgOrderNoDto.userTypeNo;
                 vo.serviceTypeNo = OrgOrderNoDto.serviceTypeNo;
                 vo.userNo = OrgOrderNoDto.userNo;
+                vo.productNo = OrgOrderNoDto.productNo;
                 vo.orgId = orgId;
                 await metaOrgModel.create(vo);
             } else {
@@ -58,6 +62,7 @@ export class MetaOrgService {
         dto.userTypeNo = 0;
         dto.serviceTypeNo = 0;
         dto.userNo = 0;
+        dto.productNo = 0;
         const meta: MetadataOrgVo = await metaOrgModel.findOne({ orgId: orgId }) as MetadataOrgVo;
         if (meta) {
             if (meta?.no > 0) {
@@ -77,6 +82,9 @@ export class MetaOrgService {
             }
             if (meta?.userNo > 0) {
                 dto.userNo = meta.userNo;
+            }
+            if (meta?.productNo > 0) {
+                dto.productNo = meta.productNo;
             }
         }
         return dto;
