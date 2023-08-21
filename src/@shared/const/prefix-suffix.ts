@@ -7,7 +7,8 @@ export const PREFIX = {
   USER : "USR",
   SERVICE : "SER",
   SERVICE_TYPE : "SET",
-  PRODUCT : "PRO"
+  PRODUCT : "PRO",
+  SERVICE_ITEM : "SEI"
 };
 
 export const SUFFIX = {

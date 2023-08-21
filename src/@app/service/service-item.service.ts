@@ -27,6 +27,10 @@ export class ServiceItemService {
           { new: true }
         );
       } else {
+        const nextServiceItemNo = await this._getNextServiceItemNo(serviceItemVo);
+            const orgDetails =  await new OrgService().getOrgById(serviceItemVo.orgId);
+            const serviceItemCode = await this._getNewServiceItemCode(nextServiceItemNo.serviceItemNo, orgDetails?.codeSuffix as string);
+            serviceItemVo.code = serviceItemCode;
         return await this.serviceItem.create(serviceItemVo);
       }
     } catch (error) {
@@ -91,9 +95,22 @@ public getServiceTypeById = async (serviceTypeId: string): Promise<ServiceTypeVo
     return nextServiceTypeNo;
 }
 
-private _getNewServiceTypeCode = async (nextServiceTypeNo:Number, codeSuffix:string) => {
+private _getNewServiceTypeCode = async (nextServiceTypeNo:number, codeSuffix:string) => {
     const serviceTypeNo = String(nextServiceTypeNo).padStart(5, '0');
     const serviceTypePrefix = PREFIX.SERVICE_TYPE
     return serviceTypePrefix.concat(codeSuffix).concat(serviceTypeNo);
+}
+
+private _getNextServiceItemNo = async (serviceItem: ItemVo): Promise<OrgOrderNoDto> => {
+  const nextServiceItemNo = {} as OrgOrderNoDto;
+  const lastServiceItemOrder = await new MetaOrgService().getLastOrderNo(serviceItem.orgId);
+  nextServiceItemNo.serviceItemNo = lastServiceItemOrder.serviceItemNo + 1;
+  return nextServiceItemNo;
+}
+
+private _getNewServiceItemCode = async (nextServiceItemNo:number, codeSuffix:string) => {
+  const serviceItemNo = String(nextServiceItemNo).padStart(5, '0');
+  const serviceItemPrefix = PREFIX.SERVICE_ITEM
+  return serviceItemPrefix.concat(codeSuffix).concat(serviceItemNo);
 }
 }
