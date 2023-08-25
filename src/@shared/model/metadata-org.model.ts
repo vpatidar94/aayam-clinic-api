@@ -10,6 +10,7 @@ const metaOrgSchema = new mongoose.Schema({
   departmentNo: Number,
   userTypeNo: Number,
   serviceTypeNo: Number,
+  serviceItemNo: Number,
   userNo: Number,
   productNo: Number
 });

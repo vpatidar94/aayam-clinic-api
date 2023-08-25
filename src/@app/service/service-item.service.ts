@@ -31,7 +31,8 @@ export class ServiceItemService {
             const orgDetails =  await new OrgService().getOrgById(serviceItemVo.orgId);
             const serviceItemCode = await this._getNewServiceItemCode(nextServiceItemNo.serviceItemNo, orgDetails?.codeSuffix as string);
             serviceItemVo.code = serviceItemCode;
-        return await this.serviceItem.create(serviceItemVo);
+            await new MetaOrgService().updateOrderNo(serviceItemVo.orgId, nextServiceItemNo);
+            return await this.serviceItem.create(serviceItemVo);
       }
     } catch (error) {
       throw error;
