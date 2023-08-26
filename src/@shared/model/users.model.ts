@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   emp: mongoose.Schema.Types.Mixed,
   crtBy: String,
   created: Date,
+  code: String,
   address: {
     street1: String,
     street2: String,
