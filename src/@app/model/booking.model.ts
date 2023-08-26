@@ -28,17 +28,27 @@ const bookingSchema = new mongoose.Schema({
   items: [
     {
       item: {
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: "serviceItem" },
         orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
         brId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
+        departmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
+        serviceTypeId: { type: mongoose.Schema.Types.ObjectId, ref: "serviceType" },
+        associatedDoctorId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
         name: String,
-        description: String,
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        price: { type: Number }, // Price in lowest unit
-        taxInclusive: Boolean,
-        igst: Number,
-        cgst: Number,
-        sgst: Number,
-        active: Boolean,
+        code: String,
+        fee: Number,
+        feeType: {
+          isPercent: mongoose.Schema.Types.Boolean,
+          value: { type: Number }
+        },
+        doctorFee: Number,
+        orgFee: Number,
+        status: String,
+        del: mongoose.Schema.Types.Boolean,
+        modBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        crtBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        modified: mongoose.Schema.Types.Date,
+        created: mongoose.Schema.Types.Date,
       },
       qty: mongoose.Schema.Types.Number, // Quantity
 
