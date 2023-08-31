@@ -68,5 +68,7 @@ export const URL = {
   SERVICE_TYPE_ADD_UPDATE: "/service-type-add-update",
   SERVICE_TYPE_LIST: "/service-type-list",
   SERVICE_TYPE_DELETE: "/service-type-delete",
-  SERVICE_TYPE_ACTIVE_INACTIVE: "/service-type-active-inactive"
+  SERVICE_TYPE_ACTIVE_INACTIVE: "/service-type-active-inactive",
+
+  TRANSACTION_ADD_UPDATE: "/transaction-add-update"
 };

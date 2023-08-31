@@ -1,24 +1,51 @@
 import { UserService } from "../../@shared/service/user.service";
-import { BOOKING_STATUS, BOOKING_TYPE, BookingVo, InvestigationVo, OrgOrderNoDto, UserBookingDto, UserBookingInvestigationDto, UserVo, BookingPopulateVo, OrgBookingDto } from "aayam-clinic-core";
+import {
+  BOOKING_STATUS,
+  BOOKING_TYPE,
+  BookingVo,
+  InvestigationVo,
+  OrgOrderNoDto,
+  UserBookingDto,
+  UserBookingInvestigationDto,
+  UserVo,
+  BookingPopulateVo,
+  OrgBookingDto,
+  BookingAddTransactionDto,
+  TxVo,
+} from "aayam-clinic-core";
 import bookingModel from "../../@app/model/booking.model";
+import TransactionModel from "../../@app/model/transaction.model";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { InvestigationService } from "./investigation.service";
 
 export class BookingService {
   public bookingModel = bookingModel;
+  public TransactionModel = TransactionModel;
 
   /* ************************************* Public Methods ******************************************** */
-  public addUpdateBooking = async (userBookingDto: UserBookingDto): Promise<UserBookingDto | null> => {
+  public addUpdateBooking = async (
+    userBookingDto: UserBookingDto
+  ): Promise<UserBookingDto | null> => {
     try {
       const booking = userBookingDto.booking;
       if (booking._id) {
-        userBookingDto.booking = await bookingModel.findByIdAndUpdate(booking._id, booking, { new: true }) as BookingVo;
+        userBookingDto.booking = (await bookingModel.findByIdAndUpdate(
+          booking._id,
+          booking,
+          { new: true }
+        )) as BookingVo;
       } else {
         const newUpdatedOrderNo = await this._updateBookingStatusAndNo(booking);
-        const user = await new UserService().saveBookingCust(userBookingDto.user, booking.orgId);
-        userBookingDto.booking.user = user?._id ?? '';
+        const user = await new UserService().saveBookingCust(
+          userBookingDto.user,
+          booking.orgId
+        );
+        userBookingDto.booking.user = user?._id ?? "";
         userBookingDto.booking = await this.bookingModel.create(booking);
-        await new MetaOrgService().updateOrderNo(booking.orgId, newUpdatedOrderNo);
+        await new MetaOrgService().updateOrderNo(
+          booking.orgId,
+          newUpdatedOrderNo
+        );
       }
       return userBookingDto;
     } catch (error) {
@@ -26,16 +53,35 @@ export class BookingService {
     }
   };
 
-  public getPatientBooking = async (orgId: string, userId: string): Promise<UserBookingInvestigationDto> => {
+  public getPatientBooking = async (
+    orgId: string,
+    userId: string
+  ): Promise<UserBookingInvestigationDto> => {
     const userBookingInvestigationDto = {} as UserBookingInvestigationDto;
-    userBookingInvestigationDto.bookingList = await this.bookingModel.find({ user: userId, orgId: orgId }) as Array<BookingVo>;
-    userBookingInvestigationDto.investigation = await new InvestigationService().getUserInvestigation(userId) ?? [] as Array<InvestigationVo>;
-    userBookingInvestigationDto.user = await new UserService().getUserById(userId) ?? {} as UserVo;
+    userBookingInvestigationDto.bookingList = (await this.bookingModel.find({
+      user: userId,
+      orgId: orgId,
+    })) as Array<BookingVo>;
+    userBookingInvestigationDto.investigation =
+      (await new InvestigationService().getUserInvestigation(userId)) ??
+      ([] as Array<InvestigationVo>);
+    userBookingInvestigationDto.user =
+      (await new UserService().getUserById(userId)) ?? ({} as UserVo);
     return userBookingInvestigationDto;
   };
 
-  public getOrgBooking = async (orgId: string, limit: number, offset: number): Promise<OrgBookingDto[]> => {
-    const list = await this.bookingModel.find({ orgId }).limit(limit).skip(offset).sort({ no: 'desc' }).collation({ locale: "en_US", numericOrdering: true}).populate(['patient', 'drList']) as Array<BookingPopulateVo>;
+  public getOrgBooking = async (
+    orgId: string,
+    limit: number,
+    offset: number
+  ): Promise<OrgBookingDto[]> => {
+    const list = (await this.bookingModel
+      .find({ orgId })
+      .limit(limit)
+      .skip(offset)
+      .sort({ no: "desc" })
+      .collation({ locale: "en_US", numericOrdering: true })
+      .populate(["patient", "drList"])) as Array<BookingPopulateVo>;
     let orgBookingList = [] as Array<OrgBookingDto>;
     if (list?.length > 0) {
       orgBookingList = list.map((it: BookingPopulateVo) => {
@@ -52,16 +98,89 @@ export class BookingService {
     return orgBookingList;
   };
 
-  public getOrgBookingCount = async (orgId: string): Promise<number> => { 
+  public getOrgBookingCount = async (orgId: string): Promise<number> => {
     let count = 0;
-    count = await this.bookingModel.countDocuments({orgId: orgId});
+    count = await this.bookingModel.countDocuments({ orgId: orgId });
     return count;
-  }
+  };
+
+  public addUpdateBookingTransaction = async (
+    BookingAddTransactionDto: BookingAddTransactionDto
+  ): Promise<any> => {
+    try {
+      const bookingDetails = (await this.bookingModel.findOne({
+        _id: BookingAddTransactionDto.bookingId,
+      })) as BookingVo;
+      if (bookingDetails) {
+        const txVoArray = bookingDetails.tx as Array<TxVo>;
+        
+        if(bookingDetails.totalDue >= BookingAddTransactionDto.amount){
+          let txVo = {
+            id : "",
+            orgId: bookingDetails.orgId,
+            brId: bookingDetails.brId,
+            bookingId: bookingDetails._id,
+            deviceId: "",
+            registerId: "",
+            custId: "",
+            note: "",
+            orderId: "",
+            txTenderType: "",
+            txType: BookingAddTransactionDto.paymentMode,
+            txOrigin: "",
+            txProcessor: "",
+            txStatus: "success",
+            gatewayResId: "",
+            gatewayRes: "",
+            authCode: "",
+            cardType: "",
+            last4: "",
+            refNum: "",
+            resultCode: "200",
+            signData: "",
+            cardHolderName: "",
+            amount: BookingAddTransactionDto.amount,
+            amountApproved: BookingAddTransactionDto.amount,
+            serviceCharge: 0,
+            ac: "",
+            date: new Date(),
+            crtBy: "",
+            created: new Date(),
+          };
+          txVoArray.push(txVo);
+          bookingDetails.tx = txVoArray;
+          bookingDetails.totalDue = bookingDetails.totalDue - BookingAddTransactionDto.amount;
+          if(bookingDetails.totalDue == 0){
+            bookingDetails.status = "PAID";
+          }else{
+            bookingDetails.status = "PARTIALLY_PAID";
+          }
+          const booking = (await bookingModel.findByIdAndUpdate(
+            bookingDetails._id,
+            bookingDetails,
+            { new: true }
+          )) as BookingVo;
+          await this.TransactionModel.create(txVo as TxVo);
+          return booking;
+        }else{
+          return {status : false , message : "Amout is more then Remaining"}
+        }
+
+      }
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  };
 
   /* ************************************* Private Methods ******************************************** */
-  private _updateBookingStatusAndNo = async (booking: BookingVo): Promise<OrgOrderNoDto> => {
+  private _updateBookingStatusAndNo = async (
+    booking: BookingVo
+  ): Promise<OrgOrderNoDto> => {
     const newUpdatedOrderNo = {} as OrgOrderNoDto;
-    const lastBookingOrder = await new MetaOrgService().getLastOrderNo(booking.orgId);
+    const lastBookingOrder = await new MetaOrgService().getLastOrderNo(
+      booking.orgId
+    );
     booking.status = BOOKING_STATUS.PENDING;
     booking.no = String(lastBookingOrder.no + 1);
     newUpdatedOrderNo.no = lastBookingOrder.no + 1;
@@ -71,5 +190,5 @@ export class BookingService {
       booking.status = BOOKING_STATUS.CONFIRMED;
     }
     return newUpdatedOrderNo;
-  }
+  };
 }

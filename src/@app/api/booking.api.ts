@@ -1,4 +1,4 @@
-import { JwtClaimDto, OrgBookingCountDto, UserBookingDto, UserBookingInvestigationDto } from 'aayam-clinic-core';
+import { JwtClaimDto, OrgBookingCountDto, UserBookingDto, UserBookingInvestigationDto, BookingAddTransactionDto, ROLE} from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { BookingService } from '../../@app/service/booking.service';
 import { URL } from '../../@shared/const/url';
@@ -79,6 +79,28 @@ class BokingApi implements Route {
                 }
             })();
         });
+
+        // /api/core/v1/booking/transaction-add-update
+        this.router.post(`${this.path}${URL.TRANSACTION_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
+            (
+                async () => {
+                    try {
+                        const body = req.body as BookingAddTransactionDto;
+                        const claim = res.locals?.claim as JwtClaimDto;
+                        if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+                            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+                            return;
+                        }
+                        const userBooking = await this.bookingService.addUpdateBookingTransaction(body);
+                        ResponseUtility.sendSuccess(res, userBooking);
+                    } catch (error) {
+                        ResponseUtility.sendFailResponse(res, error);
+                    }
+                }
+            )();
+        });
+
+        
     }
 }
 export default BokingApi;
