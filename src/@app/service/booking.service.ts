@@ -98,6 +98,11 @@ export class BookingService {
     return orgBookingList;
   };
 
+  public getBookingDetails = async(bookingId:string): Promise<BookingVo> => {
+    const bookingDetails = await this.bookingModel.findOne({ _id : bookingId }) as BookingVo;
+    return bookingDetails;
+  }
+
   public getOrgBookingCount = async (orgId: string): Promise<number> => {
     let count = 0;
     count = await this.bookingModel.countDocuments({ orgId: orgId });
@@ -113,8 +118,6 @@ export class BookingService {
       })) as BookingVo;
       if (bookingDetails) {
         const txVoArray = bookingDetails.tx as Array<TxVo>;
-        
-        if(bookingDetails.totalDue >= BookingAddTransactionDto.amount){
           let txVo = {
             id : "",
             orgId: bookingDetails.orgId,
@@ -122,7 +125,7 @@ export class BookingService {
             bookingId: bookingDetails._id,
             deviceId: "",
             registerId: "",
-            custId: "",
+            custId: bookingDetails.user,
             note: "",
             orderId: "",
             txTenderType: "",
@@ -149,11 +152,13 @@ export class BookingService {
           };
           txVoArray.push(txVo);
           bookingDetails.tx = txVoArray;
-          bookingDetails.totalDue = bookingDetails.totalDue - BookingAddTransactionDto.amount;
-          if(bookingDetails.totalDue == 0){
+          bookingDetails.totalPaid = bookingDetails.totalPaid + BookingAddTransactionDto.amount;
+          if(bookingDetails.totalDue == bookingDetails.totalPaid){
             bookingDetails.status = "PAID";
-          }else{
+          }else if(bookingDetails.totalDue > bookingDetails.totalPaid){
             bookingDetails.status = "PARTIALLY_PAID";
+          }else{
+            bookingDetails.status = "ADVANCE_PAID";
           }
           const booking = (await bookingModel.findByIdAndUpdate(
             bookingDetails._id,
@@ -162,9 +167,7 @@ export class BookingService {
           )) as BookingVo;
           await this.TransactionModel.create(txVo as TxVo);
           return booking;
-        }else{
-          return {status : false , message : "Amout is more then Remaining"}
-        }
+        
 
       }
       return null;

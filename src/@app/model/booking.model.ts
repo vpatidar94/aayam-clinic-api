@@ -128,6 +128,7 @@ const bookingSchema = new mongoose.Schema(
     serviceFee: mongoose.Schema.Types.Number, // service charge / service fee
     discountCash: mongoose.Schema.Types.Number, // ?
     totalDue: mongoose.Schema.Types.Number,
+    totalPaid: {type : Number , default : 0},
 
     crtBy: String,
     created: mongoose.Schema.Types.Date,
