@@ -13,7 +13,7 @@ const LIST = '/list';
 const DETAIL = '/detail';
 
 // ************************************************************************************************
-// ***************************************          CORE          **********************************
+// ***************************************          CORE          *********************************
 // ************************************************************************************************
 // major operations  api/...
 /**
@@ -70,5 +70,6 @@ export const URL = {
   SERVICE_TYPE_DELETE: "/service-type-delete",
   SERVICE_TYPE_ACTIVE_INACTIVE: "/service-type-active-inactive",
 
-  TRANSACTION_ADD_UPDATE: "/transaction-add-update"
+  TRANSACTION_ADD_UPDATE: "/transaction-add-update",
+  RECEIPT_CREATE: "/receipt-create"
 };
