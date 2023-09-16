@@ -146,9 +146,7 @@ class BokingApi implements Route {
               ResponseUtility.sendFailResponse(res, null, "Not permitted");
               return;
             }
-            const receipt = await this.pdfService.createOrderReceipt(req.query.bookingId as string);
-            receipt.pipe(res);
-            receipt.end();
+            await this.pdfService.createOrderReceipt(req.query.bookingId as string, res);
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);
           }

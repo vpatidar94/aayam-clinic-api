@@ -1,23 +1,14 @@
 
-import {
-} from "aayam-clinic-core";
-import * as fs from "fs";
-import doc from "pdfkit";
 import PDFDocument from "pdfkit";
 
 
 export class PdfkitService {
-  public pdfDocument = new PDFDocument({size: 'A4'});
 
   /* ************************************* Public Methods ******************************************** */
 
   public createNewDoc = (name: string) => {
     // Create a new PDF document
-    const doc = this.pdfDocument;
-    const stream = fs.createWriteStream(name + ".pdf");
-
-    // Pipe the PDF content to a file stream
-    doc.pipe(stream);
+    const doc = new PDFDocument({ size: 'A4' });
     return doc;
   };
 

@@ -20,7 +20,7 @@ import { InvestigationService } from "./investigation.service";
 
 export class BookingService {
   public bookingModel = bookingModel;
-  public TransactionModel = TransactionModel;
+  public transactionModel = TransactionModel;
 
   /* ************************************* Public Methods ******************************************** */
   public addUpdateBooking = async (
@@ -98,8 +98,8 @@ export class BookingService {
     return orgBookingList;
   };
 
-  public getBookingDetails = async(bookingId:string): Promise<BookingVo> => {
-    const bookingDetails = await this.bookingModel.findOne({ _id : bookingId }) as BookingVo;
+  public getBookingDetails = async (bookingId: string): Promise<BookingVo> => {
+    const bookingDetails = await this.bookingModel.findOne({ _id: bookingId }) as BookingVo;
     return bookingDetails;
   }
 
@@ -110,65 +110,42 @@ export class BookingService {
   };
 
   public addUpdateBookingTransaction = async (
-    BookingAddTransactionDto: BookingAddTransactionDto
+    bookingAddTransactionDto: BookingAddTransactionDto
   ): Promise<any> => {
     try {
-      const bookingDetails = (await this.bookingModel.findOne({
-        _id: BookingAddTransactionDto.bookingId,
-      })) as BookingVo;
+      const bookingDetails = (await this.bookingModel.findById(bookingAddTransactionDto.bookingId)) as BookingVo;
       if (bookingDetails) {
         const txVoArray = bookingDetails.tx as Array<TxVo>;
-          let txVo = {
-            id : "",
-            orgId: bookingDetails.orgId,
-            brId: bookingDetails.brId,
-            bookingId: bookingDetails._id,
-            deviceId: "",
-            registerId: "",
-            custId: bookingDetails.user,
-            note: "",
-            orderId: "",
-            txTenderType: "",
-            txType: BookingAddTransactionDto.paymentMode,
-            txOrigin: "",
-            txProcessor: "",
-            txStatus: "success",
-            gatewayResId: "",
-            gatewayRes: "",
-            authCode: "",
-            cardType: "",
-            last4: "",
-            refNum: "",
-            resultCode: "200",
-            signData: "",
-            cardHolderName: "",
-            amount: BookingAddTransactionDto.amount,
-            amountApproved: BookingAddTransactionDto.amount,
-            serviceCharge: 0,
-            ac: "",
-            date: new Date(),
-            crtBy: "",
-            created: new Date(),
-          };
-          txVoArray.push(txVo);
-          bookingDetails.tx = txVoArray;
-          bookingDetails.totalPaid = bookingDetails.totalPaid + BookingAddTransactionDto.amount;
-          if(bookingDetails.totalDue == bookingDetails.totalPaid){
-            bookingDetails.status = "PAID";
-          }else if(bookingDetails.totalDue > bookingDetails.totalPaid){
-            bookingDetails.status = "PARTIALLY_PAID";
-          }else{
-            bookingDetails.status = "ADVANCE_PAID";
-          }
-          const booking = (await bookingModel.findByIdAndUpdate(
-            bookingDetails._id,
-            bookingDetails,
-            { new: true }
-          )) as BookingVo;
-          await this.TransactionModel.create(txVo as TxVo);
-          return booking;
-        
+        let txVo = {} as TxVo;
+        txVo.orgId = bookingDetails.orgId;
+        txVo.brId = bookingDetails.brId;
+        txVo.bookingId = bookingDetails._id;
+        txVo.custId = bookingDetails.user;
+        txVo.txType = bookingAddTransactionDto.paymentMode;
+        txVo.txStatus = 'SUCCESS'; // TODO: Add in the const
+        txVo.amount = bookingAddTransactionDto.amount;
+        txVo.amountApproved = bookingAddTransactionDto.amount;
+        txVo.serviceCharge = 0;
+        txVo.date = new Date();
+        txVo.created = new Date();
 
+        txVoArray.push(txVo);
+        bookingDetails.tx = txVoArray;
+        bookingDetails.totalPaid = bookingDetails.totalPaid + bookingAddTransactionDto.amount;
+        if (bookingDetails.totalDue == bookingDetails.totalPaid) {
+          bookingDetails.status = "PAID";
+        } else if (bookingDetails.totalDue > bookingDetails.totalPaid) {
+          bookingDetails.status = "PARTIALLY_PAID";
+        } else {
+          bookingDetails.status = "ADVANCE_PAID";
+        }
+        const booking = (await bookingModel.findByIdAndUpdate(
+          bookingDetails._id,
+          bookingDetails,
+          { new: true }
+        )) as BookingVo;
+        await this.transactionModel.create(txVo as TxVo);
+        return booking;
       }
       return null;
     } catch (error) {
