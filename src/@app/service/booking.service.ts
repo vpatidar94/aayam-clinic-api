@@ -12,6 +12,8 @@ import {
   OrgBookingDto,
   BookingAddTransactionDto,
   TxVo,
+  TX_STATUS,
+  ORDER_STATUS,
 } from "aayam-clinic-core";
 import bookingModel from "../../@app/model/booking.model";
 import TransactionModel from "../../@app/model/transaction.model";
@@ -115,36 +117,38 @@ export class BookingService {
     try {
       const bookingDetails = (await this.bookingModel.findById(bookingAddTransactionDto.bookingId)) as BookingVo;
       if (bookingDetails) {
-        const txVoArray = bookingDetails.tx as Array<TxVo>;
+        const txList = bookingDetails.tx as Array<TxVo>;
         let txVo = {} as TxVo;
         txVo.orgId = bookingDetails.orgId;
         txVo.brId = bookingDetails.brId;
         txVo.bookingId = bookingDetails._id;
         txVo.custId = bookingDetails.user;
         txVo.txType = bookingAddTransactionDto.paymentMode;
-        txVo.txStatus = 'SUCCESS'; // TODO: Add in the const
+        txVo.txStatus = TX_STATUS.SUCCESS;
         txVo.amount = bookingAddTransactionDto.amount;
         txVo.amountApproved = bookingAddTransactionDto.amount;
         txVo.serviceCharge = 0;
         txVo.date = new Date();
         txVo.created = new Date();
 
-        txVoArray.push(txVo);
-        bookingDetails.tx = txVoArray;
+        txList.push(txVo);
+        bookingDetails.tx = txList;
         bookingDetails.totalPaid = bookingDetails.totalPaid + bookingAddTransactionDto.amount;
-        if (bookingDetails.totalDue == bookingDetails.totalPaid) {
-          bookingDetails.status = "PAID";
+        if(bookingDetails.totalDue == 0 || bookingDetails.totalPaid == 0){
+          bookingDetails.status = ORDER_STATUS.NOT_PAID;
+        }else if (bookingDetails.totalDue == bookingDetails.totalPaid) {
+          bookingDetails.status = ORDER_STATUS.PAID;
         } else if (bookingDetails.totalDue > bookingDetails.totalPaid) {
-          bookingDetails.status = "PARTIALLY_PAID";
-        } else {
-          bookingDetails.status = "ADVANCE_PAID";
+          bookingDetails.status = ORDER_STATUS.PARTIALLY_PAID;
+        } else if (bookingDetails.totalDue < bookingDetails.totalPaid) {
+          bookingDetails.status = ORDER_STATUS.ADVANCE_PAID;
         }
         const booking = (await bookingModel.findByIdAndUpdate(
           bookingDetails._id,
           bookingDetails,
           { new: true }
         )) as BookingVo;
-        await this.transactionModel.create(txVo as TxVo);
+        await this.transactionModel.create(txVo);
         return booking;
       }
       return null;
@@ -164,6 +168,7 @@ export class BookingService {
     booking.status = BOOKING_STATUS.PENDING;
     booking.no = String(lastBookingOrder.no + 1);
     newUpdatedOrderNo.no = lastBookingOrder.no + 1;
+    //@todo frontend will send BOOKING_TYPE PATIENT ALSO
     if (booking.type != BOOKING_TYPE.APPOINTMENT) {
       booking.patientNo = String(lastBookingOrder.patientNo + 1);
       newUpdatedOrderNo.patientNo = lastBookingOrder.patientNo + 1;
