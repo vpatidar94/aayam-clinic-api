@@ -29,7 +29,7 @@ export class PdfService {
       const address = orgDetails?.address?.city || "" + ", " + orgDetails?.address?.district || "" + ", " + orgDetails?.address?.state || "" + ", " + orgDetails?.address?.country || "";
       pdf = this.pdfkitService.addTextCenter(pdf, 10, address);
 
-      pdf = this.pdfkitService.addLine(pdf, 0.5);
+      pdf = this.pdfkitService.addLine(pdf, 0.);
 
       //user details 
       // Define key-value pairs

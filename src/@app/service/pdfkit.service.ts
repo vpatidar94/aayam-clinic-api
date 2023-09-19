@@ -8,7 +8,7 @@ export class PdfkitService {
 
   public createNewDoc = (name: string) => {
     // Create a new PDF document
-    const doc = new PDFDocument({ size: 'A4' });
+    const doc = new PDFDocument({ size: 'A4', layout: 'landscape' });
     return doc;
   };
 
@@ -55,14 +55,14 @@ export class PdfkitService {
     return doc;
   };
 
-  public addLine = (doc: any,strokeOpacity : number) => {
+  public addLine = (doc: PDFKit.PDFDocument, strokeOpacity : number) => {
     // Add a line to the PDF
     const lineY = doc.y + 10;
     doc.strokeOpacity(strokeOpacity);
     // Draw a line after the current section
     doc
       .moveTo(50, lineY) // Starting point
-      .lineTo(550, lineY) // Ending point
+      .lineTo(800, lineY) // Ending point
       .stroke();// Draw the line
     doc.y = lineY;
     doc.strokeOpacity(1);
