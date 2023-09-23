@@ -12,7 +12,8 @@ const metaOrgSchema = new mongoose.Schema({
   serviceTypeNo: Number,
   serviceItemNo: Number,
   userNo: Number,
-  productNo: Number
+  productNo: Number,
+  pharmacyOrderNo: Number
 });
 
 const metaOrgModel = mongoose.model<MetadataOrgVo & mongoose.Document>('MetaOrg', metaOrgSchema);

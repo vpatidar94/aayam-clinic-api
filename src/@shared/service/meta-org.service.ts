@@ -35,6 +35,9 @@ export class MetaOrgService {
             if (OrgOrderNoDto.productNo > 0) {
                 field['productNo'] = OrgOrderNoDto.productNo;
             }
+            if (OrgOrderNoDto.pharmacyOrderNo > 0) {
+                field['pharmacyOrderNo'] = OrgOrderNoDto.pharmacyOrderNo;
+            }
 
             const meta = await metaOrgModel.findOne({ orgId }) as MetadataOrgVo | null;
             if (!meta) {
@@ -47,6 +50,7 @@ export class MetaOrgService {
                 vo.serviceItemNo = OrgOrderNoDto.serviceItemNo;
                 vo.userNo = OrgOrderNoDto.userNo;
                 vo.productNo = OrgOrderNoDto.productNo;
+                vo.pharmacyOrderNo = OrgOrderNoDto.pharmacyOrderNo;
                 vo.orgId = orgId;
                 await metaOrgModel.create(vo);
             } else {
@@ -68,6 +72,7 @@ export class MetaOrgService {
         dto.userNo = 0;
         dto.productNo = 0;
         dto.serviceItemNo = 0;
+        dto.pharmacyOrderNo = 0;
         const meta: MetadataOrgVo = await metaOrgModel.findOne({ orgId: orgId }) as MetadataOrgVo;
         if (meta) {
             if (meta?.no > 0) {
@@ -93,6 +98,9 @@ export class MetaOrgService {
             }
             if (meta?.productNo > 0) {
                 dto.productNo = meta.productNo;
+            }
+            if (meta?.pharmacyOrderNo > 0) {
+                dto.pharmacyOrderNo = meta.pharmacyOrderNo;
             }
         }
         return dto;
