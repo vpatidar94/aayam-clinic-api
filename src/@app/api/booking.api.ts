@@ -83,6 +83,7 @@ class BokingApi implements Route {
           try {
             const claim = res.locals?.claim as JwtClaimDto;
             const orgId = req.query.orgId as string;
+            const type = req.query.type as string;
             const pageNumber = Number(req.query.pageNumber as string);
             const maxRecord = Number(req.query.maxRecord as string);
             const offset = maxRecord * pageNumber - maxRecord;
@@ -92,9 +93,10 @@ class BokingApi implements Route {
             }
             const orgBookinCount = {} as OrgBookingCountDto;
             orgBookinCount.totalBooking =
-              await this.bookingService.getOrgBookingCount(orgId);
+              await this.bookingService.getOrgBookingCount(orgId, type);
             orgBookinCount.orgBooking = await this.bookingService.getOrgBooking(
               orgId,
+              type,
               maxRecord,
               offset
             );

@@ -74,11 +74,12 @@ export class BookingService {
 
   public getOrgBooking = async (
     orgId: string,
+    type: string,
     limit: number,
     offset: number
   ): Promise<OrgBookingDto[]> => {
     const list = (await this.bookingModel
-      .find({ orgId })
+      .find({ orgId, type })
       .limit(limit)
       .skip(offset)
       .sort({ no: "desc" })
@@ -105,9 +106,9 @@ export class BookingService {
     return bookingDetails;
   }
 
-  public getOrgBookingCount = async (orgId: string): Promise<number> => {
+  public getOrgBookingCount = async (orgId: string, type: string): Promise<number> => {
     let count = 0;
-    count = await this.bookingModel.countDocuments({ orgId: orgId });
+    count = await this.bookingModel.countDocuments({ orgId: orgId, type: type });
     return count;
   };
 

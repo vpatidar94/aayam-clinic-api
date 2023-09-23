@@ -11,6 +11,7 @@ const bookingSchema = new mongoose.Schema(
     patientNo: String,
 
     bookingDate: mongoose.Schema.Types.Date,
+    shift: String,
     timeSlot: String,
 
     chargable: mongoose.Schema.Types.Boolean,
@@ -22,7 +23,8 @@ const bookingSchema = new mongoose.Schema(
     diagnosis: Array<String>,
 
     type: String, // OPD, APPOINTMENT, ADMISSION, INVESTIGATION, EMERGENCY
-
+    subType: String,
+    
     status: String, // OrderStatus - [HOLD, WIP, DELETE]
     txStatus: String, // OrderStatusTx - [UNPAID, PAID, PAID_PARTLY, VOID]
     items: [
