@@ -51,61 +51,34 @@ class PharmacyApi implements Route {
         })();
       }
     );
-
-    // /api/core/v1/pharmacy/order-list
-    // this.router.get(
-    //   `${this.path}${URL.ORDER_LIST}`,
-    //   authMiddleware,
-    //   (req: Request, res: Response) => {
-    //     (async () => {
-    //       try {
-    //         const claim = res.locals?.claim as JwtClaimDto;
-    //         const userId = req.query.userId as string;
-    //         const orgId = req.query.orgId as string;
-    //         if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
-    //           ResponseUtility.sendFailResponse(res, null, "Unauthorized");
-    //           return;
-    //         }
-    //         const userBooking: UserBookingInvestigationDto =
-    //           await this.bookingService.getPatientBooking(orgId, userId);
-    //         ResponseUtility.sendSuccess(res, userBooking);
-    //       } catch (error) {
-    //         ResponseUtility.sendFailResponse(res, error);
-    //       }
-    //     })();
-    //   }
-    // );
-
-    // this.router.get(
-    //   `${this.path}${URL.ORDER_LIST_BY_ORG}`,
-    //   authMiddleware,
-    //   (req: Request, res: Response) => {
-    //     (async () => {
-    //       try {
-    //         const claim = res.locals?.claim as JwtClaimDto;
-    //         const orgId = req.query.orgId as string;
-    //         const pageNumber = Number(req.query.pageNumber as string);
-    //         const maxRecord = Number(req.query.maxRecord as string);
-    //         const offset = maxRecord * pageNumber - maxRecord;
-    //         if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
-    //           ResponseUtility.sendFailResponse(res, null, "Unauthorized");
-    //           return;
-    //         }
-    //         const orgBookinCount = {} as OrgBookingCountDto;
-    //         orgBookinCount.totalBooking =
-    //           await this.bookingService.getOrgBookingCount(orgId);
-    //         orgBookinCount.orgBooking = await this.bookingService.getOrgBooking(
-    //           orgId,
-    //           maxRecord,
-    //           offset
-    //         );
-    //         ResponseUtility.sendSuccess(res, orgBookinCount);
-    //       } catch (error) {
-    //         ResponseUtility.sendFailResponse(res, error);
-    //       }
-    //     })();
-    //   }
-    // );
+    // /api/core/v1/pharmacy/order-list-by-org
+    this.router.get(
+      `${this.path}${URL.ORDER_LIST_BY_ORG}`,
+      authMiddleware,
+      (req: Request, res: Response) => {
+        (async () => {
+          try {
+            const claim = res.locals?.claim as JwtClaimDto;
+            const orgId = req.query.orgId as string;
+            const pageNumber = Number(req.query.pageNumber as string);
+            const maxRecord = Number(req.query.maxRecord as string);
+            const offset = maxRecord * pageNumber - maxRecord;
+            if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
+              ResponseUtility.sendFailResponse(res, null, "Unauthorized");
+              return;
+            }
+            const orders = await this.pharmacyService.getOrgOrders(
+              orgId,
+              maxRecord,
+              offset
+            );
+            ResponseUtility.sendSuccess(res, orders);
+          } catch (error) {
+            ResponseUtility.sendFailResponse(res, error);
+          }
+        })();
+      }
+    );
 
     // /api/core/v1/booking/transaction-add-update
     // this.router.post(

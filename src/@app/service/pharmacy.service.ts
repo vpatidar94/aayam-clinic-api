@@ -37,51 +37,18 @@ export class PharmacyService {
     }
   };
 
-//   public getPatientBooking = async (
-//     orgId: string,
-//     userId: string
-//   ): Promise<UserBookingInvestigationDto> => {
-//     const userBookingInvestigationDto = {} as UserBookingInvestigationDto;
-//     userBookingInvestigationDto.bookingList = (await this.bookingModel.find({
-//       user: userId,
-//       orgId: orgId,
-//     })) as Array<BookingVo>;
-//     userBookingInvestigationDto.investigation =
-//       (await new InvestigationService().getUserInvestigation(userId)) ??
-//       ([] as Array<InvestigationVo>);
-//     userBookingInvestigationDto.user =
-//       (await new UserService().getUserById(userId)) ?? ({} as UserVo);
-//     return userBookingInvestigationDto;
-//   };
-
-  //   public getOrgBooking = async (
-  //     orgId: string,
-  //     type: string,
-  //     limit: number,
-  //     offset: number
-  //   ): Promise<OrgBookingDto[]> => {
-  //     const list = (await this.bookingModel
-  //       .find({ orgId, type })
-  //       .limit(limit)
-  //       .skip(offset)
-  //       .sort({ no: "desc" })
-  //       .collation({ locale: "en_US", numericOrdering: true })
-  //       .populate(["patient", "drList"])) as Array<BookingPopulateVo>;
-  //     let orgBookingList = [] as Array<OrgBookingDto>;
-  //     if (list?.length > 0) {
-  //       orgBookingList = list.map((it: BookingPopulateVo) => {
-  //         const record = JSON.parse(JSON.stringify(it));
-  //         const dto = {} as OrgBookingDto;
-  //         dto.drList = record.drList;
-  //         dto.patient = record.patient;
-  //         delete record.drList;
-  //         delete record.patient;
-  //         dto.booking = record;
-  //         return dto;
-  //       });
-  //     }
-  //     return orgBookingList;
-  //   };
+    public getOrgOrders = async (
+      orgId: string,
+      limit: number,
+      offset: number
+    ): Promise<PharmacyOrderVo[]> => {
+      const list = (await this.pharmacyOrderModel
+        .find({ orgId })
+        .limit(limit)
+        .skip(offset)
+        .sort({ no: "desc" })) as Array<PharmacyOrderVo>;
+      return list;
+    };
 
   //   public getBookingDetails = async (bookingId: string): Promise<BookingVo> => {
   //     const bookingDetails = await this.bookingModel.findOne({ _id: bookingId }) as BookingVo;
