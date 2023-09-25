@@ -31,6 +31,7 @@ export const URL = {
   MJR_BOOKING: BASE_CORE + "/booking",
   MJR_SERVICE_ITEM: BASE_CORE + "/service-item",
   MJR_PRODUCT: BASE_CORE + "/product",
+  MJR_PHARMACY: BASE_CORE + "/pharmacy",
 
   VEHICLE_LIST: LIST,
   // ORDER: MJR_TX + '/order',
@@ -71,5 +72,10 @@ export const URL = {
   SERVICE_TYPE_ACTIVE_INACTIVE: "/service-type-active-inactive",
 
   TRANSACTION_ADD_UPDATE: "/transaction-add-update",
-  RECEIPT_CREATE: "/receipt-create"
+  RECEIPT_CREATE: "/receipt-create",
+
+  ORDER_ADD_UPDATE: "/order-add-update",
+  ORDER_LIST: "/order-list",
+  ORDER_LIST_BY_ORG: "/order-list-by-org",
+
 };
