@@ -157,7 +157,7 @@ export class PdfkitService {
       listItems.forEach((item: any, index: number) => {
         const listItemText = `${index + 1}. ${item}`;
         doc.text(listItemText, listIndentation, doc.y);
-        doc.moveDown(0.5); // Move to the next line with some spacing
+        doc.moveDown(); // Move to the next line with some spacing
       });
       return doc;
   }
