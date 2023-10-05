@@ -151,13 +151,15 @@ export class PdfkitService {
   public createList = (doc: any, listItems:any, listName:string) => {
     const listIndentation = 100;
     if(listName != ""){
+      // this.addTextLeft(doc,12,listName);
+      // this.addTextLeft(doc,12,listName);
       this.addTextLeft(doc,12,listName);
     } 
     // Add the list to the PDF
       listItems.forEach((item: any, index: number) => {
         const listItemText = `${index + 1}. ${item}`;
-        doc.text(listItemText, listIndentation, doc.y);
-        doc.moveDown(); // Move to the next line with some spacing
+        doc.text(listItemText);
+        // doc.text(listItemText, listIndentation, doc.y);
       });
       return doc;
   }
