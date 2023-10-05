@@ -1,6 +1,10 @@
 import {
+    ORDER_STATUS,
+    OrderAddTransactionDto,
   OrgOrderNoDto,
   PharmacyOrderVo,
+  TX_STATUS,
+  TxVo,
 } from "aayam-clinic-core";
 import pharmacyOrderModel from "../../@app/model/pharmacy-order.model";
 import TransactionModel from "../../@app/model/transaction.model";
@@ -50,62 +54,56 @@ export class PharmacyService {
       return list;
     };
 
-  //   public getBookingDetails = async (bookingId: string): Promise<BookingVo> => {
-  //     const bookingDetails = await this.bookingModel.findOne({ _id: bookingId }) as BookingVo;
-  //     return bookingDetails;
-  //   }
+    public getOrderDetails = async (orderId: string): Promise<PharmacyOrderVo> => {
+      const orderDetails = await this.pharmacyOrderModel.findOne({ _id: orderId }) as PharmacyOrderVo;
+      return orderDetails;
+    }
 
-  //   public getOrgBookingCount = async (orgId: string, type: string): Promise<number> => {
-  //     let count = 0;
-  //     count = await this.bookingModel.countDocuments({ orgId: orgId, type: type });
-  //     return count;
-  //   };
+    public addUpdateBookingTransaction = async (
+      orderAddTransactionDto: OrderAddTransactionDto
+    ): Promise<any> => {
+      try {
+        const orderDetails = (await this.pharmacyOrderModel.findById(orderAddTransactionDto.orderId)) as PharmacyOrderVo;
+        if (orderDetails) {
+          const txList = orderDetails.tx as Array<TxVo>;
+          let txVo = {} as TxVo;
+          txVo.orgId = orderDetails.orgId;
+          txVo.brId = orderDetails.brId;
+          txVo.bookingId = orderDetails._id; //is need to change with orderId or add and addtional param for orderId
+          txVo.custId = orderDetails.user;
+          txVo.txType = orderAddTransactionDto.paymentMode;
+          txVo.txStatus = TX_STATUS.SUCCESS;
+          txVo.amount = orderAddTransactionDto.amount;
+          txVo.amountApproved = orderAddTransactionDto.amount;
+          txVo.serviceCharge = 0;
+          txVo.date = new Date();
+          txVo.created = new Date();
 
-  //   public addUpdateBookingTransaction = async (
-  //     bookingAddTransactionDto: BookingAddTransactionDto
-  //   ): Promise<any> => {
-  //     try {
-  //       const bookingDetails = (await this.bookingModel.findById(bookingAddTransactionDto.bookingId)) as BookingVo;
-  //       if (bookingDetails) {
-  //         const txList = bookingDetails.tx as Array<TxVo>;
-  //         let txVo = {} as TxVo;
-  //         txVo.orgId = bookingDetails.orgId;
-  //         txVo.brId = bookingDetails.brId;
-  //         txVo.bookingId = bookingDetails._id;
-  //         txVo.custId = bookingDetails.user;
-  //         txVo.txType = bookingAddTransactionDto.paymentMode;
-  //         txVo.txStatus = TX_STATUS.SUCCESS;
-  //         txVo.amount = bookingAddTransactionDto.amount;
-  //         txVo.amountApproved = bookingAddTransactionDto.amount;
-  //         txVo.serviceCharge = 0;
-  //         txVo.date = new Date();
-  //         txVo.created = new Date();
-
-  //         txList.push(txVo);
-  //         bookingDetails.tx = txList;
-  //         bookingDetails.totalPaid = bookingDetails.totalPaid + bookingAddTransactionDto.amount;
-  //         if(bookingDetails.totalDue == 0 || bookingDetails.totalPaid == 0){
-  //           bookingDetails.status = ORDER_STATUS.NOT_PAID;
-  //         }else if (bookingDetails.totalDue == bookingDetails.totalPaid) {
-  //           bookingDetails.status = ORDER_STATUS.PAID;
-  //         } else if (bookingDetails.totalDue > bookingDetails.totalPaid) {
-  //           bookingDetails.status = ORDER_STATUS.PARTIALLY_PAID;
-  //         } else if (bookingDetails.totalDue < bookingDetails.totalPaid) {
-  //           bookingDetails.status = ORDER_STATUS.ADVANCE_PAID;
-  //         }
-  //         const booking = (await bookingModel.findByIdAndUpdate(
-  //           bookingDetails._id,
-  //           bookingDetails,
-  //           { new: true }
-  //         )) as BookingVo;
-  //         await this.transactionModel.create(txVo);
-  //         return booking;
-  //       }
-  //       return null;
-  //     } catch (error) {
-  //       throw error;
-  //     }
-  //   };
+          txList.push(txVo);
+          orderDetails.tx = txList;
+          orderDetails.totalPaid = orderDetails.totalPaid + orderAddTransactionDto.amount;
+          if(orderDetails.totalDue == 0 || orderDetails.totalPaid == 0){
+            orderDetails.status = ORDER_STATUS.NOT_PAID;
+          }else if (orderDetails.totalDue == orderDetails.totalPaid) {
+            orderDetails.status = ORDER_STATUS.PAID;
+          } else if (orderDetails.totalDue > orderDetails.totalPaid) {
+            orderDetails.status = ORDER_STATUS.PARTIALLY_PAID;
+          } else if (orderDetails.totalDue < orderDetails.totalPaid) {
+            orderDetails.status = ORDER_STATUS.ADVANCE_PAID;
+          }
+          const booking = (await pharmacyOrderModel.findByIdAndUpdate(
+            orderDetails._id,
+            orderDetails,
+            { new: true }
+          )) as PharmacyOrderVo;
+          await this.transactionModel.create(txVo);
+          return booking;
+        }
+        return null;
+      } catch (error) {
+        throw error;
+      }
+    };
 
   /* ************************************* Private Methods ******************************************** */
     private _updatePharmacyOrderStatusAndNo = async (

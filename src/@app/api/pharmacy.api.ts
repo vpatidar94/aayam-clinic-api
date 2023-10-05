@@ -6,6 +6,7 @@ import {
   BookingAddTransactionDto,
   ROLE,
   PharmacyOrderVo,
+  OrderAddTransactionDto,
 } from "aayam-clinic-core";
 import { Request, Response, Router } from "express";
 import { PharmacyService } from "../service/pharmacy.service";
@@ -80,53 +81,53 @@ class PharmacyApi implements Route {
       }
     );
 
-    // /api/core/v1/booking/transaction-add-update
-    // this.router.post(
-    //   `${this.path}${URL.TRANSACTION_ADD_UPDATE}`,
-    //   authMiddleware,
-    //   (req: Request, res: Response) => {
-    //     (async () => {
-    //       try {
-    //         const body = req.body as BookingAddTransactionDto;
-    //         const claim = res.locals?.claim as JwtClaimDto;
-    //         if (
-    //           res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-    //           res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-    //         ) {
-    //           ResponseUtility.sendFailResponse(res, null, "Not permitted");
-    //           return;
-    //         }
-    //         const userBooking =
-    //           await this.bookingService.addUpdateBookingTransaction(body);
-    //         ResponseUtility.sendSuccess(res, userBooking);
-    //       } catch (error) {
-    //         ResponseUtility.sendFailResponse(res, error);
-    //       }
-    //     })();
-    //   }
-    // );
+    // /api/core/v1/pharmacy/transaction-add-update
+    this.router.post(
+      `${this.path}${URL.TRANSACTION_ADD_UPDATE}`,
+      authMiddleware,
+      (req: Request, res: Response) => {
+        (async () => {
+          try {
+            const body = req.body as OrderAddTransactionDto;
+            const claim = res.locals?.claim as JwtClaimDto;
+            if (
+              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            ) {
+              ResponseUtility.sendFailResponse(res, null, "Not permitted");
+              return;
+            }
+            const userBooking =
+              await this.pharmacyService.addUpdateBookingTransaction(body);
+            ResponseUtility.sendSuccess(res, userBooking);
+          } catch (error) {
+            ResponseUtility.sendFailResponse(res, error);
+          }
+        })();
+      }
+    );
 
-    // /api/core/v1/booking/receipt-create
-    // this.router.get(
-    //   `${this.path}${URL.RECEIPT_CREATE}`,
-    //   authMiddleware,
-    //   (req: Request, res: Response) => {
-    //     (async () => {
-    //       try {
-    //         if (
-    //           res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-    //           res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-    //         ) {
-    //           ResponseUtility.sendFailResponse(res, null, "Not permitted");
-    //           return;
-    //         }
-    //         await this.pdfService.createOrderReceipt(req.query.bookingId as string, res);
-    //       } catch (error) {
-    //         ResponseUtility.sendFailResponse(res, error);
-    //       }
-    //     })();
-    //   }
-    // );
+    // /api/core/v1/pharmacy/receipt-create
+    this.router.get(
+      `${this.path}${URL.RECEIPT_CREATE}`,
+      authMiddleware,
+      (req: Request, res: Response) => {
+        (async () => {
+          try {
+            if (
+              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            ) {
+              ResponseUtility.sendFailResponse(res, null, "Not permitted");
+              return;
+            }
+            await this.pdfService.createPharmacyOrderReceipt(req.query.orderId as string, res);
+          } catch (error) {
+            ResponseUtility.sendFailResponse(res, error);
+          }
+        })();
+      }
+    );
   }
 }
 export default PharmacyApi;
