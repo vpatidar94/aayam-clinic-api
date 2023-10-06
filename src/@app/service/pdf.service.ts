@@ -1,6 +1,5 @@
 
-import {
-} from "aayam-clinic-core";
+import { TxVo } from "aayam-clinic-core";
 import { BookingService } from "./booking.service";
 import { OrgService } from "../../@shared/service/org.service";
 import { PdfkitService } from "./pdfkit.service";
@@ -121,7 +120,7 @@ export class PdfService {
     }
   };
 
-  public createOrderReceiptV2 = async (bookingId: string, res: Response): Promise<any> => {
+  public createOrderReceiptV2 = async (bookingId: string,transactionId: string, res: Response): Promise<any> => {
     try {
       const bookingDetails = await this.bookingService.getBookingDetails(bookingId);
       const orgDetails = await this.orgService.getOrgById(bookingDetails.orgId);
@@ -316,21 +315,62 @@ export class PdfService {
       pdf.fontSize(12); // Set a smaller font size for the additional text
       // pdf.fontSize(fontSize).text(text, );
       pdf.text('Print Date Time: ' + formattedDate, { align: "left" });
+
+      //---------------------------discount-----------------------------------
       pdf.font('Helvetica-Bold');
       pdf.y = pdf.y - 10;
-      const total = 'Total: ' + bookingDetails.totalDue;
-      const textWidth = pdf.widthOfString(total);
-      const totalX = pdf.page.width - textWidth - 120;
-      pdf.fillColor("#000").fontSize(14).text(total, totalX, pdf.y);
-      pdf.font('Helvetica');
-      pdf.fillColor("#666666")
-      pdf.x = 100;
-      pdf.text(`Subjected to ${orgDetails?.address?.city} Jurisdiction`, { align: "left" });
-      pdf.y = pdf.y - 10;
-      const totalWords = this.numberToWords(bookingDetails.totalDue)
-      const textWordsWidth = pdf.widthOfString(totalWords);
-      const totalWordsX = pdf.page.width - textWordsWidth - 50;
-      pdf.fontSize(12).text(totalWords, totalWordsX, pdf.y);
+      const discountAmount = bookingDetails?.discount && bookingDetails.discount !== undefined ? bookingDetails.discount : 0;
+      const discount = 'Discount: ' + discountAmount as string;
+      pdf.fillColor("#000").fontSize(14).text(discount,{align :"right"});
+      const discountWords = 'Discount In Words : [' + this.numberToWords(discountAmount) + ']';
+      pdf.fillColor("#666666").fontSize(10).text(discountWords,{align :"right"});
+      //---------------------------total-----------------------------------
+
+      //---------------------------total-----------------------------------
+      pdf.font('Helvetica-Bold');
+      const totalDue = 'Total: ' + bookingDetails.totalDue;
+      pdf.fillColor("#000").fontSize(14).text(totalDue,{align :"right"});
+
+
+      const totalDueWords = 'Total In Words : [' + this.numberToWords(bookingDetails.totalDue) + ']';
+      pdf.fillColor("#666666").fontSize(10).text(totalDueWords,{align :"right"});
+      //---------------------------total-----------------------------------
+
+      //---------------------------paid-----------------------------------
+      let totalPaid = 0;
+      let due = 0;
+      
+      if(!transactionId){
+        totalPaid = bookingDetails.totalPaid;
+        due = bookingDetails.totalDue;
+      }else{
+        const transactions = bookingDetails.tx;
+        let breakLoop = false;
+        due  = bookingDetails.totalDue;
+        transactions.forEach(element => {
+          if(!breakLoop){
+            const transactionAmount = element.amount as number;
+            due = due - transactionAmount
+            if (element._id == transactionId) {
+              totalPaid = transactionAmount;
+              breakLoop = true;
+            }
+          }
+        });
+      }
+      pdf.fillColor("#000").fontSize(14).text('Paid: ' + totalPaid as unknown as string,{align :"right"});
+      const totalPaidWords = 'Paid In Words : [' + this.numberToWords(totalPaid) + ']';
+      pdf.fillColor("#666666").fontSize(10).text(totalPaidWords,{align :"right"});
+
+      //---------------------------paid-----------------------------------
+
+      //---------------------------due-----------------------------------
+      pdf.fillColor("#000").fontSize(14).text('Due: ' + due as unknown as string,{align :"right"});
+      const dueWords = 'Due In Words : [' + this.numberToWords(due) + ']';
+      pdf.fillColor("#666666").fontSize(10).text(dueWords,{align :"right"});
+
+      //---------------------------due-----------------------------------
+      
       pdf.moveDown();
       const hospitalName = 'For ' + orgDetails?.appName;
       const textHospitalNameWidth = pdf.widthOfString(hospitalName);
