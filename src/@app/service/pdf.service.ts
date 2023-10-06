@@ -340,7 +340,7 @@ export class PdfService {
       let totalPaid = 0;
       let due = 0;
       
-      if(transactionId == ""){
+      if(!transactionId){
         totalPaid = bookingDetails.totalPaid;
         due = bookingDetails.totalDue;
       }else{
