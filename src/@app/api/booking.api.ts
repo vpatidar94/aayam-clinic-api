@@ -5,6 +5,7 @@ import {
   UserBookingInvestigationDto,
   BookingAddTransactionDto,
   ROLE,
+  PATIENT_TYPE,
 } from "aayam-clinic-core";
 import { Request, Response, Router } from "express";
 import { BookingService } from "../../@app/service/booking.service";
@@ -149,6 +150,32 @@ class BokingApi implements Route {
               return;
             }
             await this.pdfService.createOrderReceiptV2(req.query.bookingId as string,req.query.transactionId as string, res);
+          } catch (error) {
+            ResponseUtility.sendFailResponse(res, error);
+          }
+        })();
+      }
+    );
+
+    // /api/core/v1/booking/convert-patient
+    this.router.get(
+      `${this.path}${URL.CONVERT_PATIENT}`,
+      authMiddleware,
+      (req: Request, res: Response) => {
+        (async () => {
+          try {
+            if (
+              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            ) {
+              ResponseUtility.sendFailResponse(res, null, "Not permitted");
+              return;
+            }
+            const bookingId: string = req.query.bookingId as string;
+            const orgId: string = req.query.orgId as string;
+            const patientType: string = req.query.patientType as string | null ?? PATIENT_TYPE.OPD;
+            await this.bookingService.convertToPatient(bookingId, patientType, orgId);
+            ResponseUtility.sendSuccess(res, null);
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);
           }

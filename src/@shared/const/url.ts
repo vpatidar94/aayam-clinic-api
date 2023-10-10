@@ -73,7 +73,8 @@ export const URL = {
 
   TRANSACTION_ADD_UPDATE: "/transaction-add-update",
   RECEIPT_CREATE: "/receipt-create",
-
+  CONVERT_PATIENT: "/convert-patient",
+  
   ORDER_ADD_UPDATE: "/order-add-update",
   ORDER_LIST: "/order-list",
   ORDER_LIST_BY_ORG: "/order-list-by-org",

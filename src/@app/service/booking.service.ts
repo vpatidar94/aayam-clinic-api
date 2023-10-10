@@ -158,6 +158,17 @@ export class BookingService {
     }
   };
 
+  public convertToPatient = async (bookingId: string, patientType: string, orgId: string): Promise<void> => { 
+    const lastBookingOrder = await new MetaOrgService().getLastOrderNo(orgId); 
+    const fields = {
+      patientNo: String(lastBookingOrder.patientNo + 1),
+      status: BOOKING_STATUS.CONFIRMED,
+      type: BOOKING_TYPE.PATIENT,
+      subType: patientType
+    } as any;
+    await this.bookingModel.findByIdAndUpdate(bookingId, { $set: fields }, { new: true });
+  }
+
   /* ************************************* Private Methods ******************************************** */
   private _updateBookingStatusAndNo = async (
     booking: BookingVo
