@@ -102,7 +102,7 @@ class OrgApi implements Route {
             ResponseUtility.sendFailResponse(res, null, 'Not permitted');
             return;
           }
-          const userList: Array<DepartmentVo> | null = await this.orgService.getOrgDepartmentList(req.query?.orgId as string);
+          const userList: Array<DepartmentVo> | null = await this.orgService.getOrgDepartmentList(req.query?.orgId as string, req.query?.type as string ?? null);
           ResponseUtility.sendSuccess(res, userList);
         } catch (error) {
           ResponseUtility.sendFailResponse(res, error);
