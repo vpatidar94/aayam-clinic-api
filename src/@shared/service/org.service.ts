@@ -102,6 +102,7 @@ export class OrgService {
 
     public addUpdateUserType = async (userType: UserTypeVo): Promise<UserTypeVo | null> => {
         try {
+            userType.name = userType.name?.toUpperCase();
             if (userType._id) {
                 return await userTypeModel.findByIdAndUpdate(userType._id, userType);
             } else {

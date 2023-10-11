@@ -198,7 +198,7 @@ export class UserService {
     }
 
     public getOrgDeptDocList = async (orgId: string, departmentId: string): Promise<UserVo[] | null> => {
-        const userType: UserTypeVo | null = await this.userTypeModel.findOne({ name: 'Doctor'});
+        const userType: UserTypeVo | null = await this.userTypeModel.findOne({ name: 'DOCTOR'});
         const criteria = {} as any;
         const key = `emp.${orgId}`;
         criteria[`${key}.active`] = true;
