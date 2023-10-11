@@ -24,6 +24,7 @@ const bookingSchema = new mongoose.Schema(
 
     type: String, // OPD, APPOINTMENT, ADMISSION, INVESTIGATION, EMERGENCY
     subType: String,
+    departmentId: String,
     
     status: String, // OrderStatus - [HOLD, WIP, DELETE]
     txStatus: String, // OrderStatusTx - [UNPAID, PAID, PAID_PARTLY, VOID]
