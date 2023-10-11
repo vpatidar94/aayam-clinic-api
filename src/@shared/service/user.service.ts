@@ -12,6 +12,8 @@ import {
     UserCustDto,
     UserEmpDto,
     UserIncomeVo,
+    UserTypePopulateVo,
+    UserTypeVo,
     UserVo
 } from "aayam-clinic-core";
 import userModel from '../model/users.model';
@@ -21,9 +23,11 @@ import { OrgService } from "./org.service";
 import userAccountModel from "../../@shared/model/users-account.model";
 import { PREFIX, SUFFIX } from "../const/prefix-suffix";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
+import userTypeModel from "../../@shared/model/user-type.model";
 
 export class UserService {
     public user = userModel;
+    public userTypeModel = userTypeModel;
     public userAccount = userAccountModel;
 
     /* ************************************* Public Methods ******************************************** */
@@ -190,6 +194,17 @@ export class UserService {
         criteria[`${key}.active`] = true;
         criteria[`${key}.role`] = ROLE.EMP;
         criteria[`${key}.subRole`] = subRole;
+        return await this.user.find(criteria) as UserVo[];
+    }
+
+    public getOrgDeptDocList = async (orgId: string, departmentId: string): Promise<UserVo[] | null> => {
+        const userType: UserTypeVo | null = await this.userTypeModel.findOne({ name: 'Doctor'});
+        const criteria = {} as any;
+        const key = `emp.${orgId}`;
+        criteria[`${key}.active`] = true;
+        criteria[`${key}.role`] = ROLE.EMP;
+        criteria[`${key}.departmentId`] = departmentId;
+        criteria[`${key}.userTypeId`] = userType?._id;
         return await this.user.find(criteria) as UserVo[];
     }
 

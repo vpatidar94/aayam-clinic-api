@@ -89,6 +89,23 @@ class UserApi implements Route {
             })();
         });
 
+        this.router.get(`${this.path}${URL.DEPT_DOC_LIST}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    const claim = res.locals?.claim as JwtClaimDto;
+                    if (!AuthUtility.hasOrgEmpAccess(claim, req.query?.orgId as string)) {
+                        ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+                        return;
+                    }
+                    const departmentId = req.query.departmentId as string;
+                    const userList: Array<UserVo> | null = await this.userService.getOrgDeptDocList(req.query?.orgId as string, departmentId);
+                    ResponseUtility.sendSuccess(res, userList);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
+            })();
+        });
+
         this.router.get(`${this.path}${URL.ACCESS_LIST}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
                 try {
