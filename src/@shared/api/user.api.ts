@@ -89,6 +89,7 @@ class UserApi implements Route {
             })();
         });
 
+        // /api/core/v1/user/dept-doc-list
         this.router.get(`${this.path}${URL.DEPT_DOC_LIST}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
                 try {
