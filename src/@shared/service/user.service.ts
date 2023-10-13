@@ -77,7 +77,7 @@ export class UserService {
                     aclList[acl.orgId] = acl;
                     user.emp = aclList;
                 }
-                const vo = await userModel.findByIdAndUpdate(user._id, user);
+                const vo = await userModel.findByIdAndUpdate(user._id, user, { new: true });
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);
                 }
@@ -90,14 +90,13 @@ export class UserService {
                 user.emp[acl.orgId] = acl;
                 user.created = new Date();
                 const nextUserNo = await this._getNextUserNo(acl.orgId);
-                user = await this._generateUserCodeAndEmail(acl.orgId,user,nextUserNo);
+                user = await this._generateUserCodeAndEmail(acl.orgId, user, nextUserNo);
                 user.sub = await this._saveUserAuth(user);
                 const vo = await userModel.create(user) as UserVo;
                 console.log(nextUserNo);
-                
+
                 await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
-                console.log("heeeeee");
-                
+
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);
                 }
@@ -154,7 +153,7 @@ export class UserService {
                 acl.enrollAt = new Date();
                 user.created = new Date();
                 const nextUserNo = await this._getNextUserNo(acl.orgId);
-                user = await this._generateUserCodeAndEmail(acl.orgId,user,nextUserNo);
+                user = await this._generateUserCodeAndEmail(acl.orgId, user, nextUserNo);
                 user.sub = await this._saveUserAuth(user);
                 const vo = await userModel.create(user) as UserVo;
                 await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
@@ -231,14 +230,14 @@ export class UserService {
         return dto;
     }
 
-    
+
     public saveUserAccount = async (userAccount: UserAccountVo): Promise<UserAccountVo | null> => {
         try {
             userAccount.income = await this._calculateTotalIncome(userAccount.income as UserIncomeVo);
             if (userAccount._id) {
                 return await this.userAccount.findByIdAndUpdate(userAccount._id, userAccount);
             } else {
-                const userAccountExist = await this.userAccount.exists({ userId: userAccount.userId});
+                const userAccountExist = await this.userAccount.exists({ userId: userAccount.userId });
                 if (userAccountExist) {
                     return null;
                 }
@@ -248,9 +247,9 @@ export class UserService {
             throw error;
         }
     };
-    
+
     public getUserAccountDetail = async (userId: string): Promise<UserAccountVo | null> => {
-        return await this.userAccount.findOne({userId : userId}) as UserAccountVo;
+        return await this.userAccount.findOne({ userId: userId }) as UserAccountVo;
     }
     /* ************************************* Private Methods ******************************************** */
     private _saveUserAuth = async (userVo: UserVo): Promise<string> => {
@@ -276,8 +275,8 @@ export class UserService {
         return userAccessDto;
     }
 
-    private _calculateTotalIncome(userIncome : UserIncomeVo) : UserIncomeVo {
-        userIncome.total = userIncome?.basicSalary + userIncome?.da + userIncome?.hra + userIncome?.others ;
+    private _calculateTotalIncome(userIncome: UserIncomeVo): UserIncomeVo {
+        userIncome.total = userIncome?.basicSalary + userIncome?.da + userIncome?.hra + userIncome?.others;
         return userIncome;
     }
 
@@ -288,19 +287,19 @@ export class UserService {
         return nextUserNo;
     }
 
-    private _getNewUserCode = async (nextUserNo:Number, codeSuffix:string) => {
+    private _getNewUserCode = async (nextUserNo: Number, codeSuffix: string) => {
         const userNo = String(nextUserNo).padStart(5, '0');
         const depPrefix = PREFIX.USER
         return depPrefix.concat(codeSuffix).concat(userNo);
     }
 
-    private _generateUserEmail =async (code:string) => {
+    private _generateUserEmail = async (code: string) => {
         const emailSuffix = SUFFIX.EMAIL;
         return code.concat(emailSuffix);
     }
 
-    private _generateUserCodeAndEmail =async (orgId:string,user:UserVo,nextUserNo: OrgOrderNoDto) => {
-        const orgDetails =  await new OrgService().getOrgById(orgId);
+    private _generateUserCodeAndEmail = async (orgId: string, user: UserVo, nextUserNo: OrgOrderNoDto) => {
+        const orgDetails = await new OrgService().getOrgById(orgId);
         user.code = await this._getNewUserCode(nextUserNo.userNo, orgDetails?.codeSuffix as string)
         user.email = await this._generateUserEmail(user.code);
         return user;
