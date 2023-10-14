@@ -84,15 +84,15 @@ export class BookingService {
       .skip(offset)
       .sort({ no: "desc" })
       .collation({ locale: "en_US", numericOrdering: true })
-      .populate(["patient", "drList"])) as Array<BookingPopulateVo>;
+      .populate(["patient", "drDetail"])) as Array<BookingPopulateVo>;
     let orgBookingList = [] as Array<OrgBookingDto>;
     if (list?.length > 0) {
       orgBookingList = list.map((it: BookingPopulateVo) => {
         const record = JSON.parse(JSON.stringify(it));
         const dto = {} as OrgBookingDto;
-        dto.drList = record.drList;
+        dto.drDetail = record.drDetail;
         dto.patient = record.patient;
-        delete record.drList;
+        delete record.drDetail;
         delete record.patient;
         dto.booking = record;
         return dto;

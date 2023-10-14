@@ -16,7 +16,7 @@ const bookingSchema = new mongoose.Schema(
 
     chargable: mongoose.Schema.Types.Boolean,
 
-    dr: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Doctor Id
+    dr: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Doctor Id
     drExt: Array<String>,
     referedBy: String,
     complaint: Array<String>,
@@ -182,11 +182,11 @@ bookingSchema.virtual("patient", {
   justOne: true,
 });
 
-bookingSchema.virtual("drList", {
+bookingSchema.virtual("drDetail", {
   ref: "User",
   localField: "dr",
   foreignField: "_id",
-  justOne: false,
+  justOne: true,
 });
 
 const bookingModel = mongoose.model<BookingVo & mongoose.Document>(
