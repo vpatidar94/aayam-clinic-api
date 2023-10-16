@@ -8,7 +8,7 @@ export class PdfkitService {
 
   public createNewDoc = (name: string) => {
     // Create a new PDF document
-    const doc = new PDFDocument({ size: 'A4', layout: 'landscape' });
+    const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margins: { top: 80, right: 50, left: 50, bottom: 80 }  });
     return doc;
   };
 

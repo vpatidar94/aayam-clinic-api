@@ -127,16 +127,16 @@ export class PdfService {
       const userDetails = await this.userService.getUserById(bookingDetails.user);
 
       let pdf = this.pdfkitService.createNewDoc(`RECEIPT_${bookingDetails.no}`);
-      pdf.page.height = 600;
+      // pdf.page.height = 600;
       pdf.pipe(res);
-      pdf.x = 100;
-      pdf.y = pdf.y - 50;
+      // pdf.x = 100;
+      // pdf.y = pdf.y - 50;
       const gstIn = orgDetails?.reg || "";
       const website = orgDetails?.domain || "";
-      pdf.fontSize(10).text(gstIn, { align: "left" });
+      pdf.fontSize(10).text('xxxxxxxxx', { align: "left" });
 
       const websiteWidth = pdf.widthOfString(website);
-      const websiteX = pdf.page.width - websiteWidth - 100;
+      const websiteX = pdf.page.width - websiteWidth - 50;
       pdf.y = pdf.y - 10;
       pdf.fontSize(10).text(website, websiteX, pdf.y);
       pdf.moveDown();
@@ -154,7 +154,7 @@ export class PdfService {
 
 
       // Define the heading
-      const heading = orgDetails?.appName || "";
+      const heading = orgDetails?.name || "";
 
       // Calculate the X position for the heading
       const headingX = imageX  // Adjust the X position as needed
@@ -189,11 +189,12 @@ export class PdfService {
       pdf.fillColor("#666666").text(address, contentX, addressY, { align: "center" });
       pdf.text(location, contentX, locationY, { align: "center" });
       pdf.text(`${contact} , ${email}`, contentX, contactEmailY, { align: "center" });
+      pdf.fontSize(12).text(`Bill No: ${bookingDetails.patientNo}`, contentX, contactEmailY, { align: "right" });
 
       // Add a horizontal line below the email address
-      const lineWidth = pdf.page.width - contentX * 2; // Calculate the line width
+      const lineWidth = pdf.page.width - 50; // Calculate the line width
       const lineY = contactEmailY + pdf.heightOfString(`${contact} , ${email}`) + 20; // Adjust the Y position as needed
-      pdf.moveTo(contentX, lineY).lineTo(contentX + lineWidth, lineY).stroke();
+      pdf.moveTo(50, lineY).lineTo(lineWidth, lineY).stroke();
 
       // Add the heading to the PDF in front of the image
       pdf.moveDown();
@@ -202,28 +203,22 @@ export class PdfService {
       pdf.fillColor("#000").fontSize(16).text("Receipt", { align: "center" });
       pdf.moveDown();
 
-
-
-
-
       // Define the section content
       const receiptNo = 'Receipt No: ' + bookingDetails.no;
       const patientID = 'Patient ID: ' + bookingDetails.patientNo;
       const visitID = 'Visit ID: ' + bookingDetails.no;
       const patientName = 'Patient Name: ' + userDetails?.nameF || "" + userDetails?.nameL || "";
       const genderAge = 'Gender/Age: ' + userDetails?.gender || "" + "/" + userDetails?.age || "";
-      const fatherName = 'Father Name: ' + userDetails?.fatherName || "";
+      const fatherName = 'Father Name: ' + userDetails?.fatherName ?? '';
       const currentDate = new Date(); // You can pass any date you want here
       const formattedDate = this.formatDate(currentDate, "MMMDY");
       const receiptDate = 'Receipt Date: ' + formattedDate;
       const paymentMode = 'Payment Mode: ';
-      const paymentStatus = 'Payment status: ' + bookingDetails?.txStatus && bookingDetails.txStatus !== undefined ? bookingDetails.txStatus : "";
+      const paymentStatus = 'Payment status: ' + ((bookingDetails?.txStatus && bookingDetails.txStatus !== undefined) ? bookingDetails.txStatus : "Unpaid");
 
       // Calculate the column widths and X positions
-      const colWidth = 200; // Adjust the width of each column as needed
-      const col1X = pdf.x; // X position for the first column
-      const col2X = col1X + colWidth + 20; // X position for the second column
-      const col3X = col2X + colWidth + 20; // X position for the third column
+      const col1X = 50; // X position for the first column
+      const centerXAxis = (pdf.page.width - 100) /2
 
       // Calculate the Y positions for each row
       const row1Y = pdf.y;
@@ -237,22 +232,18 @@ export class PdfService {
       pdf.fontSize(12);
       // Add the section content
       pdf.text(receiptNo, col1X, row1Y);
-      pdf.text(patientID, col2X, row1Y);
-      pdf.text(visitID, col3X, row1Y);
+      pdf.text(patientID, centerXAxis, row1Y);
+      pdf.text(visitID, col1X, row1Y, { align: 'right' });
 
       pdf.text(patientName, col1X, row2Y);
-      pdf.text(genderAge, col2X, row2Y);
-      pdf.text(fatherName, col3X, row2Y);
+      pdf.text(genderAge, centerXAxis, row2Y);
+      pdf.text(fatherName, col1X, row2Y, { align: 'right' });
 
       pdf.text(receiptDate, col1X, row3Y);
-      pdf.text(paymentMode, col2X, row3Y);
-      pdf.text(paymentStatus, col3X, row3Y);
+      pdf.text(paymentMode, centerXAxis, row3Y);
+      pdf.text(paymentStatus, col1X, row3Y, { align: 'right' });
       pdf.moveDown();
       pdf.moveDown();
-
-
-
-
 
       // Define the table content as a 2D array
       const table = [
@@ -272,12 +263,12 @@ export class PdfService {
       const cellHeight = 30; // Adjust the cell height as needed
 
       // Calculate the X and Y positions for the table
-      pdf.x = (pdf.page.width - tableWidth) / 2;
-      const tableX = pdf.x; // Adjust the X position as needed
+      // pdf.x = (pdf.page.width - tableWidth) / 2;
+      const tableX = 50; // Adjust the X position as needed
       const tableY = pdf.y; // Adjust the Y position as needed
 
       // Define the custom widths for the columns
-      const columnWidths = [50, 400, 100, 150]; // Adjust the widths as needed
+      const columnWidths = [50, 450, 100, 150]; // Adjust the widths as needed
 
 
       // Loop through the rows and columns to create the table
@@ -311,19 +302,19 @@ export class PdfService {
       // Add the additional text below the table
       pdf.moveDown(); // Move down to create some space
       pdf.moveDown(); // Move down to create some space
-      pdf.x = 100;
+      pdf.x = 50;
       pdf.fontSize(12); // Set a smaller font size for the additional text
       // pdf.fontSize(fontSize).text(text, );
       pdf.text('Print Date Time: ' + formattedDate, { align: "left" });
 
       //---------------------------discount-----------------------------------
-      pdf.font('Helvetica-Bold');
-      pdf.y = pdf.y - 10;
-      const discountAmount = bookingDetails?.discount && bookingDetails.discount !== undefined ? bookingDetails.discount : 0;
-      const discount = 'Discount: ' + discountAmount as string;
-      pdf.fillColor("#000").fontSize(14).text(discount,{align :"right"});
-      const discountWords = 'Discount In Words : [' + this.numberToWords(discountAmount) + ']';
-      pdf.fillColor("#666666").fontSize(10).text(discountWords,{align :"right"});
+      // pdf.font('Helvetica-Bold');
+      // pdf.y = pdf.y - 10;
+      // const discountAmount = bookingDetails?.discount && bookingDetails.discount !== undefined ? bookingDetails.discount : 0;
+      // const discount = 'Discount: ' + discountAmount as string;
+      // pdf.fillColor("#000").fontSize(14).text(discount,{align :"right"});
+      // const discountWords = 'Discount In Words : [' + this.numberToWords(discountAmount) + ']';
+      // pdf.fillColor("#666666").fontSize(10).text(discountWords,{align :"right"});
       //---------------------------total-----------------------------------
 
       //---------------------------total-----------------------------------
@@ -337,46 +328,46 @@ export class PdfService {
       //---------------------------total-----------------------------------
 
       //---------------------------paid-----------------------------------
-      let totalPaid = 0;
-      let due = 0;
+      // let totalPaid = 0;
+      // let due = 0;
       
-      if(!transactionId){
-        totalPaid = bookingDetails.totalPaid;
-        due = bookingDetails.totalDue;
-      }else{
-        const transactions = bookingDetails.tx;
-        let breakLoop = false;
-        due  = bookingDetails.totalDue;
-        transactions.forEach(element => {
-          if(!breakLoop){
-            const transactionAmount = element.amount as number;
-            due = due - transactionAmount
-            if (element._id == transactionId) {
-              totalPaid = transactionAmount;
-              breakLoop = true;
-            }
-          }
-        });
-      }
-      pdf.fillColor("#000").fontSize(14).text('Paid: ' + totalPaid as unknown as string,{align :"right"});
-      const totalPaidWords = 'Paid In Words : [' + this.numberToWords(totalPaid) + ']';
-      pdf.fillColor("#666666").fontSize(10).text(totalPaidWords,{align :"right"});
+      // if(!transactionId){
+      //   totalPaid = bookingDetails.totalPaid;
+      //   due = bookingDetails.totalDue;
+      // }else{
+      //   const transactions = bookingDetails.tx;
+      //   let breakLoop = false;
+      //   due  = bookingDetails.totalDue;
+      //   transactions.forEach(element => {
+      //     if(!breakLoop){
+      //       const transactionAmount = element.amount as number;
+      //       due = due - transactionAmount
+      //       if (element._id == transactionId) {
+      //         totalPaid = transactionAmount;
+      //         breakLoop = true;
+      //       }
+      //     }
+      //   });
+      // }
+      // pdf.fillColor("#000").fontSize(14).text('Paid: ' + totalPaid as unknown as string,{align :"right"});
+      // const totalPaidWords = 'Paid In Words : [' + this.numberToWords(totalPaid) + ']';
+      // pdf.fillColor("#666666").fontSize(10).text(totalPaidWords,{align :"right"});
 
       //---------------------------paid-----------------------------------
 
       //---------------------------due-----------------------------------
-      pdf.fillColor("#000").fontSize(14).text('Due: ' + due as unknown as string,{align :"right"});
-      const dueWords = 'Due In Words : [' + this.numberToWords(due) + ']';
-      pdf.fillColor("#666666").fontSize(10).text(dueWords,{align :"right"});
+      // pdf.fillColor("#000").fontSize(14).text('Due: ' + due as unknown as string,{align :"right"});
+      // const dueWords = 'Due In Words : [' + this.numberToWords(due) + ']';
+      // pdf.fillColor("#666666").fontSize(10).text(dueWords,{align :"right"});
 
       //---------------------------due-----------------------------------
       
       pdf.moveDown();
-      const hospitalName = 'For ' + orgDetails?.appName;
+      const hospitalName = 'For ' + orgDetails?.name;
       const textHospitalNameWidth = pdf.widthOfString(hospitalName);
-      const hospitalNameX = pdf.page.width - textHospitalNameWidth - 100;
-      pdf.fontSize(12).text(hospitalName, hospitalNameX, pdf.y);
-      pdf.x = 100;
+      const hospitalNameX = pdf.page.width - textHospitalNameWidth - 50;
+      pdf.fontSize(12).text(hospitalName, 50, pdf.y, {align: 'right'});
+      pdf.x = 50;
       const listItems = [
         'Cultural Report : After 2-3 days enquire',
         'Outside Report : No same day gaurantee',
