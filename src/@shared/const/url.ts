@@ -31,6 +31,7 @@ export const URL = {
   MJR_BOOKING: BASE_CORE + "/booking",
   MJR_SERVICE_ITEM: BASE_CORE + "/service-item",
   MJR_PRODUCT: BASE_CORE + "/product",
+  MJR_INVESTIGATION: BASE_CORE + "/investigation",
   MJR_PHARMACY: BASE_CORE + "/pharmacy",
 
   VEHICLE_LIST: LIST,

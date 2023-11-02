@@ -1,21 +1,17 @@
 import {
   JwtClaimDto,
-  OrgBookingCountDto,
-  UserBookingDto,
-  UserBookingInvestigationDto,
-  BookingAddTransactionDto,
-  ROLE,
-  PharmacyOrderVo,
   OrderAddTransactionDto,
+  PharmacyOrderVo,
+  ROLE
 } from "aayam-clinic-core";
 import { Request, Response, Router } from "express";
-import { PharmacyService } from "../service/pharmacy.service";
+import { PdfService } from "../../@app/service/pdf.service";
 import { URL } from "../../@shared/const/url";
 import { Route } from "../../@shared/interface/route.interface";
 import authMiddleware from "../../@shared/middleware/auth.middleware";
 import { AuthUtility } from "../../@shared/utility/auth.utility";
 import { ResponseUtility } from "../../@shared/utility/response.utility";
-import { PdfService } from "../../@app/service/pdf.service";
+import { PharmacyService } from "../service/pharmacy.service";
 
 class PharmacyApi implements Route {
   public path = URL.MJR_PHARMACY;

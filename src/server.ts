@@ -7,6 +7,7 @@ import ServiceItemApi from './@app/api/service-item.api';
 import BokingApi from './@app/api/booking.api';
 import ProductApi from './@app/api/product.api';
 import PharmacyApi from './@app/api/pharmacy.api';
+import InvestigationApi from './@app/api/investigation.api';
 // import IndexRoute from './routes/index.route';
 // import UsersRoute from './routes/users.route';
 // import AuthRoute from './routes/auth.route';
@@ -22,7 +23,8 @@ const app = new App([
     new ServiceItemApi(),
     new BokingApi(),
     new ProductApi(),
-    new PharmacyApi()
+    new PharmacyApi(),
+    new InvestigationApi()
     // new UsersRoute(),
     // new AuthRoute(),
 ]);
