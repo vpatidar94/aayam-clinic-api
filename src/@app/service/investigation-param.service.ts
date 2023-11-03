@@ -17,5 +17,16 @@ export class InvestigationParamService {
     }
   };
 
+  public getInvestigationParam = async (orgId: string): Promise<InvestigationParamVo[] | null> => {
+    try {
+      if (!orgId) {
+        return null;
+      }
+      return await investigationParamModel.find({ orgId: orgId }) as InvestigationParamVo[];
+    } catch (error) {
+      throw error;
+    }
+  };
+
   /* ************************************* Private Methods ******************************************** */
 }

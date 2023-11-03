@@ -34,8 +34,26 @@ class InvestigationApi implements Route {
           ResponseUtility.sendFailResponse(res, error);
         }
       })();
-    }
-    );
+    });
+
+    // /api/core/v1/investigation/param-list
+    this.router.get(`${this.path}${URL.INVESTIGATION_PARAM_LIST}`, authMiddleware, (req: Request, res: Response) => {
+      (async () => {
+        try {
+          if (
+            res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+          ) {
+            ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            return;
+          }
+          const list = await this.investigationParamService.getInvestigationParam(req.query.orgId as string);
+          ResponseUtility.sendSuccess(res, list);
+        } catch (error) {
+          ResponseUtility.sendFailResponse(res, error);
+        }
+      })();
+    });
   }
 }
 
