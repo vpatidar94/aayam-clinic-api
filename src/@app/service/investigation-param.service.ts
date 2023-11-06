@@ -1,5 +1,8 @@
-import { InvestigationParamVo } from "aayam-clinic-core";
+import { InvestigationParamVo, OrgCodeNoDto } from "aayam-clinic-core";
 import investigationParamModel from "../../@app/model/investigation-param.model";
+import { PREFIX } from "../../@shared/const/prefix-suffix";
+import { MetaOrgService } from "../../@shared/service/meta-org.service";
+import { OrgService } from "../../@shared/service/org.service";
 
 export class InvestigationParamService {
   public investigationParamModel = investigationParamModel;
@@ -10,6 +13,11 @@ export class InvestigationParamService {
       if (param._id) {
         return await investigationParamModel.findByIdAndUpdate(param._id, param);
       } else {
+        const nextTestNo = await this._getNextTestNo(param);
+        const orgDetails = await new OrgService().getOrgById(param.orgId);
+        const testCode = await this._getNewTestCode(nextTestNo.testNo, orgDetails?.codeSuffix as string);
+        param.testCode = testCode;
+        await new MetaOrgService().updateCodeNo(param.orgId, nextTestNo);
         return await investigationParamModel.create(param);
       }
     } catch (error) {
@@ -29,4 +37,16 @@ export class InvestigationParamService {
   };
 
   /* ************************************* Private Methods ******************************************** */
+  private _getNewTestCode = async (no: number, codeSuffix: string) => {
+    const testNo = String(no).padStart(5, '0');
+    const testPrefix = PREFIX.INVESTIGATION;
+    return testPrefix.concat(codeSuffix).concat(testNo);
+  }
+
+  private _getNextTestNo = async (param: InvestigationParamVo): Promise<OrgCodeNoDto> => {
+    const codeNo = {} as OrgCodeNoDto;
+    const lastCodeOrder = await new MetaOrgService().getLastCodeNo(param.orgId);
+    codeNo.testNo = lastCodeOrder.testNo + 1;
+    return codeNo;
+  }
 }

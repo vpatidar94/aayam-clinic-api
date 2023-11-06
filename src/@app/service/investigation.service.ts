@@ -1,3 +1,4 @@
+import { PREFIX } from "@shared/const/prefix-suffix";
 import investigationModel from "../../@app/model/investigation.model";
 import { InvestigationVo } from "aayam-clinic-core";
 

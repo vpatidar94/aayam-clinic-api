@@ -4,7 +4,7 @@ import {
   BOOKING_TYPE,
   BookingVo,
   InvestigationVo,
-  OrgOrderNoDto,
+  OrgCodeNoDto,
   UserBookingDto,
   UserBookingInvestigationDto,
   UserVo,
@@ -44,7 +44,7 @@ export class BookingService {
         );
         userBookingDto.booking.user = user?._id ?? "";
         userBookingDto.booking = await this.bookingModel.create(booking);
-        await new MetaOrgService().updateOrderNo(
+        await new MetaOrgService().updateCodeNo(
           booking.orgId,
           newUpdatedOrderNo
         );
@@ -135,9 +135,9 @@ export class BookingService {
         txList.push(txVo);
         bookingDetails.tx = txList;
         bookingDetails.totalPaid = bookingDetails.totalPaid + bookingAddTransactionDto.amount;
-        if(bookingDetails.totalDue == 0 || bookingDetails.totalPaid == 0){
+        if (bookingDetails.totalDue == 0 || bookingDetails.totalPaid == 0) {
           bookingDetails.status = ORDER_STATUS.NOT_PAID;
-        }else if (bookingDetails.totalDue == bookingDetails.totalPaid) {
+        } else if (bookingDetails.totalDue == bookingDetails.totalPaid) {
           bookingDetails.status = ORDER_STATUS.PAID;
         } else if (bookingDetails.totalDue > bookingDetails.totalPaid) {
           bookingDetails.status = ORDER_STATUS.PARTIALLY_PAID;
@@ -158,8 +158,8 @@ export class BookingService {
     }
   };
 
-  public convertToPatient = async (bookingId: string, patientType: string, orgId: string): Promise<void> => { 
-    const lastBookingOrder = await new MetaOrgService().getLastOrderNo(orgId); 
+  public convertToPatient = async (bookingId: string, patientType: string, orgId: string): Promise<void> => {
+    const lastBookingOrder = await new MetaOrgService().getLastCodeNo(orgId);
     const fields = {
       patientNo: String(lastBookingOrder.patientNo + 1),
       status: BOOKING_STATUS.CONFIRMED,
@@ -172,9 +172,9 @@ export class BookingService {
   /* ************************************* Private Methods ******************************************** */
   private _updateBookingStatusAndNo = async (
     booking: BookingVo
-  ): Promise<OrgOrderNoDto> => {
-    const newUpdatedOrderNo = {} as OrgOrderNoDto;
-    const lastBookingOrder = await new MetaOrgService().getLastOrderNo(
+  ): Promise<OrgCodeNoDto> => {
+    const newUpdatedOrderNo = {} as OrgCodeNoDto;
+    const lastBookingOrder = await new MetaOrgService().getLastCodeNo(
       booking.orgId
     );
     booking.status = BOOKING_STATUS.PENDING;

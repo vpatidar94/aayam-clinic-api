@@ -3,7 +3,7 @@ import {
     AclVo,
     FnUtility,
     JwtClaimDto,
-    OrgOrderNoDto,
+    OrgCodeNoDto,
     OrgVo,
     ROLE,
     UserAccessDetailDto,
@@ -95,7 +95,7 @@ export class UserService {
                 const vo = await userModel.create(user) as UserVo;
                 console.log(nextUserNo);
 
-                await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
+                await new MetaOrgService().updateCodeNo(acl.orgId, nextUserNo);
 
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);
@@ -156,7 +156,7 @@ export class UserService {
                 user = await this._generateUserCodeAndEmail(acl.orgId, user, nextUserNo);
                 user.sub = await this._saveUserAuth(user);
                 const vo = await userModel.create(user) as UserVo;
-                await new MetaOrgService().updateOrderNo(acl.orgId, nextUserNo);
+                await new MetaOrgService().updateCodeNo(acl.orgId, nextUserNo);
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);
                 }
@@ -280,9 +280,9 @@ export class UserService {
         return userIncome;
     }
 
-    private _getNextUserNo = async (orgId: string): Promise<OrgOrderNoDto> => {
-        const nextUserNo = {} as OrgOrderNoDto;
-        const lastUserOrder = await new MetaOrgService().getLastOrderNo(orgId);
+    private _getNextUserNo = async (orgId: string): Promise<OrgCodeNoDto> => {
+        const nextUserNo = {} as OrgCodeNoDto;
+        const lastUserOrder = await new MetaOrgService().getLastCodeNo(orgId);
         nextUserNo.userNo = lastUserOrder.userNo + 1;
         return nextUserNo;
     }
@@ -298,7 +298,7 @@ export class UserService {
         return code.concat(emailSuffix);
     }
 
-    private _generateUserCodeAndEmail = async (orgId: string, user: UserVo, nextUserNo: OrgOrderNoDto) => {
+    private _generateUserCodeAndEmail = async (orgId: string, user: UserVo, nextUserNo: OrgCodeNoDto) => {
         const orgDetails = await new OrgService().getOrgById(orgId);
         user.code = await this._getNewUserCode(nextUserNo.userNo, orgDetails?.codeSuffix as string)
         user.email = await this._generateUserEmail(user.code);

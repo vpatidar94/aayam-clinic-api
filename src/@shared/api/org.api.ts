@@ -63,8 +63,8 @@ class OrgApi implements Route {
     this.router.get(`${this.path}${URL.LAST_ORDER_NO}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          const orgOrderNoDto = await this.metaOrgService.getLastOrderNo(req.query.orgId as string);
-          ResponseUtility.sendSuccess(res, orgOrderNoDto);
+          const orgCodeNoDto = await this.metaOrgService.getLastCodeNo(req.query.orgId as string);
+          ResponseUtility.sendSuccess(res, orgCodeNoDto);
         } catch (error) {
           ResponseUtility.sendFailResponse(res, error);
         }

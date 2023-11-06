@@ -5,6 +5,7 @@ const investigationParamSchema = new mongoose.Schema({
     orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
     brId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
     testName: String,
+    testCode: String,
     departmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
     specimen: String,
     charge: Number,

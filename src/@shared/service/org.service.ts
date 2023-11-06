@@ -2,9 +2,9 @@ import orgModel from "../../@shared/model/org.model";
 import departmentModel from "../../@shared/model/department.model";
 import userTypeModel from "../../@shared/model/user-type.model";
 import {
-    OrgVo, 
+    OrgVo,
     DepartmentVo,
-    OrgOrderNoDto,
+    OrgCodeNoDto,
     DEPT_STATUS,
     UserTypeVo,
     USER_TYPE_STATUS,
@@ -69,15 +69,15 @@ export class OrgService {
             if (department._id) {
                 return await departmentModel.findByIdAndUpdate(department._id, department);
             } else {
-                const departmentExist = await this.department.exists({ name: department.name , orgId : department.orgId, brId : department.brId });
+                const departmentExist = await this.department.exists({ name: department.name, orgId: department.orgId, brId: department.brId });
                 if (departmentExist) {
                     return null;
                 }
                 const nextDepartmentNo = await this._getNextDepartmentNo(department);
-                const orgDetails =  await this.getOrgById(department.orgId);
+                const orgDetails = await this.getOrgById(department.orgId);
                 const departmentCode = await this._getNewDepartmentCode(nextDepartmentNo.departmentNo, orgDetails?.codeSuffix as string);
                 department.code = departmentCode;
-                await new MetaOrgService().updateOrderNo(department.orgId, nextDepartmentNo);
+                await new MetaOrgService().updateCodeNo(department.orgId, nextDepartmentNo);
                 department.del = false;
                 department.status = DEPT_STATUS.ACTIVE;
                 return await departmentModel.create(department);
@@ -106,15 +106,15 @@ export class OrgService {
             if (userType._id) {
                 return await userTypeModel.findByIdAndUpdate(userType._id, userType);
             } else {
-                const userTypeExist = await this.userType.exists({ name: userType.name , orgId : userType.orgId, brId : userType.brId, departmentId : userType.departmentId });
+                const userTypeExist = await this.userType.exists({ name: userType.name, orgId: userType.orgId, brId: userType.brId, departmentId: userType.departmentId });
                 if (userTypeExist) {
                     return null;
                 }
                 const nextUserTypeNo = await this._getNextUserTypeNo(userType);
-                const orgDetails =  await this.getOrgById(userType.orgId);
+                const orgDetails = await this.getOrgById(userType.orgId);
                 const userTypeCode = await this._getNewUserTypeCode(nextUserTypeNo.userTypeNo, orgDetails?.codeSuffix as string,);
                 userType.code = userTypeCode;
-                await new MetaOrgService().updateOrderNo(userType.orgId, nextUserTypeNo);
+                await new MetaOrgService().updateCodeNo(userType.orgId, nextUserTypeNo);
                 userType.del = false;
                 userType.status = USER_TYPE_STATUS.ACTIVE;
                 return await userTypeModel.create(userType);
@@ -137,42 +137,42 @@ export class OrgService {
             delete record.Department;
             dto.userType = record as UserTypeVo;
             return dto;
-          }) as Array<UserTypeDetailDto>;
-          
-          return list;
+        }) as Array<UserTypeDetailDto>;
+
+        return list;
     }
 
     public getUserTypeById = async (userTypeId: string): Promise<UserTypeVo | null> => {
         return await this.userType.findById(userTypeId) as UserTypeVo;
     }
 
-    
+
     /* ************************************* Private Methods ******************************************** */
-    private _getNextDepartmentNo = async (department: DepartmentVo): Promise<OrgOrderNoDto> => {
-        const nextDepartmentNo = {} as OrgOrderNoDto;
-        const lastDepartmentOrder = await new MetaOrgService().getLastOrderNo(department.orgId);
+    private _getNextDepartmentNo = async (department: DepartmentVo): Promise<OrgCodeNoDto> => {
+        const nextDepartmentNo = {} as OrgCodeNoDto;
+        const lastDepartmentOrder = await new MetaOrgService().getLastCodeNo(department.orgId);
         nextDepartmentNo.departmentNo = lastDepartmentOrder.departmentNo + 1;
         return nextDepartmentNo;
     }
 
-    private _getNewDepartmentCode = async (nextDepartmentNo:Number, codeSuffix:string) => {
+    private _getNewDepartmentCode = async (nextDepartmentNo: Number, codeSuffix: string) => {
         const departmentNo = String(nextDepartmentNo).padStart(5, '0');
         const depPrefix = PREFIX.DEPARTMENT
         return depPrefix.concat(codeSuffix).concat(departmentNo);
     }
 
-    private _getNewOrgSuffix = async (orgName:String) => {
+    private _getNewOrgSuffix = async (orgName: String) => {
         return orgName.replace(/[^\w\s]/gi, '').replace(/\s+/g, '').toUpperCase().substring(0, 3);
     }
 
-    private _getNextUserTypeNo = async (userType: UserTypeVo): Promise<OrgOrderNoDto> => {
-        const nextUserTypeNo = {} as OrgOrderNoDto;
-        const lastUserTypeOrder = await new MetaOrgService().getLastOrderNo(userType.orgId);
+    private _getNextUserTypeNo = async (userType: UserTypeVo): Promise<OrgCodeNoDto> => {
+        const nextUserTypeNo = {} as OrgCodeNoDto;
+        const lastUserTypeOrder = await new MetaOrgService().getLastCodeNo(userType.orgId);
         nextUserTypeNo.userTypeNo = lastUserTypeOrder.userTypeNo + 1;
         return nextUserTypeNo;
     }
 
-    private _getNewUserTypeCode = async (nextUserTypeNo:Number, codeSuffix:string) => {
+    private _getNewUserTypeCode = async (nextUserTypeNo: Number, codeSuffix: string) => {
         const userTypeNo = String(nextUserTypeNo).padStart(5, '0');
         const userTypePrefix = PREFIX.USER_TYPE
         return userTypePrefix.concat(codeSuffix).concat(userTypeNo);
