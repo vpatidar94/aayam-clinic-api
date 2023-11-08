@@ -66,6 +66,7 @@ export class OrgService {
 
     public addUpdateDepartment = async (department: DepartmentVo): Promise<DepartmentVo | null> => {
         try {
+            department.name = department.name?.toUpperCase();
             if (department._id) {
                 return await departmentModel.findByIdAndUpdate(department._id, department);
             } else {

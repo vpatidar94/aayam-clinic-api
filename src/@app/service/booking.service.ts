@@ -19,6 +19,8 @@ import bookingModel from "../../@app/model/booking.model";
 import TransactionModel from "../../@app/model/transaction.model";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { InvestigationService } from "./investigation.service";
+import departmentModel from "../../@shared/model/department.model";
+import { APP_CONST } from "../../@shared/const/app.const";
 
 export class BookingService {
   public bookingModel = bookingModel;
@@ -99,6 +101,31 @@ export class BookingService {
       });
     }
     return orgBookingList;
+  };
+
+  public getInvestigationPatient = async (
+    orgId: string,
+  ): Promise<OrgBookingDto[]> => {
+    const dept = await departmentModel.findOne({ name: APP_CONST.PATHOLOGY, orgId });
+    const list = (await this.bookingModel
+      .find({ orgId, departmentId: dept?._id?.toString() })
+      .sort({ no: "desc" })
+      .collation({ locale: "en_US", numericOrdering: true })
+      .populate(["patient", "drDetail"])) as Array<BookingPopulateVo>;
+    let investigationPatientList = [] as Array<OrgBookingDto>;
+    if (list?.length > 0) {
+      investigationPatientList = list.map((it: BookingPopulateVo) => {
+        const record = JSON.parse(JSON.stringify(it));
+        const dto = {} as OrgBookingDto;
+        dto.drDetail = record.drDetail;
+        dto.patient = record.patient;
+        delete record.drDetail;
+        delete record.patient;
+        dto.booking = record;
+        return dto;
+      });
+    }
+    return investigationPatientList;
   };
 
   public getBookingDetails = async (bookingId: string): Promise<BookingVo> => {

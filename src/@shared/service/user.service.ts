@@ -24,6 +24,7 @@ import userAccountModel from "../../@shared/model/users-account.model";
 import { PREFIX, SUFFIX } from "../const/prefix-suffix";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import userTypeModel from "../../@shared/model/user-type.model";
+import { APP_CONST } from "../../@shared/const/app.const";
 
 export class UserService {
     public user = userModel;
@@ -197,7 +198,7 @@ export class UserService {
     }
 
     public getOrgDeptDocList = async (orgId: string, departmentId: string): Promise<UserVo[] | null> => {
-        const userType: UserTypeVo | null = await this.userTypeModel.findOne({ name: 'DOCTOR', departmentId });
+        const userType: UserTypeVo | null = await this.userTypeModel.findOne({ name: APP_CONST.DOCTOR, departmentId });
         const criteria = {} as any;
         const key = `emp.${orgId}`;
         criteria[`${key}.active`] = true;

@@ -82,5 +82,6 @@ export const URL = {
   ORDER_LIST_BY_ORG: "/order-list-by-org",
 
   INVESTIGATION_PARAM_LIST: "/param-list",
+  INVESTIGATION_PATIENT_LIST: "/patient-list",
 
 };
