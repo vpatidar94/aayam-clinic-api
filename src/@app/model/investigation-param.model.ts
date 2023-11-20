@@ -11,6 +11,8 @@ const investigationParamSchema = new mongoose.Schema({
     charge: Number,
     params: [{
         name: String,
+        geneder: Array<String>,
+        ageGroup: String,
         criteriaList: [{
             testName: String,
             ref: String,
