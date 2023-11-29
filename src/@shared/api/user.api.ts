@@ -1,4 +1,4 @@
-import { JwtClaimDto, UserAccessDetailDto, UserAccountVo, UserEmpDto, UserVo, ROLE } from 'aayam-clinic-core';
+import { JwtClaimDto, UserAccessDetailDto, UserAccountVo, UserEmpDto, UserVo, ROLE, AssetUploadDto, AssetPathUtility } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { AuthUtility } from '../../@shared/utility/auth.utility';
 import { URL } from '../const/url';
@@ -6,12 +6,16 @@ import { Route } from '../interface/route.interface';
 import authMiddleware from "../middleware/auth.middleware";
 import { UserService } from '../service/user.service';
 import { ResponseUtility } from '../utility/response.utility';
+import { upload } from '../../@shared/service/multer.service';
+import { UploadService } from '../../@shared/service/upload.service';
 
 class UserApi implements Route {
     public path = URL.MJR_USER;
     public router = Router();
 
     private userService = new UserService();
+    private uploadService = new UploadService();
+    private singleUploadImage = upload.single('file');
 
     constructor() {
         this.initializeRoutes();
@@ -157,6 +161,21 @@ class UserApi implements Route {
             })();
           }
         );
+
+        this.router.post(`${this.path}${URL.USER_ASSET_UPLOAD}`, this.singleUploadImage, async (req: Request, res: Response) => {
+            try {
+                const body = req.body as AssetUploadDto;
+                if (!req.file?.buffer) {
+                    ResponseUtility.sendFailResponse(res, "File not found");
+                    return;
+                }
+                const path = await this.uploadService.uploadMedia(AssetPathUtility.getPath(body.assetIdentity, body.assetId) + '.png', req.file.buffer);
+                await this.userService.updateUserImgPath(body, path);
+                ResponseUtility.sendSuccess(res, path);
+            } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+            }
+        });
     }
 }
 export default UserApi;

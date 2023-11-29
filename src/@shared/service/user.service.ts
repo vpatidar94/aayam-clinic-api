@@ -1,6 +1,8 @@
 import {
     AclCustVo,
     AclVo,
+    AssetPathUtility,
+    AssetUploadDto,
     FnUtility,
     JwtClaimDto,
     OrgCodeNoDto,
@@ -252,6 +254,22 @@ export class UserService {
     public getUserAccountDetail = async (userId: string): Promise<UserAccountVo | null> => {
         return await this.userAccount.findOne({ userId: userId }) as UserAccountVo;
     }
+
+    public updateUserImgPath = async (uploadDto: AssetUploadDto, path: string): Promise<void> => { 
+        const condition = {} as any;
+        switch (uploadDto.assetIdentity) {
+            case AssetPathUtility.ASSET_IDENTITY.EMP_PHOTO:
+                condition.img = path;
+                break;
+            case AssetPathUtility.ASSET_IDENTITY.EMP_ID_PROOF:
+                condition.imgIdProof = path;
+                break;
+            default:
+                break; 
+        }
+        await this.user.findByIdAndUpdate(uploadDto.assetId, { $set: condition }, { new: true });
+    };
+
     /* ************************************* Private Methods ******************************************** */
     private _saveUserAuth = async (userVo: UserVo): Promise<string> => {
         const auth = FirebaseUtility.getApp().auth();
