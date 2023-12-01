@@ -34,10 +34,10 @@ class PharmacyApi implements Route {
           try {
             const body = req.body as PharmacyOrderVo;
             const claim = res.locals?.claim as JwtClaimDto;
-            if (!AuthUtility.hasOrgEmpAccess(claim, body?.orgId)) {
-              ResponseUtility.sendFailResponse(res, null, "Unauthorized");
-              return;
-            }
+            // if (!AuthUtility.hasOrgEmpAccess(claim, body?.orgId)) {
+            //   ResponseUtility.sendFailResponse(res, null, "Unauthorized");
+            //   return;
+            // }
             const pharmacyOrder = await this.pharmacyService.addUpdateOrder(
               body
             );
@@ -60,10 +60,10 @@ class PharmacyApi implements Route {
             const pageNumber = Number(req.query.pageNumber as string);
             const maxRecord = Number(req.query.maxRecord as string);
             const offset = maxRecord * pageNumber - maxRecord;
-            if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
-              ResponseUtility.sendFailResponse(res, null, "Unauthorized");
-              return;
-            }
+            // if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
+            //   ResponseUtility.sendFailResponse(res, null, "Unauthorized");
+            //   return;
+            // }
             const orders = await this.pharmacyService.getOrgOrders(
               orgId,
               maxRecord,
@@ -86,13 +86,13 @@ class PharmacyApi implements Route {
           try {
             const body = req.body as OrderAddTransactionDto;
             const claim = res.locals?.claim as JwtClaimDto;
-            if (
-              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-            ) {
-              ResponseUtility.sendFailResponse(res, null, "Not permitted");
-              return;
-            }
+            // if (
+            //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            // ) {
+            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            //   return;
+            // }
             const userBooking =
               await this.pharmacyService.addUpdateBookingTransaction(body);
             ResponseUtility.sendSuccess(res, userBooking);
@@ -110,13 +110,13 @@ class PharmacyApi implements Route {
       (req: Request, res: Response) => {
         (async () => {
           try {
-            if (
-              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-            ) {
-              ResponseUtility.sendFailResponse(res, null, "Not permitted");
-              return;
-            }
+            // if (
+            //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            // ) {
+            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            //   return;
+            // }
             await this.pdfService.createPharmacyOrderReceipt(req.query.orderId as string, res);
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);

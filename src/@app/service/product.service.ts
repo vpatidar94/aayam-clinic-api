@@ -12,6 +12,7 @@ export class ProductService {
     product: ProductVo
   ): Promise<ProductVo | null> => {
     try {
+      product.name = product.name?.toUpperCase();
       if (product._id) {
         return await productModel.findByIdAndUpdate(product._id, product);
       } else {

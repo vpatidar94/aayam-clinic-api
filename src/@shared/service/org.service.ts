@@ -92,9 +92,12 @@ export class OrgService {
         return await this.department.findById(depId) as DepartmentVo;
     }
 
-    public getOrgDepartmentList = async (orgId: string, type: string | null): Promise<DepartmentVo[] | null> => {
+    public getOrgDepartmentList = async (orgId: string | null, type: string | null): Promise<DepartmentVo[] | null> => {
         const criteria = {} as any;
         criteria['del'] = false;
+        if (orgId) {
+            criteria['orgId'] = orgId;
+        } 
         if (type) {
             criteria['type'] = type;
         }

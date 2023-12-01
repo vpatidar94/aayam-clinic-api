@@ -24,13 +24,13 @@ class ProductApi implements Route {
       (req: Request, res: Response) => {
         (async () => {
           try {
-            if (
-              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-            ) {
-              ResponseUtility.sendFailResponse(res, null, "Not permitted");
-              return;
-            }
+            // if (
+            //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            // ) {
+            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            //   return;
+            // }
             const product = await this.productService.addUpdateProduct(
               req.body as ProductVo
             );
@@ -57,13 +57,13 @@ class ProductApi implements Route {
       (req: Request, res: Response) => {
         (async () => {
           try {
-            if (
-              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-            ) {
-              ResponseUtility.sendFailResponse(res, null, "Not permitted");
-              return;
-            }
+            // if (
+            //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            // ) {
+            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            //   return;
+            // }
             const list: Array<ProductVo> | null =
               await this.productService.getProductsByOrgId(
                 req.query.orgId as string

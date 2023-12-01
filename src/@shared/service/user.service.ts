@@ -27,6 +27,7 @@ import { PREFIX, SUFFIX } from "../const/prefix-suffix";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import userTypeModel from "../../@shared/model/user-type.model";
 import { APP_CONST } from "../../@shared/const/app.const";
+import { SmsService } from "./sms.service";
 
 export class UserService {
     public user = userModel;
@@ -62,6 +63,7 @@ export class UserService {
     public saveStaff = async (staff: UserEmpDto): Promise<UserVo | null> => {
         try {
             let user = staff.user;
+            const email = user.email;
             const acl = staff.acl;
             if (!acl || !acl.orgId) {
                 return null;
@@ -84,6 +86,11 @@ export class UserService {
                 if (user.sub && user.email) {
                     await new AuthService().setFbCustomUserClaim(user.sub, user.email);
                 }
+                // const auth = FirebaseUtility.getApp().auth();
+                // if (email) {
+                //     const link = await auth.generatePasswordResetLink(email);
+                //     await SmsService.sendSms('', link);
+                // }
                 return vo;
             } else {
                 // New user
@@ -277,7 +284,10 @@ export class UserService {
             email: userVo.email?.toLocaleLowerCase()?.trim(),
             password: userVo.cell.trim()
         } as any;
+        const password = user.password;
         user = await auth.createUser(user);
+        const body = `Welcome ${userVo.nameF}!! Your password to login to Aayam account is - ${password}.`;
+        SmsService.sendSms(userVo.cell, body);
         return user.uid;
     }
 

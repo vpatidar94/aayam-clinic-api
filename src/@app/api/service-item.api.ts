@@ -25,10 +25,10 @@ class ServiceItemApi implements Route {
             const body = req.body as ItemVo;
             const claim = res.locals?.claim as JwtClaimDto;
             
-            if (!AuthUtility.hasOrgEmpAccess(claim, body?.orgId)) {
-              ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
-              return;
-            }
+            // if (!AuthUtility.hasOrgEmpAccess(claim, body?.orgId)) {
+            //   ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+            //   return;
+            // }
             const item = await this.serviceItemService.addUpdateServiceItem(body);
             ResponseUtility.sendSuccess(res, item);
           } catch (error) {
@@ -43,10 +43,10 @@ class ServiceItemApi implements Route {
       (async () => {
         try {
           const claim = res.locals?.claim as JwtClaimDto;
-          if (!AuthUtility.hasOrgEmpAccess(claim, req.query.orgId as string)) {
-            ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
-            return;
-          }
+          // if (!AuthUtility.hasOrgEmpAccess(claim, req.query.orgId as string)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+          //   return;
+          // }
           const list: Array<ItemDetailDto> | null = await this.serviceItemService.getListByOrgId(req.query.orgId as string);
           ResponseUtility.sendSuccess(res, list);
         } catch (error) {
@@ -60,10 +60,10 @@ class ServiceItemApi implements Route {
     this.router.post(`${this.path}${URL.SERVICE_TYPE_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const userType = await this.serviceItemService.addUpdateServiceType(req.body as ServiceTypeVo);
           if (!userType) {
             ResponseUtility.sendFailResponse(res, null, "Service Type Name not available");
@@ -81,10 +81,10 @@ class ServiceItemApi implements Route {
     this.router.get(`${this.path}${URL.SERVICE_TYPE_LIST}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const list: Array<ServiceTypeVo> | null = await this.serviceItemService.getServiceTypeListByOrgId(req.query.orgId as string);
           ResponseUtility.sendSuccess(res, list);
         } catch (error) {
@@ -98,10 +98,10 @@ class ServiceItemApi implements Route {
         this.router.get(`${this.path}${URL.SERVICE_TYPE_DELETE}`, authMiddleware, (req: Request, res: Response) => {
           (async () => {
             try {
-              if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-                ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-                return;
-              }
+              // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+              //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+              //   return;
+              // }
               const serviceType = await this.serviceItemService.getServiceTypeById(req.query?.serviceTypeId as string);
               if (!serviceType || serviceType.del) {
                 ResponseUtility.sendFailResponse(res, null, "Service Type not available");
@@ -121,10 +121,10 @@ class ServiceItemApi implements Route {
         this.router.get(`${this.path}${URL.SERVICE_TYPE_ACTIVE_INACTIVE}`, authMiddleware, (req: Request, res: Response) => {
           (async () => {
             try {
-              if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-                ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-                return;
-              }
+              // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+              //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+              //   return;
+              // }
               const serviceType = await this.serviceItemService.getServiceTypeById(req.query?.serviceTypeId as string);
               if (!serviceType || serviceType.del) {
                 ResponseUtility.sendFailResponse(res, null, "Service Type not available");

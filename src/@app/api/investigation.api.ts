@@ -22,13 +22,13 @@ class InvestigationApi implements Route {
     this.router.post(`${this.path}${URL.ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if (
-            res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-            res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-          ) {
-            ResponseUtility.sendFailResponse(res, null, "Not permitted");
-            return;
-          }
+          // if (
+          //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+          //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+          // ) {
+          //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+          //   return;
+          // }
           const param = await this.investigationParamService.addUpdateInvestigationParam(req.body as InvestigationParamVo);
           ResponseUtility.sendSuccess(res, param);
         } catch (error) {
@@ -41,13 +41,13 @@ class InvestigationApi implements Route {
     this.router.get(`${this.path}${URL.INVESTIGATION_PARAM_LIST}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if (
-            res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-            res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-          ) {
-            ResponseUtility.sendFailResponse(res, null, "Not permitted");
-            return;
-          }
+          // if (
+          //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+          //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+          // ) {
+          //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+          //   return;
+          // }
           const list = await this.investigationParamService.getInvestigationParam(req.query.orgId as string);
           ResponseUtility.sendSuccess(res, list);
         } catch (error) {
@@ -60,13 +60,13 @@ class InvestigationApi implements Route {
     this.router.get(`${this.path}${URL.INVESTIGATION_PATIENT_LIST}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if (
-            res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-            res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-          ) {
-            ResponseUtility.sendFailResponse(res, null, "Not permitted");
-            return;
-          }
+          // if (
+          //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+          //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+          // ) {
+          //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+          //   return;
+          // }
           const list = await new BookingService().getInvestigationPatient(req.query?.orgId as string);
           ResponseUtility.sendSuccess(res, list);
         } catch (error) {

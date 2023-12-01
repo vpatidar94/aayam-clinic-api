@@ -37,10 +37,10 @@ class BokingApi implements Route {
           try {
             const body = req.body as UserBookingDto;
             const claim = res.locals?.claim as JwtClaimDto;
-            if (!AuthUtility.hasOrgEmpAccess(claim, body?.booking?.orgId)) {
-              ResponseUtility.sendFailResponse(res, null, "Unauthorized");
-              return;
-            }
+            // if (!AuthUtility.hasOrgEmpAccess(claim, body?.booking?.orgId)) {
+            //   ResponseUtility.sendFailResponse(res, null, "Unauthorized");
+            //   return;
+            // }
             const userBooking = await this.bookingService.addUpdateBooking(
               body
             );
@@ -62,10 +62,10 @@ class BokingApi implements Route {
             const claim = res.locals?.claim as JwtClaimDto;
             const userId = req.query.userId as string;
             const orgId = req.query.orgId as string;
-            if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
-              ResponseUtility.sendFailResponse(res, null, "Unauthorized");
-              return;
-            }
+            // if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
+            //   ResponseUtility.sendFailResponse(res, null, "Unauthorized");
+            //   return;
+            // }
             const userBooking: UserBookingInvestigationDto =
               await this.bookingService.getPatientBooking(orgId, userId);
             ResponseUtility.sendSuccess(res, userBooking);
@@ -88,10 +88,10 @@ class BokingApi implements Route {
             const pageNumber = Number(req.query.pageNumber as string);
             const maxRecord = Number(req.query.maxRecord as string);
             const offset = maxRecord * pageNumber - maxRecord;
-            if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
-              ResponseUtility.sendFailResponse(res, null, "Unauthorized");
-              return;
-            }
+            // if (!AuthUtility.hasOrgEmpAccess(claim, orgId)) {
+            //   ResponseUtility.sendFailResponse(res, null, "Unauthorized");
+            //   return;
+            // }
             const orgBookinCount = {} as OrgBookingCountDto;
             orgBookinCount.totalBooking =
               await this.bookingService.getOrgBookingCount(orgId, type);
@@ -118,13 +118,13 @@ class BokingApi implements Route {
           try {
             const body = req.body as BookingAddTransactionDto;
             const claim = res.locals?.claim as JwtClaimDto;
-            if (
-              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-            ) {
-              ResponseUtility.sendFailResponse(res, null, "Not permitted");
-              return;
-            }
+            // if (
+            //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            // ) {
+            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            //   return;
+            // }
             const userBooking =
               await this.bookingService.addUpdateBookingTransaction(body);
             ResponseUtility.sendSuccess(res, userBooking);
@@ -142,13 +142,13 @@ class BokingApi implements Route {
       (req: Request, res: Response) => {
         (async () => {
           try {
-            if (
-              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-            ) {
-              ResponseUtility.sendFailResponse(res, null, "Not permitted");
-              return;
-            }
+            // if (
+            //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            // ) {
+            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            //   return;
+            // }
             await this.pdfService.createOrderReceiptV2(req.query.bookingId as string,req.query.transactionId as string, res);
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);
@@ -164,13 +164,13 @@ class BokingApi implements Route {
       (req: Request, res: Response) => {
         (async () => {
           try {
-            if (
-              res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
-              res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
-            ) {
-              ResponseUtility.sendFailResponse(res, null, "Not permitted");
-              return;
-            }
+            // if (
+            //   res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN &&
+            //   res.locals?.claim?.userAccess?.role !== ROLE.ADMIN
+            // ) {
+            //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+            //   return;
+            // }
             const bookingId: string = req.query.bookingId as string;
             const orgId: string = req.query.orgId as string;
             const patientType: string = req.query.patientType as string | null ?? PATIENT_TYPE.OPD;

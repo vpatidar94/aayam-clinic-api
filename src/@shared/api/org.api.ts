@@ -75,12 +75,10 @@ class OrgApi implements Route {
     this.router.post(`${this.path}${URL.DEPARTMENT_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          console.log(res.locals?.claim?.userAccess?.role);
-
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const department = await this.orgService.addUpdateDepartment(req.body as DepartmentVo);
           if (!department) {
             ResponseUtility.sendFailResponse(res, null, "Department Name not available");
@@ -98,10 +96,10 @@ class OrgApi implements Route {
     this.router.get(`${this.path}${URL.DEPARTMENT_LIST}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const userList: Array<DepartmentVo> | null = await this.orgService.getOrgDepartmentList(req.query?.orgId as string, req.query?.type as string ?? null);
           ResponseUtility.sendSuccess(res, userList);
         } catch (error) {
@@ -114,10 +112,10 @@ class OrgApi implements Route {
     this.router.get(`${this.path}${URL.DEPARTMENT_DELETE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const department = await this.orgService.getDepartmentById(req.query?.departmentId as string);
           if (!department || department.del) {
             ResponseUtility.sendFailResponse(res, null, "Department not available");
@@ -137,10 +135,10 @@ class OrgApi implements Route {
     this.router.get(`${this.path}${URL.DEPARTMENT_ACTIVE_INACTIVE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const department = await this.orgService.getDepartmentById(req.query?.departmentId as string);
           if (!department || department.del) {
             ResponseUtility.sendFailResponse(res, null, "Department not available");
@@ -160,10 +158,10 @@ class OrgApi implements Route {
     this.router.post(`${this.path}${URL.USER_TYPE_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const userType = await this.orgService.addUpdateUserType(req.body as UserTypeVo);
           if (!userType) {
             ResponseUtility.sendFailResponse(res, null, "UserType Name not available");
@@ -181,10 +179,10 @@ class OrgApi implements Route {
     this.router.get(`${this.path}${URL.USER_TYPE_LIST}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const userList: Array<UserTypeDetailDto> | null = await this.orgService.getOrgUserTypeList(req.query?.orgId as string);
           ResponseUtility.sendSuccess(res, userList);
         } catch (error) {
@@ -197,10 +195,10 @@ class OrgApi implements Route {
     this.router.get(`${this.path}${URL.USER_TYPE_DELETE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const userType = await this.orgService.getUserTypeById(req.query?.userTypeId as string);
           if (!userType || userType.del) {
             ResponseUtility.sendFailResponse(res, null, "UserType not available");
@@ -220,10 +218,10 @@ class OrgApi implements Route {
     this.router.get(`${this.path}${URL.USER_TYPE_ACTIVE_INACTIVE}`, authMiddleware, (req: Request, res: Response) => {
       (async () => {
         try {
-          if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
-            ResponseUtility.sendFailResponse(res, null, 'Not permitted');
-            return;
-          }
+          // if ((res.locals?.claim?.userAccess?.role !== ROLE.SUPER_ADMIN) && (res.locals?.claim?.userAccess?.role !== ROLE.ADMIN)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Not permitted');
+          //   return;
+          // }
           const userType = await this.orgService.getUserTypeById(req.query?.userTypeId as string);
           if (!userType || userType.del) {
             ResponseUtility.sendFailResponse(res, null, "UserType not available");

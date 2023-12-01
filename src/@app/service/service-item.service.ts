@@ -14,6 +14,7 @@ export class ServiceItemService {
     serviceItemVo: ItemVo
   ): Promise<ItemVo | null> => {
     try {
+      serviceItemVo.name = serviceItemVo.name?.toUpperCase();
       if (serviceItemVo.feeType.isPercent) {
         serviceItemVo.doctorFee = (serviceItemVo.fee / 100) * serviceItemVo.feeType.value;
       } else {
@@ -56,6 +57,7 @@ export class ServiceItemService {
 
   public addUpdateServiceType = async (serviceType: ServiceTypeVo): Promise<ServiceTypeVo | null> => {
     try {
+      serviceType.name = serviceType.name?.toUpperCase();
       if (serviceType._id) {
         return await serviceTypeModel.findByIdAndUpdate(serviceType._id, serviceType);
       } else {
