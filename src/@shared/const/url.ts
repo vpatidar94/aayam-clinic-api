@@ -85,6 +85,8 @@ export const URL = {
   INVESTIGATION_PATIENT_LIST: "/patient-list",
 
   USER_ASSET_UPLOAD: "/upload-user-asset",
+  ORG_ASSET_UPLOAD: "/upload-org-asset",
+
 
 
 };

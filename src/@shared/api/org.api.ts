@@ -1,4 +1,4 @@
-import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS, UserTypeVo, USER_TYPE_STATUS, UserTypeDetailDto } from 'aayam-clinic-core';
+import { OrgVo, DepartmentVo, ROLE, DEPT_STATUS, UserTypeVo, USER_TYPE_STATUS, UserTypeDetailDto, AssetUploadDto, AssetPathUtility } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
@@ -6,6 +6,8 @@ import { ResponseUtility } from '../utility/response.utility';
 import { OrgService } from '../../@shared/service/org.service';
 import authMiddleware from '../../@shared/middleware/auth.middleware';
 import { MetaOrgService } from '../../@shared/service/meta-org.service';
+import { upload } from '../../@shared/service/multer.service';
+import { UploadService } from '../../@shared/service/upload.service';
 
 class OrgApi implements Route {
   public path = URL.MJR_ORG;
@@ -13,6 +15,8 @@ class OrgApi implements Route {
 
   private orgService = new OrgService();
   private metaOrgService = new MetaOrgService();
+  private singleUploadImage = upload.single('file');
+  private uploadService = new UploadService();
 
 
   constructor() {
@@ -41,6 +45,21 @@ class OrgApi implements Route {
           }
         }
       )();
+    });
+    
+    this.router.post(`${this.path}${URL.ORG_ASSET_UPLOAD}`, this.singleUploadImage, async (req: Request, res: Response) => {
+      try {
+        const body = req.body as AssetUploadDto;
+        if (!req.file?.buffer) {
+          ResponseUtility.sendFailResponse(res, "File not found");
+          return;
+        }
+        const path = await this.uploadService.uploadMedia(AssetPathUtility.getPath(body.assetIdentity, body.assetId) + '.png', req.file.buffer);
+        await this.orgService.updateOrgImgPath(body, path);
+        ResponseUtility.sendSuccess(res, path);
+      } catch (error) {
+        ResponseUtility.sendFailResponse(res, error);
+      }
     });
 
     // /api/core/v1/org/list

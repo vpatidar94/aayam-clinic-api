@@ -9,10 +9,17 @@ import {
     UserTypeVo,
     USER_TYPE_STATUS,
     UserTypePopulateVo,
-    UserTypeDetailDto
+    UserTypeDetailDto,
+    AssetUploadDto,
+    AssetPathUtility,
+    UserVo,
+    AclVo,
+    ROLE,
+    UserEmpDto
 } from "aayam-clinic-core";
 import { PREFIX } from '../const/prefix-suffix';
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
+import { UserService } from "./user.service";
 
 export class OrgService {
     public org = orgModel;
@@ -30,7 +37,9 @@ export class OrgService {
                 if (orgExist) {
                     return null;
                 }
-                return await orgModel.create(org);
+                const vo = await orgModel.create(org);
+                await this._addAdmin(vo);
+                return vo;
             }
         } catch (error) {
             throw error;
@@ -97,7 +106,7 @@ export class OrgService {
         criteria['del'] = false;
         if (orgId) {
             criteria['orgId'] = orgId;
-        } 
+        }
         if (type) {
             criteria['type'] = type;
         }
@@ -150,6 +159,21 @@ export class OrgService {
         return await this.userType.findById(userTypeId) as UserTypeVo;
     }
 
+    public updateOrgImgPath = async (uploadDto: AssetUploadDto, path: string): Promise<void> => {
+        const condition = {} as any;
+        switch (uploadDto.assetIdentity) {
+            case AssetPathUtility.ASSET_IDENTITY.ORG_LOGO:
+                condition.logo = path;
+                break;
+            case AssetPathUtility.ASSET_IDENTITY.ORG_COVER:
+                condition.cover = path;
+                break;
+            default:
+                break;
+        }
+        await this.org.findByIdAndUpdate(uploadDto.assetId, { $set: condition }, { new: true });
+    };
+
 
     /* ************************************* Private Methods ******************************************** */
     private _getNextDepartmentNo = async (department: DepartmentVo): Promise<OrgCodeNoDto> => {
@@ -180,6 +204,32 @@ export class OrgService {
         const userTypeNo = String(nextUserTypeNo).padStart(5, '0');
         const userTypePrefix = PREFIX.USER_TYPE
         return userTypePrefix.concat(codeSuffix).concat(userTypeNo);
+    }
+
+    private _addAdmin = async (org: OrgVo): Promise<void> => {
+        const user = {} as UserVo;
+        const acl = {} as AclVo;
+        const name = org.adminName?.split(' ');
+        if (name && name?.length > 0) {
+            user.nameF = name[0];
+            if (name.length > 1) {
+                user.nameL = name[1];
+            }
+        }
+        if (org.adminCell) {
+            user.cell = org.adminCell;
+        }
+        user.address = org.address;
+        acl.orgId = org._id?.toString();
+        acl.brId = acl.orgId;
+        acl.role = ROLE.ADMIN;
+        acl.subRole = org.adminDesignation;
+        acl.departmentId = null;
+        acl.userTypeId = null;
+        acl.active = true;
+        user.emp = {} as { [key: string]: AclVo };
+        user.emp[acl.orgId] = acl;
+        await new UserService().saveStaff(new UserEmpDto(user, acl));
     }
 
 }

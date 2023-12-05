@@ -43,6 +43,7 @@ const orgSchema = new mongoose.Schema({
   tagline: String,
   est: mongoose.Schema.Types.Date,
   reg: String,
+  gst: String,
   ph: String,
   email: String,
   status: String,
@@ -51,6 +52,14 @@ const orgSchema = new mongoose.Schema({
   crtBy: String,
   modified: mongoose.Schema.Types.Date,
   created: mongoose.Schema.Types.Date,
+
+  adminName: String,
+  adminCell: String,
+  adminDesignation: String,
+
+  expiryPanel: mongoose.Schema.Types.Date,
+  category: String // BASIC, STARTER, ENTERPRISE, PREMIUM
+
 });
 
 const orgModel = mongoose.model<OrgVo & mongoose.Document>('Org', orgSchema);
