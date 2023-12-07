@@ -3,6 +3,7 @@ import { Route } from '../../@shared/interface/route.interface';
 import userModel from '../../@shared/model/users.model';
 import { UserEmpDto, UserVo } from 'aayam-clinic-core';
 import { UserService } from '../../@shared/service/user.service';
+import { SmsService } from '../../@shared/service/sms.service';
 
 class IndexApi implements Route {
   public path = '/';
@@ -13,7 +14,7 @@ class IndexApi implements Route {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/test`, async (req: Request, res: Response, next: NextFunction) => {
       const user: UserVo | null = await userModel.findById('65697f2f6c098a251899e87f');
       if (user) {
         const dto = new UserEmpDto(user, user.emp['CLINIC']);
@@ -22,6 +23,17 @@ class IndexApi implements Route {
       try {
         res.status(200).json({
           "xx": user
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
+
+    this.router.get(`/test1`, async (req: Request, res: Response, next: NextFunction) => {
+      await SmsService.sendWhatAppMessage();
+      try {
+        res.status(200).json({
+          "xx": 'xxxxxxxxx'
         });
       } catch (error) {
         next(error);

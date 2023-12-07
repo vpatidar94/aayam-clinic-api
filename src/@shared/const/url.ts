@@ -86,7 +86,7 @@ export const URL = {
 
   USER_ASSET_UPLOAD: "/upload-user-asset",
   ORG_ASSET_UPLOAD: "/upload-org-asset",
-
-
+  SEND_OTP: "/send-otp",
+  RESET_PASSWORD_LINK: "/reset-password-link",
 
 };

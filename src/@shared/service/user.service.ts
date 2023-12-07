@@ -28,6 +28,7 @@ import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import userTypeModel from "../../@shared/model/user-type.model";
 import { APP_CONST } from "../../@shared/const/app.const";
 import { SmsService } from "./sms.service";
+import { UserOtpService } from "./user-otp.service";
 
 export class UserService {
     public user = userModel;
@@ -276,6 +277,30 @@ export class UserService {
         }
         await this.user.findByIdAndUpdate(uploadDto.assetId, { $set: condition }, { new: true });
     };
+
+    public getUserByEmpCode = async (empCode: string): Promise<UserVo | null> => {
+        return await this.user.findOne({ code: empCode }) as UserVo;
+    }
+
+    public sendOtp = async (empCode: string): Promise<boolean> => { 
+        const user = await this.getUserByEmpCode(empCode);
+        if (!user || !user?.cell) {
+            return false;
+        }
+        return await new UserOtpService().addUserOtp(user);
+    }
+
+    public getPasswordResetLink = async (empCode: string, otp: string): Promise<string | null> => {
+        const otpValid = await new UserOtpService().isValidUserOtp(empCode, otp);
+        if (otpValid === true) {
+            const user = await this.getUserByEmpCode(empCode);
+            const auth = FirebaseUtility.getApp().auth();
+            return await auth.generatePasswordResetLink(user?.email ?? '');
+            return '';
+        } else {
+            return null;
+        }
+    }
 
     /* ************************************* Private Methods ******************************************** */
     private _saveUserAuth = async (userVo: UserVo): Promise<string> => {

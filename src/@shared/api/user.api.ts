@@ -177,6 +177,31 @@ class UserApi implements Route {
                 ResponseUtility.sendFailResponse(res, error);
             }
         });
+
+        this.router.get(`${this.path}${URL.SEND_OTP}`, async (req: Request, res: Response) => {
+            try {
+                const empCode = req.query.empCode as string;
+                const sent = await this.userService.sendOtp(empCode);
+                ResponseUtility.sendSuccess(res, sent);
+            } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+            }
+        });
+
+        this.router.get(`${this.path}${URL.RESET_PASSWORD_LINK}`, async (req: Request, res: Response) => {
+            try {
+                const empCode = req.query.empCode as string;
+                const otp = req.query.otp as string;
+
+                const link = await this.userService.getPasswordResetLink(empCode, otp);
+                if (!link) { 
+                    ResponseUtility.sendFailResponse(res, 'Invalid OTP');
+                }
+                ResponseUtility.sendSuccess(res, link);
+            } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+            }
+        });
     }
 }
 export default UserApi;
