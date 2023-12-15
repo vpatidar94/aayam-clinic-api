@@ -4,6 +4,7 @@ import serviceTypeModel from "../../@app/model/service-type.model";
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { OrgService } from "../../@shared/service/org.service";
 import { PREFIX } from "../../@shared/const/prefix-suffix";
+import { APP_CONST } from "../../@shared/const/app.const";
 
 export class ServiceItemService {
   public serviceItem = serviceItemModel;
@@ -15,12 +16,14 @@ export class ServiceItemService {
   ): Promise<ItemVo | null> => {
     try {
       serviceItemVo.name = serviceItemVo.name?.toUpperCase();
-      if (serviceItemVo.feeType.isPercent) {
-        serviceItemVo.doctorFee = (serviceItemVo.fee / 100) * serviceItemVo.feeType.value;
-      } else {
-        serviceItemVo.doctorFee = serviceItemVo.feeType.value;
+      if (serviceItemVo.feeType) {
+        if (serviceItemVo.feeType.isPercent) {
+          serviceItemVo.doctorFee = (serviceItemVo.fee / 100) * serviceItemVo.feeType.value;
+        } else {
+          serviceItemVo.doctorFee = serviceItemVo.feeType.value;
+        }
       }
-      serviceItemVo.orgFee = serviceItemVo.fee - serviceItemVo.doctorFee;
+      serviceItemVo.orgFee = serviceItemVo.fee - (serviceItemVo.doctorFee ?? 0);
       if (serviceItemVo._id) {
         return await serviceItemModel.findByIdAndUpdate(
           serviceItemVo._id,
@@ -89,6 +92,66 @@ export class ServiceItemService {
   public getServiceTypeById = async (serviceTypeId: string): Promise<ServiceTypeVo | null> => {
     return await this.serviceType.findById(serviceTypeId) as ServiceTypeVo;
   }
+
+  public getInvestigationTypetId = async (orgId: string, departmentId: string): Promise<string> => {
+    const st = await this.serviceType.findOne({ orgId, departmentId, name: APP_CONST.INVESTIGATION }) as ServiceTypeVo;
+    return st?._id?.toString();
+  }
+
+  public getInvestigationService = async (orgId: string): Promise<Array<ItemVo> | null> => {
+    const departmentId = await (new OrgService()).getPathalogyDeptId(orgId);
+    const serviceTypeId = await this.getInvestigationTypetId(orgId, departmentId);
+    return (await this.serviceItem.find({ orgId, departmentId, serviceTypeId })) as Array<ItemVo>;
+
+    // const item = await this.serviceItem.aggregate([
+    //   {
+    //     "$match": {
+    //       orgId: orgId,
+    //       departmentId: department._id
+    //       startTime: "2017-01-01",
+    //     }
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'departments',
+    //       localField: 'departmentId',
+    //       foreignField: '_id',
+    //       as: 'department'
+    //     }
+    //   },
+    //   {
+    //     $unwind: '$department'
+    //   },
+    //   {
+    //     $match: {
+    //       $and: [
+    //         { 'department.orgId ': orgId },
+    //         { 'department.name': APP_CONST.PATHOLOGY }
+    //       ]
+    //       // 'customer.status': { $ne: 'completed' } // Filter where customer status is not equal to 'completed'
+    //     }
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'servicetypes',
+    //       localField: 'serviceTypeId',
+    //       foreignField: '_id',
+    //       as: 'servicetype'
+    //     }
+    //   },
+    //   {
+    //     $unwind: '$servicetype'
+    //   },
+    //   {
+    //     $match: {
+    //       $and: [
+    //         { 'servicetype.orgId': orgId },
+    //         { 'servicetype.name': APP_CONST.INVESTIGATION }
+    //       ]
+    //     }
+    //   },
+    // ]).exec();
+  };
 
   /* ************************************* Private Methods ******************************************** */
   private _getNextServiceTypeNo = async (serviceType: ServiceTypeVo): Promise<OrgCodeNoDto> => {

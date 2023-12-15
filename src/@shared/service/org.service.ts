@@ -20,6 +20,7 @@ import {
 import { PREFIX } from '../const/prefix-suffix';
 import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { UserService } from "./user.service";
+import { APP_CONST } from "../../@shared/const/app.const";
 
 export class OrgService {
     public org = orgModel;
@@ -173,6 +174,11 @@ export class OrgService {
         }
         await this.org.findByIdAndUpdate(uploadDto.assetId, { $set: condition }, { new: true });
     };
+
+    public getPathalogyDeptId = async (orgId: string): Promise<string> => { 
+        const dept = await this.department.findOne({orgId, name: APP_CONST.PATHOLOGY}) as DepartmentVo;
+        return dept?._id?.toString();
+    }
 
 
     /* ************************************* Private Methods ******************************************** */

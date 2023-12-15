@@ -89,4 +89,6 @@ export const URL = {
   SEND_OTP: "/send-otp",
   RESET_PASSWORD_LINK: "/reset-password-link",
 
+  INVESTIGATION_LIST: "/investigation-list",
+
 };

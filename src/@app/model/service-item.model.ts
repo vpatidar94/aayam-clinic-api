@@ -26,17 +26,32 @@ const schema = new mongoose.Schema({
   code: String,
   fee: Number,
   feeType: {
-    isPercent : mongoose.Schema.Types.Boolean,
-    value : {type : Number}
+    isPercent: mongoose.Schema.Types.Boolean,
+    value: { type: Number }
   },
   doctorFee: Number,
   orgFee: Number,
   status: String,
   del: mongoose.Schema.Types.Boolean,
-  modBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  crtBy:  {type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  modBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  crtBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   modified: mongoose.Schema.Types.Date,
   created: mongoose.Schema.Types.Date,
+
+  investigationParam: {
+    specimen: String,
+    params: [{
+      name: String,
+      gender: Array<String>,
+      ageGroup: String,
+      criteriaList: [{
+        testName: String,
+        ref: String,
+        unit: String
+      }]
+    }]
+  }
+
 }, {
   toJSON: {
     getters: true,
