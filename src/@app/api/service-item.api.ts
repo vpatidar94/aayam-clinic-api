@@ -56,6 +56,24 @@ class ServiceItemApi implements Route {
     }
     );
 
+    // /api/core/v1/service-item/delete
+    this.router.get(`${this.path}${URL.DELETE}`, authMiddleware, (req: Request, res: Response) => {
+      (async () => {
+        try {
+          const claim = res.locals?.claim as JwtClaimDto;
+          // if (!AuthUtility.hasOrgEmpAccess(claim, req.query.orgId as string)) {
+          //   ResponseUtility.sendFailResponse(res, null, 'Unauthorized');
+          //   return;
+          // }
+          const removed: boolean = await this.serviceItemService.deleteByItemId(req.query.itemId as string);
+          ResponseUtility.sendSuccess(res, removed);
+        } catch (error) {
+          ResponseUtility.sendFailResponse(res, error);
+        }
+      })();
+    }
+    );
+
     // /api/core/v1/service-item/investigation-list
     this.router.get(`${this.path}${URL.INVESTIGATION_LIST}`, (req: Request, res: Response) => {
       (async () => {

@@ -57,6 +57,11 @@ export class ServiceItemService {
     return list;
   };
 
+  public deleteByItemId = async (itemId: string): Promise<boolean> => {
+    await this.serviceItem.findByIdAndDelete(itemId);
+    return true;
+  };
+
 
   public addUpdateServiceType = async (serviceType: ServiceTypeVo): Promise<ServiceTypeVo | null> => {
     try {

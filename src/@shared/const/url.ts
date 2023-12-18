@@ -22,6 +22,7 @@ const DETAIL = '/detail';
 export const URL = {
   ADD_UPDATE,
   LIST,
+  DELETE,
 
   MJR_TX: BASE_CORE + "/tx",
   MJR_VEHICLE: BASE_CORE + "/vehicle",
