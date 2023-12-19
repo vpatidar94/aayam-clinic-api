@@ -95,6 +95,7 @@ const bookingSchema = new mongoose.Schema(
 
         openItem: mongoose.Schema.Types.Boolean,
         name: String,
+        sampleCollectDate: mongoose.Schema.Types.Date,
       },
     ],
     tx: [
