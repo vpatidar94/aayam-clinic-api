@@ -62,6 +62,19 @@ const bookingSchema = new mongoose.Schema(
           crtBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
           modified: mongoose.Schema.Types.Date,
           created: mongoose.Schema.Types.Date,
+          investigationParam: {
+            specimen: String,
+            params: [{
+              name: String,
+              gender: Array<String>,
+              ageGroup: String,
+              criteriaList: [{
+                testName: String,
+                ref: String,
+                unit: String
+              }]
+            }]
+          }
         },
         qty: mongoose.Schema.Types.Number, // Quantity
 
