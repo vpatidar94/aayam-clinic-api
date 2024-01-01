@@ -9,9 +9,10 @@ const productSchema = new mongoose.Schema({
   drug: String,
   productType: String,
   company: String,
+  packagingType: String,
+  qtyPerPackage: Number,
   price : Number,
-  qtyPerStrip : Number,
-  pricePerStrip : Number,
+  pricePerPackage : Number,
   purchaseDate: mongoose.Schema.Types.Date,
   expirtyDate : mongoose.Schema.Types.Date,
 
