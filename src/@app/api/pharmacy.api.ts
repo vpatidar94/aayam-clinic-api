@@ -1,15 +1,13 @@
 import {
   JwtClaimDto,
   OrderAddTransactionDto,
-  PharmacyOrderVo,
-  ROLE
+  PharmacyOrderVo
 } from "aayam-clinic-core";
 import { Request, Response, Router } from "express";
 import { PdfService } from "../../@app/service/pdf.service";
 import { URL } from "../../@shared/const/url";
 import { Route } from "../../@shared/interface/route.interface";
 import authMiddleware from "../../@shared/middleware/auth.middleware";
-import { AuthUtility } from "../../@shared/utility/auth.utility";
 import { ResponseUtility } from "../../@shared/utility/response.utility";
 import { PharmacyService } from "../service/pharmacy.service";
 
