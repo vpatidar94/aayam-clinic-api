@@ -8,6 +8,8 @@ const pharmacyOrderSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
 
+    no: String,
+    bookingDate: Date,
 
     status: String, // OrderStatus - [HOLD, WIP, DELETE]
     txStatus: String, // OrderStatusTx - [UNPAID, PAID, PAID_PARTLY, VOID]
@@ -134,6 +136,19 @@ const pharmacyOrderSchema = new mongoose.Schema(
   }
 );
 
+pharmacyOrderSchema.virtual("patient", {
+  ref: "User",
+  localField: "user",
+  foreignField: "_id",
+  justOne: true,
+});
+
+pharmacyOrderSchema.virtual("drDetail", {
+  ref: "User",
+  localField: "dr",
+  foreignField: "_id",
+  justOne: true,
+});
 
 const pharmacyOrdersModel = mongoose.model<PharmacyOrderVo & mongoose.Document>(
   "pharmacyOrders",

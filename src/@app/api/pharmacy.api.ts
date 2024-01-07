@@ -1,6 +1,7 @@
 import {
   JwtClaimDto,
   OrderAddTransactionDto,
+  OrgPharmacyOrderCountDto,
   PharmacyOrderVo
 } from "aayam-clinic-core";
 import { Request, Response, Router } from "express";
@@ -62,12 +63,15 @@ class PharmacyApi implements Route {
             //   ResponseUtility.sendFailResponse(res, null, "Unauthorized");
             //   return;
             // }
-            const orders = await this.pharmacyService.getOrgOrders(
+            const orderCountDto = {} as OrgPharmacyOrderCountDto;
+            orderCountDto.totalOrder =
+              await this.pharmacyService.getOrgOrderCount(orgId);
+            orderCountDto.orgOrder = await this.pharmacyService.getOrgOrders(
               orgId,
               maxRecord,
               offset
             );
-            ResponseUtility.sendSuccess(res, orders);
+            ResponseUtility.sendSuccess(res, orderCountDto);
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);
           }

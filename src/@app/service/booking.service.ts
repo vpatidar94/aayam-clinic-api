@@ -1,26 +1,27 @@
-import { UserService } from "../../@shared/service/user.service";
 import {
   BOOKING_STATUS,
   BOOKING_TYPE,
+  BookingAddTransactionDto,
+  BookingPopulateVo,
   BookingVo,
   InvestigationVo,
+  ORDER_TX_STATUS,
+  OrgBookingDto,
   OrgCodeNoDto,
+  TX_STATUS,
+  TxVo,
   UserBookingDto,
   UserBookingInvestigationDto,
-  UserVo,
-  BookingPopulateVo,
-  OrgBookingDto,
-  BookingAddTransactionDto,
-  TxVo,
-  TX_STATUS,
-  ORDER_STATUS,
+  UserVo
 } from "aayam-clinic-core";
 import bookingModel from "../../@app/model/booking.model";
 import TransactionModel from "../../@app/model/transaction.model";
-import { MetaOrgService } from "../../@shared/service/meta-org.service";
-import { InvestigationService } from "./investigation.service";
-import departmentModel from "../../@shared/model/department.model";
 import { APP_CONST } from "../../@shared/const/app.const";
+import departmentModel from "../../@shared/model/department.model";
+import { MetaOrgService } from "../../@shared/service/meta-org.service";
+import { UserService } from "../../@shared/service/user.service";
+import { InvestigationService } from "./investigation.service";
+import { PharmacyService } from "./pharmacy.service";
 
 export class BookingService {
   public bookingModel = bookingModel;
@@ -87,18 +88,20 @@ export class BookingService {
       .sort({ no: "desc" })
       .collation({ locale: "en_US", numericOrdering: true })
       .populate(["patient", "drDetail"])) as Array<BookingPopulateVo>;
-    let orgBookingList = [] as Array<OrgBookingDto>;
+    const orgBookingList = [] as Array<OrgBookingDto>;
     if (list?.length > 0) {
-      orgBookingList = list.map((it: BookingPopulateVo) => {
+      for (let i = 0; i < list.length; i++) {
+        const it: BookingPopulateVo = list[i];
         const record = JSON.parse(JSON.stringify(it));
         const dto = {} as OrgBookingDto;
         dto.drDetail = record.drDetail;
         dto.patient = record.patient;
+        dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
         delete record.drDetail;
         delete record.patient;
         dto.booking = record;
-        return dto;
-      });
+        orgBookingList.push(dto);
+      }
     }
     return orgBookingList;
   };
@@ -163,13 +166,13 @@ export class BookingService {
         bookingDetails.tx = txList;
         bookingDetails.totalPaid = bookingDetails.totalPaid + bookingAddTransactionDto.amount;
         if (bookingDetails.totalDue == 0 || bookingDetails.totalPaid == 0) {
-          bookingDetails.status = ORDER_STATUS.NOT_PAID;
+          bookingDetails.status = ORDER_TX_STATUS.NOT_PAID;
         } else if (bookingDetails.totalDue == bookingDetails.totalPaid) {
-          bookingDetails.status = ORDER_STATUS.PAID;
+          bookingDetails.status = ORDER_TX_STATUS.PAID;
         } else if (bookingDetails.totalDue > bookingDetails.totalPaid) {
-          bookingDetails.status = ORDER_STATUS.PARTIALLY_PAID;
+          bookingDetails.status = ORDER_TX_STATUS.PARTIALLY_PAID;
         } else if (bookingDetails.totalDue < bookingDetails.totalPaid) {
-          bookingDetails.status = ORDER_STATUS.ADVANCE_PAID;
+          bookingDetails.status = ORDER_TX_STATUS.ADVANCE_PAID;
         }
         const booking = (await bookingModel.findByIdAndUpdate(
           bookingDetails._id,
