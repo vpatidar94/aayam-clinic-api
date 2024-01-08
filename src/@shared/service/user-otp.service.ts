@@ -17,7 +17,7 @@ export class UserOtpService {
             userOtp.empCode = user.code;
             userOtp.userId = user._id?.toString();
             await this.otpModel.create(userOtp);
-            await new SmsService().sentWhatsAppOtp('7898118503', userOtp.otp, 'Aayam Clinic App');
+            await SmsService.sendOtp(userOtp.cell, userOtp.otp);
             return true;
         } catch (error) {
             console.log('xxx xx xerror ', error);

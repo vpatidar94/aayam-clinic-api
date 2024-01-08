@@ -30,10 +30,10 @@ class IndexApi implements Route {
     });
 
     this.router.get(`/test1`, async (req: Request, res: Response, next: NextFunction) => {
-      await SmsService.sendWhatAppMessage();
+      const result = await SmsService.sendOtp('6260687100', "Your OTP is: 12345. Regards AAYAM");
       try {
         res.status(200).json({
-          "xx": 'xxxxxxxxx'
+          "xx": result
         });
       } catch (error) {
         next(error);
