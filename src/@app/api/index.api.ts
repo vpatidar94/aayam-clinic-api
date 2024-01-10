@@ -30,7 +30,7 @@ class IndexApi implements Route {
     });
 
     this.router.get(`/test1`, async (req: Request, res: Response, next: NextFunction) => {
-      const result = await SmsService.sendOtp('6260687100', 123456);
+      const result = await SmsService.sendCredential('6260687100', 'Vinay', '6363456677', '123');
       try {
         res.status(200).json({
           "xx": result

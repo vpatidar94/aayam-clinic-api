@@ -22,6 +22,8 @@ import { MetaOrgService } from "../../@shared/service/meta-org.service";
 import { UserService } from "../../@shared/service/user.service";
 import { InvestigationService } from "./investigation.service";
 import { PharmacyService } from "./pharmacy.service";
+import { SmsService } from "../../@shared/service/sms.service";
+import { OrgService } from "../../@shared/service/org.service";
 
 export class BookingService {
   public bookingModel = bookingModel;
@@ -131,6 +133,11 @@ export class BookingService {
     return investigationPatientList;
   };
 
+  public getBookingAndUserDetails = async (bookingId: string): Promise<BookingPopulateVo> => {
+    const bookingDetails = await this.bookingModel.findOne({ _id: bookingId }).populate(["patient"]) as BookingPopulateVo;
+    return bookingDetails;
+  }
+
   public getBookingDetails = async (bookingId: string): Promise<BookingVo> => {
     const bookingDetails = await this.bookingModel.findOne({ _id: bookingId }) as BookingVo;
     return bookingDetails;
@@ -180,6 +187,9 @@ export class BookingService {
           { new: true }
         )) as BookingVo;
         await this.transactionModel.create(txVo);
+        const bookingDetail: BookingPopulateVo = await this.getBookingAndUserDetails(bookingAddTransactionDto.bookingId);
+        const org = await new OrgService().getOrgById(bookingDetail.orgId);
+        await SmsService.sendThanksMsg(bookingDetail.patient?.cell, org?.ph ?? '');
         return booking;
       }
       return null;

@@ -311,8 +311,7 @@ export class UserService {
         } as any;
         const password = user.password;
         user = await auth.createUser(user);
-        const body = `Welcome ${userVo.nameF}!! Your password to login to Aayam account is - ${password}.`;
-        // SmsService.sendSms(userVo.cell, body);
+        await SmsService.sendCredential(userVo.cell, userVo.nameF ?? '', userVo.code, password);
         return user.uid;
     }
 

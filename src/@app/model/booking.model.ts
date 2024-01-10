@@ -166,13 +166,13 @@ const bookingSchema = new mongoose.Schema(
 
     test: Array<String>, // test suggested by doc
 
-    prescription: {
+    prescription: [{
       productId: String,
       name: String, // chemical name
       dosage: String, // OD, BD, TDS, QDS
       duration: mongoose.Schema.Types.Number, // days
       instruction: String,
-    },
+    }],
 
     instruction: Array<String>,
 

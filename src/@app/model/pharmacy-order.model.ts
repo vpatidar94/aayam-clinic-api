@@ -123,6 +123,13 @@ const pharmacyOrderSchema = new mongoose.Schema(
     modified: mongoose.Schema.Types.Date,
 
     note: String,
+    prescription: [{
+      productId: String,
+      name: String, // chemical name
+      dosage: String, // OD, BD, TDS, QDS
+      duration: mongoose.Schema.Types.Number, // days
+      instruction: String,
+    }],
   },
   {
     toJSON: {
