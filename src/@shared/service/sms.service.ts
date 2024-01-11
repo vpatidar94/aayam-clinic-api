@@ -39,7 +39,7 @@ export class SmsService {
         }
     }
 
-    public static sendAppointmentConfirmation = async (to: string, time: string, date: string): Promise<any> => {
+    public static sendAppointmentConfirmation = async (to: string, date: string, time: string): Promise<any> => {
         try {
             dotenv.config();
             const apiUrl = process.env.SMS_API_URL;

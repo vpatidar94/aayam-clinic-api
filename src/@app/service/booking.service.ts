@@ -53,6 +53,7 @@ export class BookingService {
           booking.orgId,
           newUpdatedOrderNo
         );
+        await SmsService.sendAppointmentConfirmation(userBookingDto.user.cell, userBookingDto.booking.bookingDate?.toDateString(), userBookingDto.booking.timeSlot);
       }
       return userBookingDto;
     } catch (error) {
