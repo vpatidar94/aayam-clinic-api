@@ -26,6 +26,12 @@ export class PdfService {
       let pdf = this.pdfkitService.createNewDoc(`RECEIPT_${bookingDetails.no}`);
       pdf.pipe(res);
 
+
+       // Add the logo before the hospital name and address
+    const logoPath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxZnF-nba-de7h_3B6b5RrH6Z0YGyB-jt4xModq-MOAg&s'; // Update this with the path to your logo
+    pdf.image(logoPath, 50, 50, { width: 100 }); // Adjust the coordinates and width as needed
+    
+
       pdf = this.pdfkitService.addTextCenter(pdf, 20, orgDetails?.name as string);
       const address = orgDetails?.address?.city || "" + ", " + orgDetails?.address?.district || "" + ", " + orgDetails?.address?.state || "" + ", " + orgDetails?.address?.country || "";
       pdf = this.pdfkitService.addTextCenter(pdf, 10, address);
@@ -133,7 +139,7 @@ export class PdfService {
       // pdf.y = pdf.y - 50;
       const gstIn = orgDetails?.reg || "";
       const website = orgDetails?.domain || "";
-      pdf.fontSize(10).text('xxxxxxxxx', { align: "left" });
+      pdf.fontSize(10).text('2388PCA5532R1Z5', { align: "left" });
 
       const websiteWidth = pdf.widthOfString(website);
       const websiteX = pdf.page.width - websiteWidth - 50;
