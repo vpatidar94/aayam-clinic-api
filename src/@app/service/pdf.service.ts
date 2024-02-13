@@ -139,7 +139,7 @@ export class PdfService {
       // pdf.y = pdf.y - 50;
       const gstIn = orgDetails?.reg || "";
       const website = orgDetails?.domain || "";
-      pdf.fontSize(10).text('2388PCA5532R1Z5', { align: "left" });
+      pdf.fontSize(10).text('xxxxxxxxx', { align: "left" });
 
       const websiteWidth = pdf.widthOfString(website);
       const websiteX = pdf.page.width - websiteWidth - 50;
