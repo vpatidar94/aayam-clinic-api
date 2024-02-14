@@ -27,9 +27,9 @@ export class PdfService {
       pdf.pipe(res);
 
 
-       // Add the logo before the hospital name and address
-    const logoPath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxZnF-nba-de7h_3B6b5RrH6Z0YGyB-jt4xModq-MOAg&s'; // Update this with the path to your logo
-    pdf.image(logoPath, 50, 50, { width: 100 }); // Adjust the coordinates and width as needed
+    //    // Add the logo before the hospital name and address
+    // const logoPath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxZnF-nba-de7h_3B6b5RrH6Z0YGyB-jt4xModq-MOAg&s'; // Update this with the path to your logo
+    // pdf.image(logoPath, 50, 50, { width: 100 }); // Adjust the coordinates and width as needed
     
 
       pdf = this.pdfkitService.addTextCenter(pdf, 20, orgDetails?.name as string);
@@ -147,15 +147,24 @@ export class PdfService {
       pdf.fontSize(10).text(website, websiteX, pdf.y);
       pdf.moveDown();
 
+
+      // Add the logo before the hospital name and address
+    // const logoPath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxZnF-nba-de7h_3B6b5RrH6Z0YGyB-jt4xModq-MOAg&s'; // Update this with the path to your logo
+    // pdf.image(logoPath, 50, 50, { width: 100 }); // Adjust the coordinates and width as needed
+
       // Load and embed an image
       // const imagePath = 'https://pdfkit.org/docs/img/15.png'; // Specify the path to your image
+      // const encodedURL = encodeURIComponent('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxZnF-nba-de7h_3B6b5RrH6Z0YGyB-jt4xModq-MOAg&s');
+
+      // const imagePath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxZnF-nba-de7h_3B6b5RrH6Z0YGyB-jt4xModq-MOAg&s'; // Specify the path to your image
+
       const imageX = 100; // X-coordinate for the image
       const imageY = 50; // Y-coordinate for the image
       // const imageWidth = 80; // Width of the image (adjust as needed)
       // const imageHeight = 80; // Height of the image (adjust as needed)
 
       // // Load and embed the image to the left of the heading
-      // pdf.image(imagePath, imageX + 50, imageY, { width: imageWidth, height: imageHeight });
+      // pdf.image(encodedURL, imageX + 50, imageY, { width: imageWidth, height: imageHeight });
 
 
 
@@ -219,8 +228,13 @@ export class PdfService {
       const currentDate = new Date(); // You can pass any date you want here
       const formattedDate = this.formatDate(currentDate, "MMMDY");
       const receiptDate = 'Receipt Date: ' + formattedDate;
-      const paymentMode = 'Payment Mode: ';
-      const paymentStatus = 'Payment status: ' + ((bookingDetails?.txStatus && bookingDetails.txStatus !== undefined) ? bookingDetails.txStatus : "Unpaid");
+      // const paymentMode = 'Payment Mode: ' + ((bookingDetails?.tx));
+      const paymentMode = 'Payment Mode: ' + ((bookingDetails?.tx.map(detail => detail.txType)));
+      // const paymentStatus = 'Payment status: ' + ((bookingDetails?.txStatus && bookingDetails.txStatus !== undefined) ? bookingDetails.txStatus : "paid");
+      // const paymentStatus = 'Payment status: ' + ((bookingDetails?.tx.map(detail => detail.txStatus)));
+      const paymentStatus = 'Payment status: ' + ((bookingDetails?.status));
+
+
 
       // Calculate the column widths and X positions
       const col1X = 50; // X position for the first column
