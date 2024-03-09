@@ -103,6 +103,9 @@ export class PharmacyService {
         txVo.serviceCharge = 0;
         txVo.date = new Date();
         txVo.created = new Date();
+        if (orderAddTransactionDto.chequeNo) {
+          txVo.chequeNo = orderAddTransactionDto.chequeNo;
+        }
 
         txList.push(txVo);
         orderDetails.tx = txList;
