@@ -18,10 +18,10 @@ class App {
         this.connectToDatabase();
         this.initializeMiddlewares();
         this.initializeRoutes(routes);
-        const metaEmitter = metaOrgModel.watch();
-        metaEmitter.on('change', (data) => {
-            console.log('meta data ', JSON.stringify(data));
-        });
+        // const metaEmitter = metaOrgModel.watch();
+        // metaEmitter.on('change', (data) => {
+        //     console.log('meta data ', JSON.stringify(data));
+        // });
         // this.initializeErrorHandling();
     }
 
