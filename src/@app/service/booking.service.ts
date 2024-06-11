@@ -144,6 +144,11 @@ export class BookingService {
     return bookingDetails;
   }
 
+  public removeBookingById = async (bookingId: string): Promise<boolean> => {
+    await this.bookingModel.findByIdAndDelete({ _id: bookingId });
+    return true;
+  }
+
   public getOrgBookingCount = async (orgId: string, type: string): Promise<number> => {
     let count = 0;
     count = await this.bookingModel.countDocuments({ orgId: orgId, type: type });

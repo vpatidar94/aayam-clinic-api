@@ -12,7 +12,6 @@ import { BookingService } from "../../@app/service/booking.service";
 import { URL } from "../../@shared/const/url";
 import { Route } from "../../@shared/interface/route.interface";
 import authMiddleware from "../../@shared/middleware/auth.middleware";
-import { AuthUtility } from "../../@shared/utility/auth.utility";
 import { ResponseUtility } from "../../@shared/utility/response.utility";
 import { PdfService } from "../../@app/service/pdf.service";
 
@@ -176,6 +175,23 @@ class BokingApi implements Route {
             const patientType: string = req.query.patientType as string | null ?? PATIENT_TYPE.OPD;
             await this.bookingService.convertToPatient(bookingId, patientType, orgId);
             ResponseUtility.sendSuccess(res, null);
+          } catch (error) {
+            ResponseUtility.sendFailResponse(res, error);
+          }
+        })();
+      }
+    );
+
+    // /api/core/v1/booking/delete
+    this.router.delete(
+      `${this.path}${URL.DELETE}`,
+      authMiddleware,
+      (req: Request, res: Response) => {
+        (async () => {
+          try {
+            const bookingId: string = req.query.bookingId as string;
+            await this.bookingService.removeBookingById(req.query.bookingId as string);
+            ResponseUtility.sendSuccess(res, null, "Booking deleted successfully");
           } catch (error) {
             ResponseUtility.sendFailResponse(res, error);
           }
