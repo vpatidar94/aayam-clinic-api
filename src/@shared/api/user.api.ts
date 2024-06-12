@@ -1,6 +1,5 @@
 import { JwtClaimDto, UserAccessDetailDto, UserAccountVo, UserEmpDto, UserVo, ROLE, AssetUploadDto, AssetPathUtility } from 'aayam-clinic-core';
 import { Request, Response, Router } from 'express';
-import { AuthUtility } from '../../@shared/utility/auth.utility';
 import { URL } from '../const/url';
 import { Route } from '../interface/route.interface';
 import authMiddleware from "../middleware/auth.middleware";
@@ -77,6 +76,19 @@ class UserApi implements Route {
             })();
         });
 
+        this.router.delete(`${this.path}${URL.DELETE}`, authMiddleware, (req: Request, res: Response) => {
+            (async () => {
+                try {
+                    const orgId = req.query?.orgId as string;
+                    const userId = req.query?.userId as string;
+                    await this.userService.removeOrgUser(orgId, userId);
+                    ResponseUtility.sendSuccess(res, null, 'User deleted successfully');
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
+            })();
+        });
+
         this.router.get(`${this.path}${URL.STAFF_SUBROLE_LIST}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
                 try {
@@ -124,43 +136,43 @@ class UserApi implements Route {
             })();
         });
 
-        this.router.post(`${this.path}${URL.USER_ACCOUNT_ADD_UPDATE}`,authMiddleware,(req: Request, res: Response) => {
+        this.router.post(`${this.path}${URL.USER_ACCOUNT_ADD_UPDATE}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
-              try {
-                const body = req.body as UserAccountVo;
-                const claim = res.locals?.claim as JwtClaimDto;
-                // if (claim?.userAccess?.role !== ROLE.SUPER_ADMIN && claim?.userAccess?.role !== ROLE.ADMIN) {
-                //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
-                //   return;
-                // }
-                const user = await this.userService.saveUserAccount(body);
-                if (!user) {
-                  ResponseUtility.sendFailResponse(res,null,"User Account already exists");
-                  return;
+                try {
+                    const body = req.body as UserAccountVo;
+                    const claim = res.locals?.claim as JwtClaimDto;
+                    // if (claim?.userAccess?.role !== ROLE.SUPER_ADMIN && claim?.userAccess?.role !== ROLE.ADMIN) {
+                    //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+                    //   return;
+                    // }
+                    const user = await this.userService.saveUserAccount(body);
+                    if (!user) {
+                        ResponseUtility.sendFailResponse(res, null, "User Account already exists");
+                        return;
+                    }
+                    ResponseUtility.sendSuccess(res, user);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
                 }
-                ResponseUtility.sendSuccess(res, user);
-              } catch (error) {
-                ResponseUtility.sendFailResponse(res, error);
-              }
             })();
-          }
+        }
         );
 
-        this.router.get(`${this.path}${URL.USER_ACCOUNT_DETAILS}`,authMiddleware,(req: Request, res: Response) => {
+        this.router.get(`${this.path}${URL.USER_ACCOUNT_DETAILS}`, authMiddleware, (req: Request, res: Response) => {
             (async () => {
-              try {
-                const claim = res.locals?.claim as JwtClaimDto;
-                // if (claim?.userAccess?.role !== ROLE.SUPER_ADMIN && claim?.userAccess?.role !== ROLE.ADMIN) {
-                //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
-                //   return;
-                // }
-                const accessList: UserAccountVo | null = await this.userService.getUserAccountDetail(req.query?.userId as string);
-                ResponseUtility.sendSuccess(res, accessList);
-              } catch (error) {
-                ResponseUtility.sendFailResponse(res, error);
-              }
+                try {
+                    const claim = res.locals?.claim as JwtClaimDto;
+                    // if (claim?.userAccess?.role !== ROLE.SUPER_ADMIN && claim?.userAccess?.role !== ROLE.ADMIN) {
+                    //   ResponseUtility.sendFailResponse(res, null, "Not permitted");
+                    //   return;
+                    // }
+                    const accessList: UserAccountVo | null = await this.userService.getUserAccountDetail(req.query?.userId as string);
+                    ResponseUtility.sendSuccess(res, accessList);
+                } catch (error) {
+                    ResponseUtility.sendFailResponse(res, error);
+                }
             })();
-          }
+        }
         );
 
         this.router.post(`${this.path}${URL.USER_ASSET_UPLOAD}`, this.singleUploadImage, async (req: Request, res: Response) => {
@@ -194,7 +206,7 @@ class UserApi implements Route {
                 const otp = req.query.otp as string;
 
                 const link = await this.userService.getPasswordResetLink(empCode, otp);
-                if (!link) { 
+                if (!link) {
                     ResponseUtility.sendFailResponse(res, 'Invalid OTP');
                 }
                 ResponseUtility.sendSuccess(res, link);

@@ -198,6 +198,18 @@ export class UserService {
         return await this.user.find(criteria) as UserVo[];
     }
 
+    public removeOrgUser = async (orgId: string, userId: string): Promise<boolean> => {
+        let user = await this.getUserById(userId) as UserVo;
+        if (user && user.emp && user.emp[orgId]) {
+            delete user.emp[orgId];
+        }
+        user = await userModel.findByIdAndUpdate(user._id, user, { new: true }) as UserVo;
+        if (user.sub && user.email) {
+            await new AuthService().setFbCustomUserClaim(user.sub, user.email);
+        }
+        return true;
+    }
+
     public getOrgUserListBySubRole = async (orgId: string, subRole: string): Promise<UserVo[] | null> => {
         const criteria = {} as any;
         const key = `emp.${orgId}`;
@@ -263,7 +275,7 @@ export class UserService {
         return await this.userAccount.findOne({ userId: userId }) as UserAccountVo;
     }
 
-    public updateUserImgPath = async (uploadDto: AssetUploadDto, path: string): Promise<void> => { 
+    public updateUserImgPath = async (uploadDto: AssetUploadDto, path: string): Promise<void> => {
         const condition = {} as any;
         switch (uploadDto.assetIdentity) {
             case AssetPathUtility.ASSET_IDENTITY.EMP_PHOTO:
@@ -273,7 +285,7 @@ export class UserService {
                 condition.imgIdProof = path;
                 break;
             default:
-                break; 
+                break;
         }
         await this.user.findByIdAndUpdate(uploadDto.assetId, { $set: condition }, { new: true });
     };
@@ -282,7 +294,7 @@ export class UserService {
         return await this.user.findOne({ code: empCode }) as UserVo;
     }
 
-    public sendOtp = async (empCode: string): Promise<boolean> => { 
+    public sendOtp = async (empCode: string): Promise<boolean> => {
         const user = await this.getUserByEmpCode(empCode);
         if (!user || !user?.cell) {
             return false;
