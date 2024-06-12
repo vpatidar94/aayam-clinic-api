@@ -24,6 +24,7 @@ import { InvestigationService } from "./investigation.service";
 import { PharmacyService } from "./pharmacy.service";
 import { SmsService } from "../../@shared/service/sms.service";
 import { OrgService } from "../../@shared/service/org.service";
+import userModel from "../../@shared/model/users.model";
 
 export class BookingService {
   public bookingModel = bookingModel;
@@ -41,6 +42,9 @@ export class BookingService {
           booking,
           { new: true }
         )) as BookingVo;
+        if (userBookingDto.user?._id) { 
+          userBookingDto.user = await userModel.findByIdAndUpdate(userBookingDto.user._id, userBookingDto.user, { new: true }) as UserVo; 
+        }
       } else {
         const newUpdatedOrderNo = await this._updateBookingStatusAndNo(booking);
         const user = await new UserService().saveBookingCust(
