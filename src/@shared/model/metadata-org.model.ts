@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 
 const metaOrgSchema = new mongoose.Schema({
 
-  orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
+  orgId: String,
 
   no: Number,
   patientNo: Number,
