@@ -204,12 +204,12 @@ export class BookingService {
         await this.transactionModel.create(txVo);
         const bookingDetail: BookingPopulateVo = await this.getBookingAndUserDetails(bookingAddTransactionDto.bookingId);
         const org = await new OrgService().getOrgById(bookingDetail.orgId);
-        try {
-          await SmsService.sendThanksMsg(bookingDetail.patient?.cell, org?.ph ?? '');
-        }
-        catch (error) {
-          return booking;
-        }
+        // try {
+        //   await SmsService.sendThanksMsg(bookingDetail.patient?.cell, org?.ph ?? '');
+        // }
+        // catch (error) {
+        //   return booking;
+        // }
         return booking;
       }
       return null;
