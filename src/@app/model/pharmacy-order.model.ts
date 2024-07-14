@@ -56,6 +56,7 @@ const pharmacyOrderSchema = new mongoose.Schema(
 
         taxInclusive: mongoose.Schema.Types.Boolean, // from ItemVo.taxInclusive
         priceBase: mongoose.Schema.Types.Number, // from ItemVo.price
+        discount: mongoose.Schema.Types.Number, // from ItemVo.price
 
         tax: mongoose.Schema.Types.Number, // total tax
         amount: mongoose.Schema.Types.Number, // Amount = qty * price
