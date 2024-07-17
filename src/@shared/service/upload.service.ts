@@ -10,6 +10,7 @@ export class UploadService {
     constructor() {
         dotenv.config();
         this.s3 = new S3Client({
+            region:'blr1',
             endpoint: process.env.BUCKET_ENDPOINT,
             forcePathStyle: false, // Configures to use subdomain/virtual calling format.
             credentials: {
@@ -20,17 +21,28 @@ export class UploadService {
     }
 
     /* ************************************* Public Methods ******************************************** */
+    // public uploadMedia = async (path: string, buffer: Buffer): Promise<string> => {
+    //     dotenv.config();
+    //     const params = {
+    //         Bucket: process.env.BUCKET_NAME ?? '',
+    //         Key: `${path}`,
+    //         Body: buffer,
+    //         ACL: "public-read" // Defines ACL permissions, such as private or public.
+    //     } as PutObjectCommandInput;
+    //     await this.s3.send(new PutObjectCommand(params));
+    //     return path;
+    // }
+
     public uploadMedia = async (path: string, buffer: Buffer): Promise<string> => {
-        dotenv.config();
         const params = {
             Bucket: process.env.BUCKET_NAME ?? '',
-            Key: `${path}`,
+            Key: `${path}`, // Path includes the unique file name
             Body: buffer,
-            ACL: "public-read" // Defines ACL permissions, such as private or public.
+            ACL: "public-read"
         } as PutObjectCommandInput;
         await this.s3.send(new PutObjectCommand(params));
         return path;
     }
 
-    /* ************************************* Private Methods ******************************************** */
+      
 }

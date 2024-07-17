@@ -7,6 +7,7 @@ import { UserService } from '../service/user.service';
 import { ResponseUtility } from '../utility/response.utility';
 import { upload } from '../../@shared/service/multer.service';
 import { UploadService } from '../../@shared/service/upload.service';
+import { GetImageService } from '../../@shared/service/get-image.service';
 
 class UserApi implements Route {
     public path = URL.MJR_USER;
@@ -14,6 +15,7 @@ class UserApi implements Route {
 
     private userService = new UserService();
     private uploadService = new UploadService();
+    private getImageService = new GetImageService();
     private singleUploadImage = upload.single('file');
 
     constructor() {
@@ -188,6 +190,46 @@ class UserApi implements Route {
             } catch (error) {
                 ResponseUtility.sendFailResponse(res, error);
             }
+        });
+
+        // THIS API IS TO UPLOAD IMAGES IN THE DIGITAL OCEAN IN THE FOLDER OBSERVATION AND UNDER THAT FOLDER VISITID AND THEN UNDER THAT ALL PHOTOS OF THAT VISIT ID IS THERE
+        this.router.post(`${this.path}/upload-observation-images`, this.singleUploadImage, async (req: Request, res: Response) => {
+            try {
+                const body = req.body as AssetUploadDto;
+                const fileName = req.body.fileName as string; // Get the unique file name
+                if (!req.file?.buffer) {
+                    ResponseUtility.sendFailResponse(res, "File not found");
+                    return;
+                }
+                // const path = await this.uploadService.uploadMedia(AssetPathUtility.getPath(body.assetIdentity, body.assetId) + '.png', req.file.buffer);
+                const path = await this.uploadService.uploadMedia(`OBSERVATION/${body.assetId}/${fileName}`, req.file.buffer);
+
+                // await this.userService.updateUserImgPath(body, path);
+                ResponseUtility.sendSuccess(res, path);
+            } catch (error) {
+                ResponseUtility.sendFailResponse(res, error);
+            }
+        });
+
+
+
+        // THE BELOW API IS TO GET ALL IMAGES OF PARTICULAR VISIT ID FROM THE DIGITAL OCEAN FOLDER NAME OBSERVATION
+        this.router.get(`${this.path}/list-images`, (req: Request, res: Response) => {
+            (async () => {
+                const folder = req.query.folder as string;
+                if (!folder) {
+                    return res.status(400).send('Folder query parameter is required');
+                }
+
+                try {
+                    const images = await this.getImageService.listImages(folder);
+                    console.log("1")
+                    res.status(200).json(images);
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).send('Failed to list images');
+                }
+            })()
         });
 
         this.router.get(`${this.path}${URL.SEND_OTP}`, async (req: Request, res: Response) => {
