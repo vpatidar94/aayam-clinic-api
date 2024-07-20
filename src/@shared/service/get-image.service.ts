@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { S3Client, ListObjectsV2Command, ListObjectsV2CommandInput } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, ListObjectsV2CommandInput, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 export class GetImageService {
 
@@ -30,12 +30,9 @@ export class GetImageService {
             Bucket: process.env.BUCKET_NAME ?? '',
             Prefix: folder,
         } as ListObjectsV2CommandInput;
-console.log("2")
         try {
-            console.log("3")
             const data = await this.s3.send(new ListObjectsV2Command(params));
-            console.log(data)
-            return data.Contents ? data.Contents.map((item: any)=> `https://${params.Bucket}.${this.spacesEndpoint}/${item.Key}`) : [];
+            return data.Contents ? data.Contents.map((item: any) => `https://${params.Bucket}.${this.spacesEndpoint}/${item.Key}`) : [];
         } catch (err) {
             console.error(err);
             return [];
@@ -43,5 +40,12 @@ console.log("2")
     }
 
 
-    
+    public async deleteImage(key: string): Promise<void> {
+        const params = {
+            Bucket: process.env.BUCKET_NAME ?? '',
+            Key: key
+        };
+        await this.s3.send(new DeleteObjectCommand(params));
+    }   
+
 }

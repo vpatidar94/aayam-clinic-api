@@ -8,6 +8,7 @@ import { ResponseUtility } from '../utility/response.utility';
 import { upload } from '../../@shared/service/multer.service';
 import { UploadService } from '../../@shared/service/upload.service';
 import { GetImageService } from '../../@shared/service/get-image.service';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 class UserApi implements Route {
     public path = URL.MJR_USER;
@@ -223,7 +224,6 @@ class UserApi implements Route {
 
                 try {
                     const images = await this.getImageService.listImages(folder);
-                    console.log("1")
                     res.status(200).json(images);
                 } catch (error) {
                     console.error(error);
@@ -231,6 +231,28 @@ class UserApi implements Route {
                 }
             })()
         });
+
+
+        // THE BELOW API IS TO DELETE THE PARTICULAR IMAGE FROM THE DIGITAL OCEAN
+        this.router.delete(`${this.path}/delete-image`, (req: Request, res: Response) => {
+            (async () => {
+            const key = req.query.key as string;
+            if (!key) {
+                return res.status(400).send('Key query parameter is required');
+            }
+
+            try {
+                await this.getImageService.deleteImage(key);
+                res.status(200).send('Image deleted successfully');
+            } catch (error) {
+                console.error(error);
+                res.status(500).send('Failed to delete image');
+            }
+        })()
+    });
+
+
+
 
         this.router.get(`${this.path}${URL.SEND_OTP}`, async (req: Request, res: Response) => {
             try {
