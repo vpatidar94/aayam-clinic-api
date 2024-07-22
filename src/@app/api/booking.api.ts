@@ -27,7 +27,7 @@ class BokingApi implements Route {
   }
 
   private initializeRoutes() {
-    // /api/core/v1/booking/app-update
+    // /api/core/v1/booking/add-update
     this.router.post(
       `${this.path}${URL.ADD_UPDATE}`,
       authMiddleware,

@@ -77,10 +77,12 @@ export class MetaOrgService {
         const meta: MetadataOrgVo = await metaOrgModel.findOne({ orgId: orgId }) as MetadataOrgVo;
         if (meta) {
             if (meta?.no > 0) {
-                dto.no = meta.no;
+                // dto.no = meta.no;
+                dto.no = meta.no+1;
             }
             if (meta?.patientNo > 0) {
-                dto.patientNo = meta.patientNo;
+                // dto.patientNo = meta.patientNo;
+                dto.patientNo = meta.patientNo+1;
             }
             if (meta?.departmentNo > 0) {
                 dto.departmentNo = meta.departmentNo;

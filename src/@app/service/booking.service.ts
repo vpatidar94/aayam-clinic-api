@@ -238,12 +238,16 @@ export class BookingService {
       booking.orgId
     );
     booking.status = BOOKING_STATUS.PENDING;
-    booking.no = String(lastBookingOrder.no + 1);
-    newUpdatedOrderNo.no = lastBookingOrder.no + 1;
+    // booking.no = String(lastBookingOrder.no + 1);
+    // newUpdatedOrderNo.no = lastBookingOrder.no + 1;
+    booking.no = String(lastBookingOrder.no);
+    newUpdatedOrderNo.no = lastBookingOrder.no;
     //@todo frontend will send BOOKING_TYPE PATIENT ALSO
     if (booking.type != BOOKING_TYPE.APPOINTMENT) {
-      booking.patientNo = String(lastBookingOrder.patientNo + 1);
-      newUpdatedOrderNo.patientNo = lastBookingOrder.patientNo + 1;
+      // booking.patientNo = String(lastBookingOrder.patientNo + 1);
+      // newUpdatedOrderNo.patientNo = lastBookingOrder.patientNo + 1;
+      booking.patientNo = String(lastBookingOrder.patientNo);
+      newUpdatedOrderNo.patientNo = lastBookingOrder.patientNo;
       booking.status = BOOKING_STATUS.CONFIRMED;
     }
     return newUpdatedOrderNo;
