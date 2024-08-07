@@ -92,4 +92,7 @@ export const URL = {
 
   INVESTIGATION_LIST: "/investigation-list",
 
+  // newly added to search whole table
+  SEARCH_BOOKINGS: "/search-booking"
+
 };

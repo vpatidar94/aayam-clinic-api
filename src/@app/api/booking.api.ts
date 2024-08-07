@@ -107,6 +107,151 @@ class BokingApi implements Route {
         })();
       }
     );
+    
+    // this.router.get(
+    //   `${this.path}${URL.SEARCH_BOOKINGS}`,
+    //   authMiddleware,
+    //   (req: Request, res: Response) => {
+    //     (async () => {
+    //       try {
+    //         const orgId = req.query.orgId as string;
+    //         const query = req.query.query as string;
+    //         const pageNumber = Number(req.query.pageNumber as string);
+    //         const maxRecord = Number(req.query.maxRecord as string);
+    //         const offset = maxRecord * pageNumber - maxRecord;
+    
+    //         const searchResults = await this.bookingService.searchOrgBooking(
+    //           orgId,
+    //           query,
+    //           maxRecord,
+    //           offset
+    //         );
+    //         ResponseUtility.sendSuccess(res, searchResults);
+    //       } catch (error) {
+    //         ResponseUtility.sendFailResponse(res, error);
+    //       }
+    //     })();
+    //   }
+    // );
+
+
+
+//     this.router.get(
+//       `${this.path}${URL.SEARCH_BOOKINGS}`,
+//       authMiddleware,
+//       async (req: Request, res: Response) => {
+//         try {
+//           const orgId = req.query.orgId as string;
+//           const query = req.query.query as string;
+//           // const pageNumber = Number(req.query.pageNumber as string);
+//           // const maxRecord = Number(req.query.maxRecord as string);
+//           // const offset = maxRecord * pageNumber - maxRecord;
+//           const pageNumber = Number(req.query.pageNumber as string) || 1;
+// const maxRecord = Number(req.query.maxRecord as string) || 10;
+// const offset = maxRecord * (pageNumber - 1);
+
+// // Ensure skip (offset) is non-negative
+// const skip = Math.max(offset, 0);
+    
+//           const searchResults = await this.bookingService.searchOrgBooking(
+//             orgId,
+//             query,
+//             maxRecord,
+//             skip
+//           );
+//           console.log('Search Results:', searchResults);
+//           ResponseUtility.sendSuccess(res, searchResults);
+//         } catch (error) {
+//           console.error('Error during searchOrgBooking:', error);
+//           ResponseUtility.sendFailResponse(res, error);
+//         }
+//       }
+//     );
+
+
+// this.router.get(
+//   `${this.path}${URL.SEARCH_BOOKINGS}`,
+//   authMiddleware,
+//   async (req: Request, res: Response) => {
+//     try {
+//       // const orgId = req.query.orgId as string;
+//       // const query = req.query.query as string;
+//       // const pageNumber = Number(req.query.pageNumber as string) || 1;
+//       // const maxRecord = Number(req.query.maxRecord as string) || 10;
+//       // const offset = maxRecord * (pageNumber - 1);
+
+//       const orgId = '65682edbf126f7bf2500a5ea';
+// const query = 'Aditya';
+// const maxRecord = 10;
+// const skip = 0;
+
+//       // Ensure skip (offset) is non-negative
+//       // const skip = Math.max(offset, 0);
+
+//       // Validate parameters (optional but recommended)
+//       if (!orgId) {
+//         return ResponseUtility.sendFailResponse(res, 'Organization ID is required');
+//       }
+
+//       const searchResults = await this.bookingService.searchOrgBooking(
+//         orgId,
+//         query,
+//         maxRecord,
+//         skip
+//       );
+
+//       console.log('Search Results:', searchResults);
+//       ResponseUtility.sendSuccess(res, searchResults);
+//     } catch (error) {
+//       console.error('Error during searchOrgBooking:', error);
+//       ResponseUtility.sendFailResponse(res, error || 'Internal server error');
+//     }
+//   }
+// );
+
+// newly added to search from whole table end
+//newly added start
+// Search bookings
+// this.router.get(`${this.path}/search`, async (req: Request, res: Response) => {
+//   try {
+//     const searchQuery = req.query.q as string;
+//     const results = await bookingModel.find({ $text: { $search: searchQuery } }).exec();
+//     res.status(200).json(results);
+//   } catch (error) {
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+
+this.router.get(`${this.path}/search`, async (req: Request, res: Response) => {
+  // try {
+  //   const searchQuery = req.query.q as string || '';
+  //   const orgId = req.query.orgId as string; // Assuming orgId is passed as a query parameter
+  //   const maxRecord = parseInt(req.query.maxRecord as string, 10) || 10;
+  //   const skip = parseInt(req.query.skip as string, 10) || 0;
+
+  //   const results = await this.bookingService.searchBooking(orgId, searchQuery, maxRecord, skip);
+  //   res.status(200).json(results);
+  // } catch (error) {
+  //   res.status(500).json({ error: 'Internal server error' });
+  // }
+
+  try {
+    const orgId = req.query.orgId as string;
+    const searchQuery = req.query.q as string;
+    console.log('Search Query:', searchQuery);
+    console.log('Org ID:', orgId);
+    const results = await this.bookingService.searchBooking(orgId, searchQuery, 10, 0);
+    console.log('Results:', results);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Error in search API:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+//newly added end
+
 
     // /api/core/v1/booking/transaction-add-update
     this.router.post(

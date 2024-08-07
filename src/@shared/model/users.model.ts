@@ -58,6 +58,14 @@ const userSchema = new mongoose.Schema({
   ]
 });
 
+// this userSchema.index is newly added to apply monodb search to search the any text from the userModel and hence show that entry in table
+userSchema.index({
+  'cell': 'text',
+  'cell2': 'text',
+  'nameF':'text',
+  'nameL':'text',
+});
+
 const userModel = mongoose.model<UserVo & mongoose.Document>('User', userSchema);
 
 export default userModel;

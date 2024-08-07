@@ -2,10 +2,14 @@ import { BookingVo } from "aayam-clinic-core";
 import * as mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
-  {
+  { 
     orgId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
     brId: { type: mongoose.Schema.Types.ObjectId, ref: "Org" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+
+  //   nameF: String,
+  // nameL: String,
+
 
     no: String,
     patientNo: String,
@@ -189,6 +193,42 @@ const bookingSchema = new mongoose.Schema(
     },
   }
 );
+
+
+
+// newly added start
+//this bookingSchema.index is newly added to apply monodb search to search the any text from the bookingModel and hence show that entry in table
+// Define the text index 
+bookingSchema.index({
+
+  'no': 'text',
+  'patientNo': 'text',
+  'shift': 'text',
+  'timeSlot': 'text',
+  'referedBy': 'text',
+  'complaint': 'text',
+  'diagnosis': 'text',
+  'type': 'text',
+  'subType': 'text',
+  'departmentId': 'text',
+  'status': 'text',
+  'txStatus': 'text',
+  'items.item.name': 'text',
+  'items.item.code': 'text',
+  'items.item.note': 'text',
+  'items.note': 'text',
+  'items.status': 'text',
+  'items.name': 'text',
+  'test': 'text',
+  'prescription.name': 'text',
+  'prescription.instruction': 'text',
+  'instruction': 'text',
+  'note': 'text',
+  'observation.healthParams.key': 'text',
+  'observation.healthParams.value': 'text',
+  'observation.healthParams.name': 'text',
+});
+// newly added end
 
 bookingSchema.virtual("patient", {
   ref: "User",

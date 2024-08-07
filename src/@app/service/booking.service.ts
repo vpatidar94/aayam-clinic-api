@@ -25,9 +25,11 @@ import { PharmacyService } from "./pharmacy.service";
 import { SmsService } from "../../@shared/service/sms.service";
 import { OrgService } from "../../@shared/service/org.service";
 import userModel from "../../@shared/model/users.model";
+import { Types } from "mongoose";
 
 export class BookingService {
   public bookingModel = bookingModel;
+  public userModel = userModel;
   public transactionModel = TransactionModel;
 
   /* ************************************* Public Methods ******************************************** */
@@ -117,6 +119,432 @@ export class BookingService {
     }
     return orgBookingList;
   };
+  
+
+//   public searchBooking = async (orgId: string, query: string, maxRecord: number, skip: number): Promise<OrgBookingDto[]> => {
+//     // try {
+//       const results = (await this.bookingModel.find({
+//         // const results = (await this.userModel.find({
+
+//         orgId: orgId,
+//         $text: { $search: query }
+//       }).skip(skip).limit(250).populate(["patient", "drDetail"])) as Array<BookingPopulateVo>;
+
+// // newly added to show search patient in the table start
+// const orgBookingList = [] as Array<OrgBookingDto>;
+//     if (results?.length > 0) {
+//       for (let i = 0; i < results.length; i++) {
+//         const it: BookingPopulateVo = results[i];
+//         const record = JSON.parse(JSON.stringify(it));
+//         const dto = {} as OrgBookingDto;
+//         dto.drDetail = record.drDetail;
+//         dto.patient = record.patient;
+//         dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
+//         delete record.drDetail;
+//         delete record.patient;
+//         dto.booking = record;
+//         orgBookingList.push(dto);
+//       }
+      
+//     // }
+// // newly added to show search patient in the table start
+
+
+  
+//     //   console.log('Results:', results); // Log the results
+//     //   // return results;
+//     // } catch (error) {
+//     //   console.error('Error in searchBooking:', error);
+//     //   throw error;
+//     }
+//     return orgBookingList;
+//   }
+
+
+
+// it is working perfectly till now but it only search user name and not "no" and mobile number
+// public searchBooking = async (orgId: string, query: string, maxRecord: number, skip: number): Promise<OrgBookingDto[]> => {
+
+//   const userResults = await this.userModel.find({
+//     $text: { $search: query }
+//   }).select('_id');  // Fetch only IDs of matched users
+//   const userIds = userResults.map(user => user._id);
+//   console.log("id is",userIds);
+
+//   console.log("User IDs found:", userIds);
+// const users = await this.userModel.find({ _id: { $in: userIds } });
+// console.log("User details:", users);
+//   // const bookingResults = await this.bookingModel.find({
+//   //   orgId: orgId,
+//   //   $text: { $search: query },
+//   //   user: { $in: userIds }  // Match bookings with the IDs of users found in the previous step
+//   // }).skip(skip).limit(maxRecord).populate(['patient', 'drDetail']);
+
+//   const bookingResults = await this.bookingModel.find({
+//     orgId: orgId,
+//     user: { $in: userIds }  // Only check if there are bookings for this user
+//   }).skip(skip).limit(maxRecord).populate(['patient', 'drDetail']);
+
+//   // const bookingResults = await this.bookingModel.find({
+//   //   orgId: orgId,
+//   //   user: { $in: userIds },
+//   //   $text: { $search: "Sumeet" }
+//   // }).skip(skip).limit(maxRecord).populate(['patient', 'drDetail']);
+//   // console.log("Booking results:", bookingResults);
+
+//   const orgBookingList = [] as Array<OrgBookingDto>;
+//   if (bookingResults?.length > 0) {
+//     for (const it of bookingResults) {
+//       const record = JSON.parse(JSON.stringify(it));
+//       const dto = {} as OrgBookingDto;
+//       dto.drDetail = record.drDetail;
+//       dto.patient = record.patient;
+//       dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
+//       delete record.drDetail;
+//       delete record.patient;
+//       dto.booking = record;
+//       orgBookingList.push(dto);
+//     }
+//   }
+//   return orgBookingList;
+
+//   // const results = await this.bookingModel.find({
+//   //   orgId: orgId,
+//   //   $text: { $search: query }
+//   // }).skip(skip).limit(250).populate(["patient", "drDetail"]);
+
+//   // const orgBookingList = [] as Array<OrgBookingDto>;
+//   // if (results?.length > 0) {
+//   //   for (const it of results) {
+//   //     const record = JSON.parse(JSON.stringify(it));
+//   //     const dto = {} as OrgBookingDto;
+//   //     dto.drDetail = record.drDetail;
+//   //     dto.patient = record.patient;
+//   //     dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
+//   //     delete record.drDetail;
+//   //     delete record.patient;
+//   //     dto.booking = record;
+//   //     orgBookingList.push(dto);
+//   //   }
+//   // }
+//   // return orgBookingList;
+// }
+
+
+
+// in it only "no" is search and username gave internal server error
+// public searchBooking = async (orgId: string, query: string, maxRecord: number, skip: number): Promise<OrgBookingDto[]> => {
+//   try {
+//     // Step 1: Perform text search on userModel
+//     const userResults = await this.userModel.find({
+//       $text: { $search: query }
+//     }).select('_id');
+    
+//     const userIds = userResults.map(user => user._id);
+
+//     // Log user IDs for debugging
+//     console.log("User IDs found:", userIds);
+
+//     // Step 2: Perform combined query on bookingModel
+//     const bookingQuery: any = {
+//       orgId: orgId,
+//       $text: { $search: query }
+//     };
+
+//     // If user IDs are found, add them to the booking query
+//     if (userIds.length > 0) {
+//       bookingQuery.$or = [
+//         { user: { $in: userIds } },
+//         { $text: { $search: query } }
+//       ];
+//     }
+
+//     const bookingResults = await this.bookingModel.find(bookingQuery)
+//       .skip(skip)
+//       .limit(maxRecord)
+//       .populate(['patient', 'drDetail']);
+
+//     // Log booking results for debugging
+//     console.log("Booking results:", bookingResults);
+
+//     // Prepare the final result list
+//     const orgBookingList: OrgBookingDto[] = [];
+//     if (bookingResults?.length > 0) {
+//       for (const it of bookingResults) {
+//         const record = JSON.parse(JSON.stringify(it));
+//         const dto: OrgBookingDto = {} as OrgBookingDto;
+//         dto.drDetail = record.drDetail;
+//         dto.patient = record.patient;
+//         dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
+//         delete record.drDetail;
+//         delete record.patient;
+//         dto.booking = record;
+//         orgBookingList.push(dto);
+//       }
+//     }
+
+//     return orgBookingList;
+
+//   } catch (error) {
+//     console.error("Error in search API:", error);
+//     throw error;
+//   }
+// }
+
+
+// it is working perfectly i.e searching user name and "no" both  but not searching mobile number
+// public searchBooking = async (orgId: string, query: string, maxRecord: number, skip: number): Promise<OrgBookingDto[]> => {
+//   try {
+//     // Step 1: Perform text search on userModel
+//     const userResults = await this.userModel.find({
+//       $text: { $search: query }
+//     }).select('_id');
+    
+//     const userIds = userResults.map(user => user._id);
+
+//     // Log user IDs for debugging
+//     console.log("User IDs found:", userIds);
+
+//     // Step 2: Query bookingModel using user IDs
+//     const userIdQueryResults = userIds.length > 0 ? await this.bookingModel.find({
+//       orgId: orgId,
+//       user: { $in: userIds }
+//     })
+//     .skip(skip)
+//     .limit(maxRecord)
+//     .populate(['patient', 'drDetail']) : [];
+
+//     // Log booking results for debugging
+//     console.log("Booking results by user IDs:", userIdQueryResults);
+
+//     // Step 3: Perform text search on bookingModel
+//     const bookingTextQueryResults = await this.bookingModel.find({
+//       orgId: orgId,
+//       $text: { $search: query }
+//     })
+//     .skip(skip)
+//     .limit(maxRecord)
+//     .populate(['patient', 'drDetail']);
+
+//     // Log booking results for debugging
+//     console.log("Booking results by text search:", bookingTextQueryResults);
+
+//     // Step 4: Merge results ensuring uniqueness
+//     const bookingResults = [...userIdQueryResults, ...bookingTextQueryResults]
+//       .filter((value, index, self) => index === self.findIndex((t) => t._id.toString() === value._id.toString()));
+
+//     // Prepare the final result list
+//     const orgBookingList: OrgBookingDto[] = [];
+//     if (bookingResults?.length > 0) {
+//       for (const it of bookingResults) {
+//         const record = JSON.parse(JSON.stringify(it));
+//         const dto: OrgBookingDto = {} as OrgBookingDto;
+//         dto.drDetail = record.drDetail;
+//         dto.patient = record.patient;
+//         dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
+//         delete record.drDetail;
+//         delete record.patient;
+//         dto.booking = record;
+//         orgBookingList.push(dto);
+//       }
+//     }
+
+//     return orgBookingList;
+
+//   } catch (error) {
+//     console.error("Error in search API:", error);
+//     throw error;
+//   }
+// }
+
+
+
+public searchBooking = async (orgId: string, query: string, maxRecord: number, skip: number): Promise<OrgBookingDto[]> => {
+  try {
+    let userIds: Types.ObjectId[] = [];
+
+    // Step 1: Perform direct search on userModel for phone numbers
+    const phoneSearchResults = await this.userModel.find({
+      cell: query
+    }).select('_id');
+
+    const phoneUserIds = phoneSearchResults.map(user => user._id);
+
+    // Log user IDs from phone search
+    console.log("User IDs found from phone search:", phoneUserIds);
+
+    // Step 2: Perform text search on userModel for other fields
+    const textSearchResults = await this.userModel.find({
+      $text: { $search: query }
+    }).select('_id');
+
+    const textUserIds = textSearchResults.map(user => user._id);
+
+    // Log user IDs from text search
+    console.log("User IDs found from text search:", textUserIds);
+
+    // Combine user IDs from text and phone searches
+    userIds = [...new Set([...phoneUserIds, ...textUserIds])];  // Ensure uniqueness
+
+    // Log combined user IDs
+    console.log("Combined User IDs:", userIds);
+
+    // Step 3: Query bookingModel using user IDs
+    const userIdQueryResults = userIds.length > 0 ? await this.bookingModel.find({
+      orgId: orgId,
+      user: { $in: userIds }
+    })
+    .skip(skip)
+    .limit(maxRecord)
+    .populate(['patient', 'drDetail']) : [];
+
+    // Log booking results for debugging
+    console.log("Booking results by user IDs:", userIdQueryResults);
+
+    // Step 4: Perform text search on bookingModel
+    const bookingTextQueryResults = await this.bookingModel.find({
+      orgId: orgId,
+      $text: { $search: query }
+    })
+    .skip(skip)
+    .limit(maxRecord)
+    .populate(['patient', 'drDetail']);
+
+    // Log booking results for debugging
+    console.log("Booking results by text search:", bookingTextQueryResults);
+
+    // Step 5: Merge results ensuring uniqueness
+    const bookingResults = [...userIdQueryResults, ...bookingTextQueryResults]
+      .filter((value, index, self) => index === self.findIndex((t) => t._id.toString() === value._id.toString()));
+
+    // Prepare the final result list
+    const orgBookingList: OrgBookingDto[] = [];
+    if (bookingResults?.length > 0) {
+      for (const it of bookingResults) {
+        const record = JSON.parse(JSON.stringify(it));
+        const dto: OrgBookingDto = {} as OrgBookingDto;
+        dto.drDetail = record.drDetail;
+        dto.patient = record.patient;
+        dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
+        delete record.drDetail;
+        delete record.patient;
+        dto.booking = record;
+        orgBookingList.push(dto);
+      }
+    }
+
+    return orgBookingList;
+
+  } catch (error) {
+    console.error("Error in search API:", error);
+    throw error;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+// newly added for the whole table search"
+
+// public searchOrgBooking = async (
+//   orgId: string,
+//   query: string,
+//   limit: number,
+//   offset: number
+// ): Promise<OrgBookingDto[]> => {
+//   const searchCriteria = {
+//     orgId,
+//     $or: [
+//       { 'patient.nameF': { $regex: query, $options: 'i' } },
+//       { 'drDetail.nameF': { $regex: query, $options: 'i' } },
+//       { 'booking.bookingId': { $regex: query, $options: 'i' } },
+//       // Add more fields if needed
+//     ]
+//   };
+
+//   const list = (await this.bookingModel
+//     .find(searchCriteria)
+//     .limit(limit)
+//     .skip(offset)
+//     .sort({ no: 'desc' })
+//     .collation({ locale: 'en_US', numericOrdering: true })
+//     .populate(['patient', 'drDetail'])) as Array<BookingPopulateVo>;
+
+//     const orgBookingList = await Promise.all(list.map(async (record) => {
+//       const dto = {} as OrgBookingDto;
+//       dto.drDetail = record.drDetail;
+//       dto.patient = record.patient;
+//       dto.pharmacyOrderId = await new PharmacyService().pharmacyIdByBookingId(record._id?.toString());
+//       dto.booking = record;
+//       return dto;
+//     }));
+//   return orgBookingList;
+// };
+
+
+
+// public searchBooking = async(orgId: string, query: string, maxRecord: number, skip: number)=>{
+// // async searchOrgBooking(orgId: string, query: string, maxRecord: number, skip: number) {
+//   try {
+//     // Simplified query for testing
+//     const results = await this.bookingModel.find({ orgId: orgId }).skip(skip).limit(maxRecord);
+//     console.log('Results:', results);
+//     return results;
+//   } catch (error) {
+//     console.error('Error in searchOrgBooking:', error);
+//     throw error;
+//   }
+// }
+
+
+// public searchBooking = async (orgId: string, query: string, maxRecord: number, skip: number) => {
+//   try {
+//     const results = await this.bookingModel.find({
+//       orgId: orgId,
+//       $text: { $search: query }
+//     }).skip(skip).limit(maxRecord);
+
+//     console.log('Results:', results); // Log the results
+//     return results;
+//   } catch (error) {
+//     console.error('Error in searchBooking:', error);
+//     throw error;
+//   }
+// }
+
+// async searchOrgBooking(orgId: string, query: string, maxRecord: number, skip: number) {
+//   try {
+//     // Example of filtering by patient name or doctor name (adjust as necessary)
+//     const searchCriteria = {
+//       orgId: orgId,
+//       $or: [
+//         { 'patient.nameF': new RegExp(query, 'i') }, // Patient's first name
+//         { 'patient.nameM': new RegExp(query, 'i') }, // Patient's middle name
+//         // Add more fields as needed
+//       ],
+//     };
+
+//     // Perform the search
+//     const results = await this.bookingModel.find(searchCriteria).skip(skip).limit(maxRecord);
+//     console.log('Search Results:', results);
+//     return results;
+//   } catch (error) {
+//     console.error('Error in searchOrgBooking:', error);
+//     throw error;
+//   }
+// }
+
+  
+  // newly added to search from whole table end
+
+
 
   public getInvestigationPatient = async (
     orgId: string,
@@ -252,4 +680,6 @@ export class BookingService {
     }
     return newUpdatedOrderNo;
   };
+
+  
 }
